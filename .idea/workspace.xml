@@ -1,34 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="73fe772e-76c5-476c-b1b5-50868bcade97" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/langchain4j-learning-web.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/assets/index-B8nNpSIB.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/assets/index-CKwiZBex.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/dist/vite.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/vite.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/App.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/chat.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/stores/chat.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/ChatView.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/ExamplesView.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/views/ModelView.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
-    </list>
+    <list default="true" id="73fe772e-76c5-476c-b1b5-50868bcade97" name="更改" comment="feat(frontend): 初始化 LangChain4j 学习平台前端项目&#10;&#10;- 添加 Vue.js 前端框架及路由配置&#10;- 集成 Pinia 状态管理实现聊天会话存储&#10;- 实现 API 接口封装支持对话、模型管理等功能&#10;- 创建聊天界面支持简单对话和会话模式&#10;- 添加示例页面展示角色扮演、翻译、代码分析功能&#10;- 配置 Vite 构建工具和相关依赖&#10;- 添加 IDEA 项目配置文件" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,6 +10,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "hrj98"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/hrj98/langchain4j-learning-web.git",
+    "accountId": "ec7e441c-5629-4eb3-b305-4f9f71014257"
+  }
+}]]></component>
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 1
 }]]></component>
@@ -51,7 +36,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "develop",
     "last_opened_file_path": "D:/projectMenu/langchain4j-learning-web"
   }
 }]]></component>
@@ -73,6 +58,19 @@
       <option name="presentableId" value="Default" />
       <updated>1779680076758</updated>
     </task>
+    <task id="LOCAL-00001" summary="feat(frontend): 初始化 LangChain4j 学习平台前端项目&#10;&#10;- 添加 Vue.js 前端框架及路由配置&#10;- 集成 Pinia 状态管理实现聊天会话存储&#10;- 实现 API 接口封装支持对话、模型管理等功能&#10;- 创建聊天界面支持简单对话和会话模式&#10;- 添加示例页面展示角色扮演、翻译、代码分析功能&#10;- 配置 Vite 构建工具和相关依赖&#10;- 添加 IDEA 项目配置文件">
+      <option name="closed" value="true" />
+      <created>1779692449328</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1779692449328</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(frontend): 初始化 LangChain4j 学习平台前端项目&#10;&#10;- 添加 Vue.js 前端框架及路由配置&#10;- 集成 Pinia 状态管理实现聊天会话存储&#10;- 实现 API 接口封装支持对话、模型管理等功能&#10;- 创建聊天界面支持简单对话和会话模式&#10;- 添加示例页面展示角色扮演、翻译、代码分析功能&#10;- 配置 Vite 构建工具和相关依赖&#10;- 添加 IDEA 项目配置文件" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(frontend): 初始化 LangChain4j 学习平台前端项目&#10;&#10;- 添加 Vue.js 前端框架及路由配置&#10;- 集成 Pinia 状态管理实现聊天会话存储&#10;- 实现 API 接口封装支持对话、模型管理等功能&#10;- 创建聊天界面支持简单对话和会话模式&#10;- 添加示例页面展示角色扮演、翻译、代码分析功能&#10;- 配置 Vite 构建工具和相关依赖&#10;- 添加 IDEA 项目配置文件" />
   </component>
 </project>
