@@ -35,22 +35,18 @@ api.interceptors.response.use(
     // 优先处理 401 认证错误
     if (error.response?.status === 401) {
       const message = error.response?.data?.message || '登录已过期，请重新登录'
-      console.error('[axios] 检测到 401 错误，准备派发 auth-expired 事件')
 
-      // 避免重复处理
       if (!loginModalShown) {
         loginModalShown = true
         setTimeout(() => {
           loginModalShown = false
         }, 3000)
 
-        // 派发事件通知 App.vue 清除会话并显示登录框
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('auth-expired'))
         }
       }
 
-      // 返回特殊标记，让组件识别为认证错误（不显示 toast）
       const authError = new Error(message)
       authError.isAuthError = true
       return Promise.reject(authError)
@@ -71,128 +67,202 @@ api.interceptors.response.use(
 
 // ==================== 认证 API（对齐 native /api/auth/*） ====================
 
-/**
- * 用户登录
- */
 export function login(username, password) {
   return api.post('/auth/login', { username, password })
 }
 
-/**
- * 用户注册
- */
 export function register(username, email, password) {
   return api.post('/auth/register', { username, email, password })
 }
 
-/**
- * 刷新令牌
- */
 export function refreshToken(refreshToken) {
   return api.post('/auth/refresh', { refreshToken })
 }
 
-/**
- * 获取当前用户信息
- */
 export function getCurrentUser() {
   return api.get('/auth/me')
 }
 
-/**
- * 用户登出
- */
 export function logout() {
   return api.post('/auth/logout')
 }
 
-// ==================== 对话 API ====================
+// ==================== 健康检查 ====================
 
-/**
- * 健康检查
- */
 export function healthCheck() {
-  return api.get('/chat/models', { timeout: 5000 })
+  return api.get('/chat/health', { timeout: 5000 })
 }
 
+// ==================== 会话 API（对齐 native /api/chat/*） ====================
+
 /**
- * 简单对话 - 无记忆
+ * 创建新会话
  */
-export function simpleChat(message) {
-  return api.get('/chat/simple', { params: { message } })
+export function createSession() {
+  return api.post('/chat/session')
 }
 
 /**
- * 流式输出 - SSE
- * 返回 AbortController 可用于取消
+ * 获取或创建会话（会话复用）
  */
-export function streamChat(message, onChunk, onComplete, onError) {
-  const controller = new AbortController()
-  const encoded = encodeURIComponent(message)
-  const token = localStorage.getItem('auth-token')
-
-  fetch(`/api/chat/stream?message=${encoded}`, {
-    method: 'GET',
-    headers: {
-      Accept: 'text/event-stream',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    signal: controller.signal
-  })
-    .then(response => {
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-
-      const read = () => {
-        reader.read().then(({ done, value }) => {
-          if (done) {
-            onComplete?.()
-            return
-          }
-          const text = decoder.decode(value, { stream: true })
-          for (const line of text.split('\n')) {
-            if (line.startsWith('data:')) {
-              onChunk?.(line.substring(5).trim())
-            }
-          }
-          read()
-        }).catch(err => {
-          if (err.name !== 'AbortError') onError?.(err)
-        })
-      }
-      read()
-    })
-    .catch(err => {
-      if (err.name !== 'AbortError') onError?.(err)
-    })
-
-  return controller
+export function getOrCreateSession() {
+  return api.post('/chat/session/active')
 }
 
 /**
- * 带记忆的会话对话
- */
-export function sessionChat(sessionId, message) {
-  return api.post('/chat/session', { sessionId, message })
-}
-
-/**
- * 清除会话
+ * 清除会话历史
  */
 export function clearSession(sessionId) {
+  return api.post(`/chat/session/${sessionId}/clear`)
+}
+
+/**
+ * 删除会话
+ */
+export function deleteSession(sessionId) {
   return api.delete(`/chat/session/${sessionId}`)
 }
 
 /**
- * 角色扮演对话
+ * 获取会话列表
  */
-export function roleChat(message, role, style) {
-  return api.get('/chat/role', { params: { message, role, style } })
+export function getSessions() {
+  return api.get('/chat/sessions')
+}
+
+/**
+ * 获取会话详情
+ */
+export function getSession(sessionId) {
+  return api.get(`/chat/session/${sessionId}`)
+}
+
+/**
+ * 获取会话消息列表
+ */
+export function getSessionMessages(sessionId) {
+  return api.get(`/chat/session/${sessionId}/messages`)
+}
+
+/**
+ * 获取会话 Token 统计
+ */
+export function getSessionStats(sessionId) {
+  return api.get(`/chat/session/${sessionId}/stats`)
+}
+
+/**
+ * 切换模式（文本/多模态）
+ */
+export function switchMode(multimodal) {
+  return api.post('/chat/mode', { multimodal })
+}
+
+/**
+ * 获取当前模式
+ */
+export function getMode() {
+  return api.get('/chat/mode')
+}
+
+// ==================== 消息发送 ====================
+
+/**
+ * 发送聊天消息（同步）
+ */
+export function sendMessage(data) {
+  return api.post('/chat/message', data)
+}
+
+/**
+ * 流式发送聊天消息（SSE，对齐 native：POST + fetch + 事件解析）
+ * @param {Object} data - { sessionId, message, model, systemPrompt, useMultimodal, imageUrls }
+ * @param {Function} onChunk - 增量内容回调
+ * @param {Function} onDone - 完成回调 (fullReply, model)
+ * @param {Function} onError - 错误回调 (errMsg)
+ */
+export async function sendMessageStream(data, onChunk, onDone, onError) {
+  const token = localStorage.getItem('auth-token')
+  const baseUrl = '/api/chat/message/stream'
+
+  try {
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+      // 处理 401 认证错误
+      if (response.status === 401) {
+        const errorMessage = '登录已过期，请重新登录'
+        if (!loginModalShown) {
+          loginModalShown = true
+          setTimeout(() => {
+            loginModalShown = false
+          }, 3000)
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('auth-expired'))
+          }
+        }
+        const authError = new Error(errorMessage)
+        authError.isAuthError = true
+        onError?.(errorMessage)
+        return
+      }
+
+      const errorText = await response.text()
+      onError?.(`请求失败 (${response.status}): ${errorText}`)
+      return
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    let fullReply = ''
+    let model = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+
+      // 按行处理 SSE 数据
+      const lines = buffer.split('\n')
+      buffer = lines.pop() // 保留不完整的最后一行
+      for (const line of lines) {
+        if (line.startsWith('data:')) {
+          try {
+            const jsonData = JSON.parse(line.slice(5).trim())
+
+            if (jsonData.type === 'chunk') {
+              fullReply += (jsonData.content || '')
+              onChunk?.(jsonData.content || '')
+            } else if (jsonData.type === 'done') {
+              model = jsonData.model || ''
+              onDone?.(fullReply, model)
+            } else if (jsonData.type === 'error') {
+              onError?.(jsonData.error || '未知错误')
+            }
+          } catch (e) {
+            console.warn('[SSE] 解析数据失败:', line, e)
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[SSE] 流式请求失败:', error)
+    onError?.(error.message || '网络连接失败')
+  }
 }
 
 // ==================== 模型管理 API ====================
 
-export function listModels() {
+export function getModelList() {
   return api.get('/chat/models')
 }
 
@@ -200,7 +270,7 @@ export function switchModel(modelId) {
   return api.post('/chat/model', { modelId })
 }
 
-export function modelStatus() {
+export function getCurrentModel() {
   return api.get('/chat/model')
 }
 

@@ -4,20 +4,20 @@
     <aside class="sidebar-panel">
       <div class="panel-header">
         <h3>💬 会话</h3>
-        <button class="btn-icon" @click="createNewSession" title="新建会话">+</button>
+        <button class="btn-icon" @click="handleCreateSession" title="新建会话">+</button>
       </div>
       <div class="session-list">
         <div
-          v-for="s in sessions"
+          v-for="s in chatStore.sessions"
           :key="s.id"
           class="session-item"
           :class="{ active: s.id === chatStore.sessionId }"
-          @click="selectSession(s.id)"
+          @click="handleSelectSession(s.id)"
         >
-          <span class="session-name">{{ s.name }}</span>
-          <button class="btn-del" @click.stop="deleteSession(s.id)">×</button>
+          <span class="session-name">{{ sessionTitle(s) }}</span>
+          <button class="btn-del" @click.stop="handleDeleteSession(s.id)">×</button>
         </div>
-        <div v-if="sessions.length === 0" class="empty-hint">暂无会话</div>
+        <div v-if="chatStore.sessions.length === 0" class="empty-hint">暂无会话</div>
       </div>
 
       <!-- 模型快捷切换 -->
@@ -39,7 +39,7 @@
     <main class="chat-main">
       <!-- 消息列表 -->
       <div class="messages-container" ref="messagesContainer">
-        <div v-if="chatStore.messages.length === 0 && !chatStore.loading" class="welcome">
+        <div v-if="chatStore.messages.length === 0 && !chatStore.isLoading" class="welcome">
           <div class="welcome-icon">🔗</div>
           <h2>LangChain4j 对话</h2>
           <p>支持同步调用、流式输出、会话记忆、角色扮演</p>
@@ -75,8 +75,8 @@
           </div>
         </div>
 
-        <!-- 加载中 -->
-        <div v-if="chatStore.loading" class="message-row assistant">
+        <!-- 加载中（流式时首 chunk 前显示） -->
+        <div v-if="chatStore.isLoading && !hasStreamingMessage" class="message-row assistant">
           <div class="avatar">🤖</div>
           <div class="message-bubble">
             <div class="typing-dots">
@@ -94,15 +94,15 @@
             @keydown.enter.exact.prevent="sendMessage"
             class="input-box"
             placeholder="输入问题... (Enter 发送)"
-            :disabled="chatStore.loading"
+            :disabled="chatStore.isLoading"
             rows="1"
           ></textarea>
           <button
             class="send-btn"
-            :disabled="!inputMessage.trim() || chatStore.loading"
+            :disabled="!inputMessage.trim() || chatStore.isLoading"
             @click="sendMessage"
           >
-            <svg v-if="!chatStore.loading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg v-if="!chatStore.isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="22" y1="2" x2="11" y2="13"></line>
               <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
             </svg>
@@ -110,10 +110,8 @@
           </button>
         </div>
         <div class="input-actions">
-          <button class="action-link" @click="mode = mode === 'session' ? 'simple' : 'session'">
-            {{ mode === 'session' ? '🧠 会话模式' : '💬 简单模式' }}
-          </button>
-          <button class="action-link" @click="clearMessages">🗑 清除消息</button>
+          <button class="action-link" @click="handleClearHistory">🗑 清除会话历史</button>
+          <button class="action-link" @click="handleNewChat">✨ 新对话</button>
         </div>
       </div>
     </main>
@@ -121,19 +119,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { marked } from 'marked'
+import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
-import { sessionChat, simpleChat, streamChat as streamApi, listModels, switchModel, clearSession as apiClearSession } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck } from '@/api/chat'
+
+// 统一解包 R<T>
+function unwrap(response) {
+  if (response?.data !== undefined) {
+    return response.data
+  }
+  return response
+}
 
 const chatStore = useChatStore()
 const messagesContainer = ref(null)
 const inputMessage = ref('')
-const sessions = ref([])
 const activeModelId = ref('')
 const modelList = ref([])
 const backendOnline = ref(false)
-const mode = ref('session') // simple | session
+
+const hasStreamingMessage = computed(() =>
+  chatStore.messages.some(m => m.streaming)
+)
 
 // 渲染 Markdown
 function renderMarkdown(content) {
@@ -143,6 +152,10 @@ function renderMarkdown(content) {
 function formatTime(ts) {
   if (!ts) return ''
   return new Date(ts).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
+function sessionTitle(s) {
+  return s.remark || s.title || (s.id ? String(s.id).substring(0, 8) : '会话')
 }
 
 function scrollToBottom() {
@@ -155,13 +168,24 @@ function scrollToBottom() {
 
 watch(() => chatStore.messages.length, scrollToBottom)
 
+// 监听流式内容变化，持续滚动到底部
+watch(
+  () => {
+    const msgs = chatStore.messages
+    const last = msgs[msgs.length - 1]
+    return last && last.streaming ? last.content.length : -1
+  },
+  scrollToBottom
+)
+
 // 加载模型列表
 async function loadModels() {
   try {
-    const res = await listModels()
-    modelList.value = res.models || []
-    activeModelId.value = res.activeModel || ''
-    backendOnline.value = !!res.activeModel
+    const res = await getModelList()
+    const data = unwrap(res)
+    modelList.value = data.models || []
+    activeModelId.value = data.activeModel || ''
+    backendOnline.value = modelList.value.length > 0
   } catch {
     modelList.value = []
     backendOnline.value = false
@@ -171,77 +195,126 @@ async function loadModels() {
 // 切换模型
 async function onModelSwitch() {
   try {
-    await switchModel(activeModelId.value)
-    console.log('模型已切换:', activeModelId.value)
+    const res = await apiSwitchModel(activeModelId.value)
+    const data = unwrap(res)
+    chatStore.currentModel = data.newModel || activeModelId.value
+    message.success(`已切换到 ${data.modelName || activeModelId.value}`)
   } catch (e) {
+    if (e.isAuthError) return
     console.error('切换模型失败:', e)
+    message.error('切换模型失败')
   }
 }
 
 // 创建新会话
-function createNewSession() {
-  const id = 'session-' + Date.now()
-  sessions.value.unshift({ id, name: `会话 ${sessions.value.length + 1}` })
-  chatStore.setActiveSession(id)
+async function handleCreateSession() {
+  try {
+    await chatStore.createNewSession()
+    message.success('新会话已创建')
+  } catch (e) {
+    if (e.isAuthError) return
+    message.error('创建会话失败: ' + (e.message || '未知错误'))
+  }
 }
 
 // 选择会话
-function selectSession(id) {
-  chatStore.setActiveSession(id)
+async function handleSelectSession(id) {
+  if (id === chatStore.sessionId) return
+  try {
+    await chatStore.selectSession(id)
+  } catch (e) {
+    console.warn('[ChatView] 加载会话消息失败:', e)
+    message.error('加载会话失败')
+  }
 }
 
 // 删除会话
-async function deleteSession(id) {
-  try {
-    await apiClearSession(id)
-    sessions.value = sessions.value.filter(s => s.id !== id)
-    if (chatStore.sessionId === id && sessions.value.length > 0) {
-      chatStore.setActiveSession(sessions.value[0].id)
+function handleDeleteSession(id) {
+  Modal.confirm({
+    title: '删除会话',
+    content: '此操作将永久删除该会话及其所有对话记录，是否继续？',
+    okText: '确定',
+    cancelText: '取消',
+    okType: 'danger',
+    async onOk() {
+      try {
+        await chatStore.removeSession(id)
+        message.success('会话已删除')
+      } catch (e) {
+        message.error('删除失败: ' + (e.message || '未知错误'))
+      }
     }
-  } catch (e) {
-    // 内存中删除
-    sessions.value = sessions.value.filter(s => s.id !== id)
+  })
+}
+
+// 清除当前会话历史
+function handleClearHistory() {
+  if (!chatStore.sessionId) {
+    chatStore.clearMessages()
+    message.success('会话已清除')
+    return
   }
+  Modal.confirm({
+    title: '清除会话',
+    content: '确定要清除当前会话的所有消息吗？（会话本身保留）',
+    okText: '确定',
+    cancelText: '取消',
+    onOk() {
+      chatStore.clearHistory()
+        .then(() => message.success('会话历史已清除'))
+        .catch((e) => {
+          if (e.isAuthError) return
+          message.error('清除失败: ' + (e.message || '未知错误'))
+        })
+    }
+  })
 }
 
-// 清除消息
-function clearMessages() {
+// 新对话：清空本地消息视图，下次发送时自动复用/创建会话
+function handleNewChat() {
   chatStore.clearMessages()
+  inputMessage.value = ''
 }
 
-// 发送消息
+// 发送消息（SSE 流式）
 async function sendMessage() {
   const text = inputMessage.value.trim()
-  if (!text || chatStore.loading) return
+  if (!text || chatStore.isLoading) return
 
   inputMessage.value = ''
-  chatStore.addMessage('user', text)
-  chatStore.setLoading(true)
 
   try {
-    if (mode.value === 'session') {
-      const res = await sessionChat(chatStore.sessionId, text)
-      chatStore.addMessage('assistant', res.response, activeModelId.value)
-    } else {
-      const res = await simpleChat(text)
-      chatStore.addMessage('assistant', res.response, activeModelId.value)
-    }
+    await chatStore.sendUserMessage(text)
   } catch (e) {
-    chatStore.addMessage('assistant', `❌ 请求失败: ${e.message}`, '')
-  } finally {
-    chatStore.setLoading(false)
+    if (e.isAuthError) return
+    console.error('[ChatView] 发送消息失败:', e)
+    message.error('发送失败: ' + (e.message || '未知错误'))
   }
-
-  scrollToBottom()
 }
 
 onMounted(async () => {
-  await loadModels()
-  // 创建一个初始会话
-  if (sessions.value.length === 0) {
-    createNewSession()
-  }
+  loadModels()
+  checkBackendHealth()
+  await initialize()
 })
+
+async function checkBackendHealth() {
+  try {
+    await healthCheck()
+    backendOnline.value = true
+  } catch {
+    backendOnline.value = false
+  }
+}
+
+async function initialize() {
+  // 页面刷新时从 localStorage 恢复会话（含历史消息）
+  try {
+    await chatStore.restoreSession()
+  } catch (e) {
+    console.warn('[ChatView] 恢复会话失败:', e)
+  }
+}
 </script>
 
 <style lang="scss" scoped>

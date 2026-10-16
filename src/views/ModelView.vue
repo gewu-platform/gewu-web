@@ -44,7 +44,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { listModels, switchModel as apiSwitchModel } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel } from '@/api/chat'
+
+// 统一解包 R<T>：{ code, message, data }
+function unwrap(response) {
+  if (response?.data !== undefined) {
+    return response.data
+  }
+  return response
+}
 
 const models = ref([])
 const activeModel = ref('')
@@ -57,9 +65,10 @@ const currentModelName = computed(() => {
 
 async function loadModels() {
   try {
-    const res = await listModels()
-    models.value = res.models || []
-    activeModel.value = res.activeModel || ''
+    const res = await getModelList()
+    const data = unwrap(res)
+    models.value = data.models || []
+    activeModel.value = data.activeModel || ''
   } catch (e) {
     console.error('加载模型列表失败:', e)
   }
@@ -69,12 +78,13 @@ async function switchTo(modelId) {
   if (modelId === activeModel.value || switching.value) return
   switching.value = true
   try {
-    await apiSwitchModel(modelId)
-    activeModel.value = modelId
-    console.log('模型已切换:', modelId)
+    const res = await apiSwitchModel(modelId)
+    const data = unwrap(res)
+    activeModel.value = data.newModel || modelId
+    console.log('模型已切换:', data.oldModel, '->', data.newModel)
   } catch (e) {
     console.error('切换失败:', e)
-    alert('切换模型失败: ' + (e.response?.data?.error || e.message))
+    alert('切换模型失败: ' + (e.message || '未知错误'))
   } finally {
     switching.value = false
   }

@@ -126,7 +126,16 @@
 <script setup>
 import { ref } from 'vue'
 import { marked } from 'marked'
-import { simpleChat, roleChat, serviceAsk, serviceTranslate, serviceAnalyze } from '@/api/chat'
+import { serviceAsk, serviceTranslate, serviceAnalyze } from '@/api/chat'
+import api from '@/api/chat'
+
+// 统一解包 R<T>：{ code, message, data }
+function unwrap(response) {
+  if (response?.data !== undefined) {
+    return response.data
+  }
+  return response
+}
 
 function renderMarkdown(content) {
   return marked.parse(content || '', { breaks: true, gfm: true })
@@ -142,7 +151,7 @@ async function runSimple() {
   simpleLoading.value = true
   simpleResult.value = ''
   try {
-    const res = await simpleChat(simpleInput.value)
+    const res = await serviceAsk(simpleInput.value)
     simpleResult.value = res.response
   } catch (e) {
     simpleResult.value = `❌ 请求失败: ${e.message}`
@@ -163,8 +172,16 @@ async function runRole() {
   roleLoading.value = true
   roleResult.value = ''
   try {
-    const res = await roleChat(roleQuestion.value, roleInput.value, styleInput.value)
+    // 原 /api/simple、/api/role 端点已删，改走 /api/service/session 带记忆对话
+    const roleSessionId = 'lc4j-role-demo'
+    const res = await api.post('/service/session', {
+      sessionId: roleSessionId,
+      message: `你是${roleInput.value}，回答风格${styleInput.value}。问题：${roleQuestion.value}`
+    })
+    // session 端点返回 { sessionId, message, response }（非 R 包装，axios 拦截器返回 response.data）
     roleResult.value = res.response
+    // 清理演示会话，避免记忆污染下次演示
+    api.delete(`/service/session/${roleSessionId}`).catch(() => {})
   } catch (e) {
     roleResult.value = `❌ 请求失败: ${e.message}`
   } finally {
