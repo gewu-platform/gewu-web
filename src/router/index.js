@@ -30,8 +30,8 @@ const routes = [
   {
     path: '/knowledge',
     name: 'knowledge',
-    component: () => import('@/views/PlaceholderView.vue'),
-    meta: { title: '知识库', placeholder: '知识库（P4 RAG 开发中）' }
+    component: () => import('@/views/KnowledgeView.vue'),
+    meta: { title: '知识库' }
   },
   {
     path: '/prompt',
