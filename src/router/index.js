@@ -2,17 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ChatView from '@/views/ChatView.vue'
 import ExamplesView from '@/views/ExamplesView.vue'
 import ModelView from '@/views/ModelView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
     path: '/',
-    redirect: '/chat'
+    name: 'home',
+    component: ChatView,
+    meta: { title: 'AI 对话' }
   },
   {
     path: '/chat',
-    name: 'chat',
-    component: ChatView,
-    meta: { title: 'AI 对话' }
+    redirect: '/'
   },
   {
     path: '/examples',
@@ -25,6 +26,50 @@ const routes = [
     name: 'models',
     component: ModelView,
     meta: { title: '模型管理' }
+  },
+  {
+    path: '/knowledge',
+    name: 'knowledge',
+    component: () => import('@/views/PlaceholderView.vue'),
+    meta: { title: '知识库', placeholder: '知识库（P4 RAG 开发中）' }
+  },
+  {
+    path: '/prompt',
+    name: 'prompt',
+    component: () => import('@/views/PlaceholderView.vue'),
+    meta: { title: '模板', placeholder: 'Prompt 模板（P5 开发中）' }
+  },
+  {
+    path: '/monitor',
+    name: 'monitor',
+    component: () => import('@/views/PlaceholderView.vue'),
+    meta: { title: '监控', placeholder: 'LLM 监控（P6 开发中）' }
+  },
+  {
+    path: '/agent',
+    name: 'agent',
+    component: () => import('@/views/PlaceholderView.vue'),
+    meta: { title: 'Agent', placeholder: 'Agent（P7 开发中）' }
+  },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/PlaceholderView.vue'),
+    meta: { title: '个人中心', placeholder: '个人中心（开发中）' }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    redirect: '/models'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    beforeEnter: (to, from, next) => {
+      const authStore = useAuthStore()
+      authStore.showLogin()
+      next('/')
+    }
   }
 ]
 
@@ -34,8 +79,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = (to.meta.title || '') + ' - LangChain4j 学习平台'
+  document.title = (to.meta.title || '') + ' - LC4J 学习平台'
   next()
 })
+
+// 移除全局认证守卫，避免应用启动时强制弹出登录框
+// 由业务逻辑（401 → auth-expired 事件）决定何时需要登录
 
 export default router
