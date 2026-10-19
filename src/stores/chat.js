@@ -84,6 +84,12 @@ export const useChatStore = defineStore('chat', () => {
         localStorage.removeItem(STORAGE_KEY_SESSION)
       }
     }
+    // 无保存会话或恢复失败：也要加载会话列表（修复重新登录/首次进入左侧列表为空）
+    try {
+      await loadSessions()
+    } catch (err) {
+      console.warn('[chatStore] 加载会话列表失败', err)
+    }
     return false
   }
 

@@ -252,6 +252,23 @@ onUnmounted(() => {
 })
 </script>
 
+<style>
+/* ===== 全局 CSS 变量（LC4J 浅色液态有机风）=====
+   ChatView 等视图引用 var(--)，此前未定义导致按钮透明/边框丢失 */
+:root {
+  --accent: #0ea5e9;
+  --accent-hover: #0284c7;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --danger: #ef4444;
+  --success: #10b981;
+}
+</style>
+
 <style scoped>
 .app-root {
   height: 100vh;

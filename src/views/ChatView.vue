@@ -44,13 +44,13 @@
           <h2>LangChain4j 对话</h2>
           <p>支持同步调用、流式输出、会话记忆、角色扮演</p>
           <div class="quick-actions">
-            <button class="quick-btn" @click="inputMessage = '介绍一下 LangChain4j 的核心概念'">
+            <button class="quick-btn" @click="applyQuickQuestion('介绍一下 LangChain4j 的核心概念')">
               🤔 LangChain4j 是什么？
             </button>
-            <button class="quick-btn" @click="inputMessage = 'Spring AI 和 LangChain4j 有什么区别？'">
+            <button class="quick-btn" @click="applyQuickQuestion('Spring AI 和 LangChain4j 有什么区别？')">
               ⚡ Spring AI vs LangChain4j？
             </button>
-            <button class="quick-btn" @click="inputMessage = '用Java写一个工具调用的示例'">
+            <button class="quick-btn" @click="applyQuickQuestion('用Java写一个工具调用的示例')">
               🛠 写个 Tool Calling 示例
             </button>
           </div>
@@ -90,6 +90,7 @@
       <div class="input-area">
         <div class="input-wrapper">
           <textarea
+            ref="inputBoxRef"
             v-model="inputMessage"
             @keydown.enter.exact.prevent="sendMessage"
             class="input-box"
@@ -123,6 +124,7 @@ import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
+import { useAuthStore } from '@/stores/auth'
 import { getModelList, switchModel as apiSwitchModel, healthCheck } from '@/api/chat'
 
 // 统一解包 R<T>
@@ -134,7 +136,9 @@ function unwrap(response) {
 }
 
 const chatStore = useChatStore()
+const authStore = useAuthStore()
 const messagesContainer = ref(null)
+const inputBoxRef = ref(null)
 const inputMessage = ref('')
 const activeModelId = ref('')
 const modelList = ref([])
@@ -276,6 +280,19 @@ function handleNewChat() {
   inputMessage.value = ''
 }
 
+// 快捷问题回填输入框并聚焦（修复点击后焦点丢失）
+function applyQuickQuestion(text) {
+  inputMessage.value = text
+  nextTick(() => {
+    inputBoxRef.value?.focus()
+    // 光标移到末尾
+    const el = inputBoxRef.value
+    if (el && typeof el.selectionStart === 'number') {
+      el.selectionStart = el.selectionEnd = el.value.length
+    }
+  })
+}
+
 // 发送消息（SSE 流式）
 async function sendMessage() {
   const text = inputMessage.value.trim()
@@ -292,9 +309,18 @@ async function sendMessage() {
   }
 }
 
+// 监听登录态变化：登录成功后加载会话列表（修复重新登录后左侧列表为空）
+watch(() => authStore.isAuthenticated, (val) => {
+  if (val) {
+    chatStore.loadSessions().catch(() => {})
+  }
+})
+
 onMounted(async () => {
   loadModels()
   checkBackendHealth()
+  // 对齐 App.vue：30s 轮询后端健康状态（后端重启后自动恢复在线显示）
+  setInterval(checkBackendHealth, 30000)
   await initialize()
 })
 
@@ -314,12 +340,19 @@ async function initialize() {
   } catch (e) {
     console.warn('[ChatView] 恢复会话失败:', e)
   }
+  // 对齐 native：无论是否恢复成功，都加载会话列表（显示现存全部会话）
+  try {
+    await chatStore.loadSessions()
+  } catch (e) {
+    console.warn('[ChatView] 加载会话列表失败:', e)
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .chat-view {
   display: flex;
+  width: 100%;
   height: 100%;
 }
 
@@ -459,19 +492,23 @@ async function initialize() {
   gap: 16px;
 }
 
+/* 欢迎区：垂直水平居中，消除大片留白 */
 .welcome {
   text-align: center;
-  padding: 60px 20px;
-  .welcome-icon { font-size: 64px; margin-bottom: 16px; }
-  h2 { font-size: 24px; margin-bottom: 8px; color: var(--accent); }
-  p { color: var(--text-secondary); margin-bottom: 24px; }
+  margin: auto;
+  padding: 32px 20px;
+  width: 100%;
+  max-width: 560px;
+  .welcome-icon { font-size: 56px; margin-bottom: 12px; }
+  h2 { font-size: 26px; margin-bottom: 8px; color: var(--accent); }
+  p { color: var(--text-secondary); margin-bottom: 28px; }
 }
 
 .quick-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 400px;
+  gap: 10px;
+  max-width: 420px;
   margin: 0 auto;
 }
 
@@ -590,48 +627,67 @@ async function initialize() {
 
 /* 输入区 */
 .input-area {
-  padding: 16px 20px;
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+  padding: 14px 24px 16px;
+  background: var(--bg-primary);
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 
 .input-wrapper {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-end;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  &:focus-within {
+    border-color: rgba(14, 165, 233, 0.35);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(14, 165, 233, 0.08);
+  }
 }
 
 .input-box {
   flex: 1;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  padding: 8px 6px;
   color: var(--text-primary);
   font-size: 14px;
   resize: none;
   outline: none;
-  line-height: 1.5;
-  min-height: 46px;
+  line-height: 1.55;
+  min-height: 44px;
   max-height: 150px;
-  &:focus { border-color: var(--accent); }
-  &:disabled { opacity: 0.5; }
+  &::placeholder { color: #94a3b8; }
+  &:disabled { opacity: 0.55; }
 }
 
 .send-btn {
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  background: var(--accent);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   border: none;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
-  &:hover:not(:disabled) { background: var(--accent-hover); transform: scale(1.05); }
-  &:disabled { opacity: 0.4; cursor: not-allowed; }
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
+  transition: all 0.2s ease;
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+    transform: translateY(-1px);
+  }
+  &:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
 }
 
 .spinner {
@@ -647,8 +703,11 @@ async function initialize() {
 
 .input-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
+  max-width: 720px;
+  margin: 10px auto 0;
 }
 
 .action-link {
@@ -658,6 +717,7 @@ async function initialize() {
   font-size: 12px;
   cursor: pointer;
   padding: 4px 0;
-  &:hover { color: var(--text-primary); }
+  transition: color 0.15s;
+  &:hover { color: var(--accent); }
 }
 </style>

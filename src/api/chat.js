@@ -240,10 +240,15 @@ export async function sendMessageStream(data, onChunk, onDone, onError) {
             const jsonData = JSON.parse(line.slice(5).trim())
 
             if (jsonData.type === 'chunk') {
-              fullReply += (jsonData.content || '')
-              onChunk?.(jsonData.content || '')
+              // 后端 chunk 事件字段名是 chunk（非 content），对齐 ChatStreamResponseDTO
+              fullReply += (jsonData.chunk || '')
+              onChunk?.(jsonData.chunk || '')
             } else if (jsonData.type === 'done') {
               model = jsonData.model || ''
+              // 后端 done 事件带完整 reply，优先用（防丢 chunk）
+              if (jsonData.reply && jsonData.reply.length >= fullReply.length) {
+                fullReply = jsonData.reply
+              }
               onDone?.(fullReply, model)
             } else if (jsonData.type === 'error') {
               onError?.(jsonData.error || '未知错误')
