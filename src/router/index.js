@@ -36,8 +36,8 @@ const routes = [
   {
     path: '/prompt',
     name: 'prompt',
-    component: () => import('@/views/PlaceholderView.vue'),
-    meta: { title: '模板', placeholder: 'Prompt 模板（P5 开发中）' }
+    component: () => import('@/views/PromptView.vue'),
+    meta: { title: 'Prompt 模板' }
   },
   {
     path: '/monitor',
