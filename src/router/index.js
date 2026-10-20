@@ -42,8 +42,8 @@ const routes = [
   {
     path: '/monitor',
     name: 'monitor',
-    component: () => import('@/views/PlaceholderView.vue'),
-    meta: { title: '监控', placeholder: 'LLM 监控（P6 开发中）' }
+    component: () => import('@/views/MonitorView.vue'),
+    meta: { title: '监控' }
   },
   {
     path: '/agent',
