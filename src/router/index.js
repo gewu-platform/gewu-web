@@ -48,8 +48,8 @@ const routes = [
   {
     path: '/agent',
     name: 'agent',
-    component: () => import('@/views/PlaceholderView.vue'),
-    meta: { title: 'Agent', placeholder: 'Agent（P7 开发中）' }
+    component: () => import('@/views/AgentView.vue'),
+    meta: { title: 'Agent' }
   },
   {
     path: '/profile',
