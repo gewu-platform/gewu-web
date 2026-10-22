@@ -71,6 +71,27 @@
               <span v-if="msg.model" class="model-tag">{{ msg.model }}</span>
               <span class="time">{{ formatTime(msg.timestamp) }}</span>
             </div>
+
+            <!-- P8a 智能模式：RAG 提示 + 审批卡片 + 工具时间线 -->
+            <div v-if="msg.role === 'assistant' && msg.ragHits !== undefined" class="rag-badge" :class="{ miss: msg.ragHits <= 0 }">
+              {{ msg.ragHits > 0 ? `📚 已从知识库检索 ${msg.ragHits} 条相关内容` : msg.ragHits === 0 ? '📚 知识库无命中' : '📚 知识库检索失败' }}
+            </div>
+            <ApprovalCard
+              v-if="msg.approval"
+              :tool-name="msg.approval.toolName"
+              :tool-input="msg.approval.toolInput"
+              :done="msg.approval.done"
+              :result="msg.approval.result"
+              @approve="approveTool(msg)"
+              @reject="rejectTool(msg)"
+            />
+            <ReasoningTimeline
+              v-if="msg.toolIterations && msg.toolIterations.length"
+              :iterations="msg.toolIterations"
+              :show="msg.showReasoning"
+              @toggle="msg.showReasoning = !msg.showReasoning"
+            />
+
             <div class="message-text" v-html="renderMarkdown(msg.content)"></div>
           </div>
         </div>
@@ -111,8 +132,37 @@
           </button>
         </div>
         <div class="input-actions">
-          <button class="action-link" @click="handleClearHistory">🗑 清除会话历史</button>
-          <button class="action-link" @click="handleNewChat">✨ 新对话</button>
+          <div class="actions-left">
+            <label class="smart-toggle" :class="{ on: smartMode }" title="开启后模型可自主调用工具（计算/时间/搜索等），支持会话记忆与工具留档">
+              <input type="checkbox" v-model="smartMode" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-text">🧠 智能{{ smartMode ? '：工具已启用' : '' }}</span>
+            </label>
+            <label v-if="smartMode && knowledgeDocs.length" class="kb-toggle" :class="{ on: kbEnabled }" title="开启后向已选知识文档检索，命中内容注入上下文（RAG）">
+              <input type="checkbox" v-model="kbEnabled" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-text">📚 知识库</span>
+            </label>
+          </div>
+          <div class="actions-right">
+            <button class="action-link" @click="handleClearHistory">🗑 清除会话历史</button>
+            <button class="action-link" @click="handleNewChat">✨ 新对话</button>
+          </div>
+        </div>
+
+        <!-- P8b 知识库选择抽条 -->
+        <div v-if="smartMode && kbEnabled && knowledgeDocs.length" class="kb-selector">
+          <span class="kb-label">选择文档：</span>
+          <span
+            v-for="d in knowledgeDocs"
+            :key="d.id"
+            class="kb-doc"
+            :class="{ picked: selectedDocIds.includes(d.id), done: d.status === 2 }"
+            @click="toggleDoc(d.id)"
+          >
+            {{ d.status === 2 ? '' : '⏳ ' }}{{ d.fileName }}
+          </span>
+          <span v-if="!knowledgeDocs.length" class="kb-empty">知识库为空，请先在「知识库」页上传文档</span>
         </div>
       </div>
     </main>
@@ -120,12 +170,41 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
 import { getModelList, switchModel as apiSwitchModel, healthCheck } from '@/api/chat'
+import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
+import { getDocuments } from '@/api/knowledge'
+import ApprovalCard from '@/components/agent/ApprovalCard.vue'
+import ReasoningTimeline from '@/components/agent/ReasoningTimeline.vue'
+
+// P8a 智能模式（方案 D）：开启后走编排层（模型+工具+会话留档）
+const smartMode = ref(false)
+// P8b RAG：知识库选择（智能模式开启时可用）
+const kbEnabled = ref(false)
+const knowledgeDocs = ref([])
+const selectedDocIds = ref([])
+
+async function loadKnowledgeDocs() {
+  try {
+    const res = await getDocuments()
+    if (res.code === 200 && Array.isArray(res.data)) {
+      knowledgeDocs.value = res.data
+    }
+  } catch (e) { console.warn('[ChatView] 知识文档列表加载失败:', e) }
+}
+
+function toggleDoc(id) {
+  const i = selectedDocIds.value.indexOf(id)
+  if (i >= 0) selectedDocIds.value.splice(i, 1)
+  else selectedDocIds.value.push(id)
+}
+
+// 智能模式开启时加载文档列表
+watch(smartMode, (v) => { if (v) loadKnowledgeDocs() })
 
 // 统一解包 R<T>
 function unwrap(response) {
@@ -182,17 +261,20 @@ watch(
   scrollToBottom
 )
 
-// 加载模型列表
-async function loadModels() {
+// 加载模型列表（失败后 2s 重试一次：后端启动中/临时 401 时自动恢复，避免下拉永久空白）
+async function loadModels(retried = false) {
   try {
     const res = await getModelList()
     const data = unwrap(res)
     modelList.value = data.models || []
     activeModelId.value = data.activeModel || ''
     backendOnline.value = modelList.value.length > 0
-  } catch {
+  } catch (e) {
     modelList.value = []
     backendOnline.value = false
+    if (!retried && !e?.isAuthError) {
+      setTimeout(() => { if (modelList.value.length === 0) loadModels(true) }, 2000)
+    }
   }
 }
 
@@ -300,6 +382,18 @@ async function sendMessage() {
 
   inputMessage.value = ''
 
+  // P8a 方案 D：智能模式走编排层（工具循环+会话留档），普通模式走纯对话
+  if (smartMode.value) {
+    try {
+      await sendSmartMessage(text)
+    } catch (e) {
+      if (e.isAuthError) return
+      console.error('[ChatView] 智能模式发送失败:', e)
+      message.error('发送失败: ' + (e.message || '未知错误'))
+    }
+    return
+  }
+
   try {
     await chatStore.sendUserMessage(text)
   } catch (e) {
@@ -309,10 +403,131 @@ async function sendMessage() {
   }
 }
 
+// ========== P8a 智能模式（编排层：模型+工具循环+会话留档）==========
+
+/**
+ * 智能模式发送：复用 chatStore 的消息列表，AI 占位消息扩展
+ * toolIterations（工具时间线）/ approval（审批卡）字段，done 后写回最终答案
+ */
+async function sendSmartMessage(text) {
+  if (!chatStore.sessionId) {
+    await chatStore.initSession()
+  }
+
+  // 用户消息入列 + AI 占位（与 store.sendUserMessage 同构，直接操作 messages）
+  chatStore.messages.push({ role: 'user', content: text, timestamp: Date.now() })
+  const aiMsg = reactive({
+    role: 'assistant',
+    content: '',
+    model: chatStore.currentModel,
+    timestamp: Date.now(),
+    streaming: true,
+    toolIterations: [],
+    toolsUsed: [],
+    approval: null,
+    showReasoning: true,
+    ragHits: undefined
+  })
+  chatStore.messages.push(aiMsg)
+  chatStore.isLoading = true
+
+  const findIteration = (n) => {
+    let it = aiMsg.toolIterations.find(x => x.iteration === n)
+    if (!it) {
+      it = { iteration: n, thought: '', toolName: '', toolInput: '', observation: '' }
+      aiMsg.toolIterations.push(it)
+    }
+    return it
+  }
+
+  const finish = () => {
+    aiMsg.streaming = false
+    chatStore.isLoading = false
+    scrollToBottom()
+  }
+
+  try {
+    await agentChatStreamSession(
+      { sessionId: chatStore.sessionId, message: text,
+        knowledgeDocumentIds: (smartMode.value && kbEnabled.value && selectedDocIds.value.length) ? selectedDocIds.value : undefined },
+      {
+        onIteration: (e) => { aiMsg.toolIterationCount = e.iteration || 0; scrollToBottom() },
+        onRag: (e) => {
+          // P8b：检索结果提示（hits>0 命中 / 0 无命中 / -1 失败）
+          aiMsg.ragHits = e.ragHits
+          scrollToBottom()
+        },
+        onDelta: (e) => { aiMsg.content += (e.content || ''); scrollToBottom() },
+        onThought: (e) => { const it = findIteration(e.iteration); it.thought = (it.thought || '') + (e.content || ''); scrollToBottom() },
+        onAction: (e) => {
+          const it = findIteration(e.iteration); it.toolName = e.toolName; it.toolInput = e.toolInput
+          // 本轮已流出正文归入时间线 Thought，正文区清空待最终答案
+          const cur = findIteration(e.iteration)
+          if (!cur.thought && aiMsg.content) {
+            cur.thought = aiMsg.content
+            aiMsg.content = ''
+          }
+          scrollToBottom()
+        },
+        onToolResult: (e) => {
+          const it = findIteration(e.iteration)
+          it.toolName = e.toolName
+          it.observation = e.content
+          if (!aiMsg.toolsUsed.includes(e.toolName)) aiMsg.toolsUsed.push(e.toolName)
+          scrollToBottom()
+        },
+        onApprovalRequired: (e) => {
+          aiMsg.approval = { toolCallId: e.toolCallId, toolName: e.toolName, toolInput: e.toolInput, done: false, result: '' }
+          scrollToBottom()
+        },
+        onDone: (e) => {
+          if (e.content) aiMsg.content = e.content
+          aiMsg.model = e.modelId || aiMsg.model
+          finish()
+        },
+        onError: (e) => {
+          aiMsg.content = `[错误] ${e && e.message ? e.message : '请求失败'}`
+          finish()
+        }
+      }
+    )
+  } catch (e) {
+    aiMsg.content = `[错误] ${e.message || '流式连接断开'}`
+    finish()
+    throw e
+  }
+}
+
+/**
+ * 智能模式审批：批准/拒绝后，同一 SSE 连接续跑（tool_result/delta/done 由原流推送）
+ */
+async function approveTool(msg) {
+  if (!msg.approval || msg.approval.done) return
+  msg.approval.done = true
+  try {
+    const res = await approveToolCall(msg.approval.toolCallId)
+    msg.approval.result = res.code === 200 ? '✅ 已批准，继续执行中…' : `❌ ${res.message || '审批失败'}`
+  } catch (e) {
+    msg.approval.result = `❌ 异常：${e.message}`
+  }
+}
+
+async function rejectTool(msg) {
+  if (!msg.approval || msg.approval.done) return
+  msg.approval.done = true
+  try {
+    const res = await rejectToolCall(msg.approval.toolCallId, '用户拒绝')
+    msg.approval.result = res.code === 200 ? '🚫 已拒绝，继续基于拒绝结果回应' : `❌ ${res.message || '操作失败'}`
+  } catch (e) {
+    msg.approval.result = `❌ 异常：${e.message}`
+  }
+}
+
 // 监听登录态变化：登录成功后加载会话列表（修复重新登录后左侧列表为空）
 watch(() => authStore.isAuthenticated, (val) => {
   if (val) {
     chatStore.loadSessions().catch(() => {})
+    if (modelList.value.length === 0) loadModels().catch(() => {})
   }
 })
 
@@ -327,7 +542,18 @@ onMounted(async () => {
 async function checkBackendHealth() {
   try {
     await healthCheck()
+    const wasOffline = !backendOnline.value
     backendOnline.value = true
+    // 后端恢复在线时补拉模型列表（修复首次加载失败后下拉永久空白）
+    if (wasOffline || modelList.value.length === 0) {
+      getModelList().then(res => {
+        const data = unwrap(res)
+        if (data.models && data.models.length) {
+          modelList.value = data.models
+          activeModelId.value = data.activeModel || ''
+        }
+      }).catch(() => {})
+    }
   } catch {
     backendOnline.value = false
   }
@@ -703,11 +929,140 @@ async function initialize() {
 
 .input-actions {
   display: flex;
-  gap: 16px;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
   max-width: 720px;
   margin: 10px auto 0;
+}
+
+.actions-left {
+  display: flex;
+  gap: 16px;
+}
+
+.actions-right {
+  display: flex;
+  gap: 16px;
+}
+
+.kb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+
+  input { display: none; }
+
+  .toggle-track {
+    width: 34px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--border-color);
+    position: relative;
+    transition: background 0.15s;
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: left 0.15s;
+  }
+
+  &.on {
+    .toggle-track { background: #10b981; }
+    .toggle-thumb { left: 18px; }
+    .toggle-text { color: #10b981; font-weight: 600; }
+  }
+}
+
+.kb-selector {
+  width: 100%;
+  max-width: 720px;
+  margin: 6px auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .kb-label { font-size: 12px; color: var(--text-secondary); }
+
+  .kb-doc {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover { border-color: #10b981; }
+    &.picked {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      font-weight: 600;
+    }
+  }
+
+  .kb-empty { font-size: 12px; color: var(--text-secondary); }
+}
+
+.rag-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  margin-bottom: 6px;
+
+  &.miss { background: rgba(148, 163, 184, 0.12); color: #94a3b8; }
+}
+
+.smart-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+
+  input { display: none; }
+
+  .toggle-track {
+    width: 34px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--border-color);
+    position: relative;
+    transition: background 0.15s;
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: left 0.15s;
+  }
+
+  &.on {
+    .toggle-track { background: var(--accent); }
+    .toggle-thumb { left: 18px; }
+    .toggle-text { color: var(--accent); font-weight: 600; }
+  }
 }
 
 .action-link {

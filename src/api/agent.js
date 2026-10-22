@@ -116,8 +116,22 @@ export function rejectToolCall(toolCallId, reason) {
  */
 export async function agentChatStream(data, callbacks) {
   const token = localStorage.getItem('auth-token')
-  const baseUrl = '/api/agent/chat/stream'
+  return runAgentSse('/api/agent/chat/stream', data, token, callbacks)
+}
 
+/**
+ * 会话式智能模式流（P8a 方案 D：历史注入 + 回复/工具轨迹落库）
+ * @param {Object} data - { sessionId(必填), message, agentId?, systemPrompt?, modelId?, userId? }
+ */
+export async function agentChatStreamSession(data, callbacks) {
+  const token = localStorage.getItem('auth-token')
+  return runAgentSse('/api/agent/chat/stream/session', data, token, callbacks)
+}
+
+/**
+ * SSE 公共执行器（fetch + ReadableStream 逐行解析，事件按 eventType 分发）
+ */
+async function runAgentSse(baseUrl, data, token, callbacks) {
   try {
     const response = await fetch(baseUrl, {
       method: 'POST',
@@ -172,6 +186,7 @@ export async function agentChatStream(data, callbacks) {
             case 'action': callbacks.onAction?.(event); break
             case 'tool_result': callbacks.onToolResult?.(event); break
             case 'approval_required': callbacks.onApprovalRequired?.(event); break
+            case 'rag': callbacks.onRag?.(event); break
             case 'done': callbacks.onDone?.(event); break
             case 'error': callbacks.onError?.(event); break
           }
