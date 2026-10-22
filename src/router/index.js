@@ -49,7 +49,7 @@ const routes = [
     path: '/agent',
     name: 'agent',
     component: () => import('@/views/AgentView.vue'),
-    meta: { title: 'Agent' }
+    meta: { title: 'Agent', requiresAdmin: true }
   },
   {
     path: '/profile',
@@ -80,6 +80,23 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   document.title = (to.meta.title || '') + ' - LC4J 学习平台'
+  // P8b 权限管控：管理员页面守卫（Agent 管理与审批）
+  if (to.meta.requiresAdmin) {
+    const authStore = useAuthStore()
+    authStore.checkAuthStatus()
+    if (!authStore.isLoggedIn) {
+      authStore.showLogin()
+      next(from.fullPath || '/')
+      return
+    }
+    if (!authStore.isAdmin) {
+      next('/')
+      setTimeout(() => {
+        import('ant-design-vue').then(({ message }) => message.warning('Agent 管理与审批仅管理员可用，请联系管理员'))
+      }, 50)
+      return
+    }
+  }
   next()
 })
 

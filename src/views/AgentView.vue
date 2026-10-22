@@ -23,6 +23,7 @@
               <th>绑定工具</th>
               <th>迭代上限</th>
               <th>温度</th>
+              <th>审批策略</th>
               <th>状态</th>
               <th>操作</th>
             </tr>
@@ -38,6 +39,12 @@
               <td>{{ agent.config?.maxIterations ?? '—' }}</td>
               <td>{{ agent.config?.temperature ?? '—' }}</td>
               <td>
+                <span class="approval-badge" :class="{
+                  'ba-strict': agent.config?.requireApproval === true,
+                  'ba-trust': agent.config?.requireApproval === false
+                }">{{ approvalLabel(agent.config?.requireApproval) }}</span>
+              </td>
+              <td>
                 <span class="status-pill" :class="agent.enabled ? 'on' : 'off'">
                   {{ agent.enabled ? '启用' : '禁用' }}
                 </span>
@@ -49,7 +56,7 @@
               </td>
             </tr>
             <tr v-if="definitions.length === 0">
-              <td colspan="7" class="empty-row">暂无 Agent 定义，点击右上角「新建 Agent」创建</td>
+              <td colspan="8" class="empty-row">暂无 Agent 定义，点击右上角「新建 Agent」创建</td>
             </tr>
           </tbody>
         </table>
@@ -233,6 +240,12 @@
           <input v-model.number="form.maxIterations" type="number" min="1" max="10" />
           <label>温度</label>
           <input v-model.number="form.temperature" type="number" min="0" max="2" step="0.1" />
+          <label>审批策略</label>
+          <select v-model="form.requireApproval" class="approval-select">
+            <option :value="null">继承默认（search 等外部工具需审批）</option>
+            <option :value="true">全部工具需审批（最严格）</option>
+            <option :value="false">免审批（可信 Agent，工具直接执行）</option>
+          </select>
           <label>启用</label>
           <input v-model="form.enabled" type="checkbox" class="single-check" />
         </div>
@@ -266,8 +279,12 @@ const modalVisible = ref(false)
 const editingId = ref(null)
 const form = reactive({
   name: '', description: '', systemPrompt: '',
-  toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true
+  toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true,
+  requireApproval: null
 })
+
+// P8b 审批策略展示文案
+const approvalLabel = (v) => v === true ? '全部审批' : v === false ? '免审批' : '继承默认'
 let healthTimer = null
 let pendingTimer = null
 
@@ -374,7 +391,7 @@ async function rejectPending(id) {
 
 function openCreateModal() {
   editingId.value = null
-  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true })
+  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null })
   modalVisible.value = true
 }
 
@@ -387,7 +404,8 @@ function openEditModal(agent) {
     toolIds: [...(agent.toolIds || [])],
     maxIterations: agent.config?.maxIterations ?? 5,
     temperature: agent.config?.temperature ?? 0.7,
-    enabled: agent.enabled !== false
+    enabled: agent.enabled !== false,
+    requireApproval: agent.config?.requireApproval ?? null
   })
   modalVisible.value = true
 }
@@ -401,7 +419,8 @@ async function submitModal() {
     modelId: null,
     maxIterations: form.maxIterations,
     temperature: form.temperature,
-    enabled: form.enabled
+    enabled: form.enabled,
+    requireApproval: form.requireApproval
   }
   try {
     let res
@@ -713,6 +732,29 @@ onUnmounted(() => {
 
   &.on { background: rgba(52, 211, 153, 0.12); color: #10b981; }
   &.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+}
+
+/* P8b 审批策略徽章 */
+.approval-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+
+  &.ba-strict { background: rgba(251, 146, 60, 0.14); color: #f97316; }
+  &.ba-trust { background: rgba(52, 211, 153, 0.12); color: #10b981; }
+}
+
+.approval-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
 }
 
 .tool-chip {

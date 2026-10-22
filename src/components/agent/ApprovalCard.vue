@@ -4,10 +4,11 @@
     <div class="approval-detail">
       工具 <b>{{ toolName }}</b>，参数：<code>{{ toolInput }}</code>
     </div>
-    <div class="approval-actions">
+    <div v-if="isAdmin" class="approval-actions">
       <button class="btn-approve" :disabled="done" @click="$emit('approve')">✅ 批准执行</button>
       <button class="btn-reject" :disabled="done" @click="$emit('reject')">❌ 拒绝</button>
     </div>
+    <div v-else class="approval-readonly">⏳ 审批由管理员处理，请等待管理员在 Agent 页操作</div>
     <div v-if="result" class="approval-result">{{ result }}</div>
   </div>
 </template>
@@ -16,7 +17,11 @@
 /**
  * 工具审批卡片（P8a 方案 D 公共组件）
  * AgentView 调试台与 ChatView 智能模式共用
+ * P8b 权限管控：仅管理员可批准/拒绝，普通用户只读提示
  */
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+
 defineProps({
   toolName: { type: String, required: true },
   toolInput: { type: String, default: '' },
@@ -24,6 +29,9 @@ defineProps({
   result: { type: String, default: '' }
 })
 defineEmits(['approve', 'reject'])
+
+const authStore = useAuthStore()
+const isAdmin = computed(() => authStore.isAdmin)
 </script>
 
 <style lang="scss" scoped>
@@ -67,6 +75,12 @@ defineEmits(['approve', 'reject'])
     margin-top: 8px;
     font-size: 12px;
     color: var(--text-secondary);
+  }
+
+  .approval-readonly {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #d97706;
   }
 }
 </style>

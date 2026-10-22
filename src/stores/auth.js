@@ -20,6 +20,8 @@ export const useAuthStore = defineStore('auth', () => {
   const currentUser = computed(() => user.value)
   const authToken = computed(() => token.value)
   const hasError = computed(() => !!error.value)
+  // P8b 权限管控：管理员（Agent 管理/审批可见性）——后端 /me 与 login 返回 admin 字段
+  const isAdmin = computed(() => !!(user.value && (user.value.admin === true || user.value.username === 'admin')))
 
   // Actions
   async function login(credentials) {
@@ -196,6 +198,7 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser,
     authToken,
     hasError,
+    isAdmin,
 
     // Actions
     login,
