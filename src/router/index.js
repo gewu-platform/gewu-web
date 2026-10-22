@@ -79,7 +79,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = (to.meta.title || '') + ' - LC4J 学习平台'
+  document.title = to.meta.title ? `${to.meta.title} · LC4J` : 'LC4J'
   // P8b 权限管控：管理员页面守卫（Agent 管理与审批）
   if (to.meta.requiresAdmin) {
     const authStore = useAuthStore()

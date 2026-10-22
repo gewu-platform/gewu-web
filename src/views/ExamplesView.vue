@@ -1,13 +1,18 @@
 <template>
   <div class="examples-view">
     <div class="page-header">
-      <h2>📚 学习示例</h2>
-      <p>通过交互式界面体验 LangChain4j 的核心能力</p>
+      <div class="header-text">
+        <h2>📚 学习示例</h2>
+        <p>通过交互式界面体验 LangChain4j 的核心能力</p>
+      </div>
+      <div class="header-chips">
+        <span class="chip">5 个交互示例</span>
+      </div>
     </div>
 
     <div class="examples-grid">
       <!-- 简单对话 -->
-      <div class="example-card">
+      <div class="example-card ex-simple" style="--i:0">
         <div class="card-header">
           <span class="card-icon">💬</span>
           <h3>简单对话</h3>
@@ -28,7 +33,7 @@
       </div>
 
       <!-- 角色扮演 -->
-      <div class="example-card">
+      <div class="example-card ex-role" style="--i:1">
         <div class="card-header">
           <span class="card-icon">🎭</span>
           <h3>角色扮演</h3>
@@ -55,7 +60,7 @@
       </div>
 
       <!-- 通用问答 -->
-      <div class="example-card">
+      <div class="example-card ex-qa" style="--i:2">
         <div class="card-header">
           <span class="card-icon">❓</span>
           <h3>通用问答</h3>
@@ -76,7 +81,7 @@
       </div>
 
       <!-- 翻译 -->
-      <div class="example-card">
+      <div class="example-card ex-translate" style="--i:3">
         <div class="card-header">
           <span class="card-icon">🌐</span>
           <h3>AI 翻译</h3>
@@ -96,7 +101,7 @@
       </div>
 
       <!-- 代码分析 -->
-      <div class="example-card wide">
+      <div class="example-card ex-code wide" style="--i:4">
         <div class="card-header">
           <span class="card-icon">🛠</span>
           <h3>代码分析</h3>
@@ -250,38 +255,119 @@ async function runCodeAnalysis() {
 </script>
 
 <style lang="scss" scoped>
+/* P8b 布局修复：main-container 是横向 flex，页面根必须 flex:1 占满，
+   否则收缩成内容宽（本项目第四次踩同族坑） */
 .examples-view {
+  flex: 1;
+  min-width: 0;
   height: 100%;
   overflow-y: auto;
-  padding: 24px;
+  padding: 28px 32px 40px;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
 }
 
 .page-header {
-  margin-bottom: 24px;
-  h2 { font-size: 22px; margin-bottom: 6px; }
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  h2 {
+    font-size: 24px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
   p { color: var(--text-secondary); font-size: 14px; }
+}
+
+.header-chips {
+  display: flex;
+  gap: 8px;
+  .chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .chip-dim {
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+  }
 }
 
 .examples-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 22px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
+/* 入场：逐卡上浮（animation-delay 由 --i 驱动） */
 .example-card {
+  --card-accent: var(--accent);
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  &.wide { grid-column: 1 / -1; }
+  position: relative;
+  animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s, border-color 0.22s;
+
+  /* 顶部强调色条：每卡专属身份色 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--card-accent), transparent 85%);
+    opacity: 0.85;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--card-accent) 40%, var(--border-color));
+    box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--card-accent) 28%, transparent);
+  }
+
+  &.wide { grid-column: span 2; }
+}
+
+@media (max-width: 1020px) {
+  .example-card.wide { grid-column: 1 / -1; }
+}
+
+/* 每卡专属强调色 */
+.ex-simple   { --card-accent: #6366f1; }
+.ex-role     { --card-accent: #f59e0b; }
+.ex-qa       { --card-accent: #10b981; }
+.ex-translate { --card-accent: #06b6d4; }
+.ex-code     { --card-accent: #8b5cf6; }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .card-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px 0;
-  .card-icon { font-size: 22px; }
+  padding: 18px 20px 0;
+  .card-icon {
+    font-size: 20px;
+    width: 38px; height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--card-accent) 12%, transparent);
+  }
   h3 { font-size: 16px; font-weight: 600; }
 }
 
@@ -317,7 +403,11 @@ async function runCodeAnalysis() {
   color: var(--text-primary);
   font-size: 14px;
   outline: none;
-  &:focus { border-color: var(--accent); }
+  transition: border-color 0.15s, box-shadow 0.15s;
+  &:focus {
+    border-color: var(--card-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--card-accent) 14%, transparent);
+  }
 }
 
 .input-area {
@@ -330,7 +420,11 @@ async function runCodeAnalysis() {
   resize: vertical;
   outline: none;
   line-height: 1.5;
-  &:focus { border-color: var(--accent); }
+  transition: border-color 0.15s, box-shadow 0.15s;
+  &:focus {
+    border-color: var(--card-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--card-accent) 14%, transparent);
+  }
 }
 
 .code-editor {
@@ -342,14 +436,18 @@ async function runCodeAnalysis() {
   align-self: flex-start;
   padding: 10px 24px;
   border-radius: 8px;
-  background: var(--accent);
+  background: var(--card-accent);
   border: none;
   color: white;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
-  &:hover:not(:disabled) { background: var(--accent-hover); }
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--card-accent) 55%, transparent);
+  }
+  &:active:not(:disabled) { transform: scale(0.97); }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
@@ -363,6 +461,7 @@ async function runCodeAnalysis() {
   line-height: 1.6;
   max-height: 400px;
   overflow-y: auto;
+  animation: card-in 0.3s ease both;
   :deep(p) { margin-bottom: 8px; &:last-child { margin-bottom: 0; } }
   :deep(code) {
     background: var(--bg-tertiary);
@@ -383,5 +482,12 @@ async function runCodeAnalysis() {
 
 .code-result {
   :deep(pre) { background: var(--bg-secondary); }
+}
+
+/* 窄屏适配 */
+@media (max-width: 760px) {
+  .examples-view { padding: 20px 16px 32px; }
+  .examples-grid { grid-template-columns: 1fr; }
+  .example-card.wide { grid-column: 1 / -1; }
 }
 </style>
