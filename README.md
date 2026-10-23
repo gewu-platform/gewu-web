@@ -17,7 +17,6 @@ LangChain4j 学习平台 Web 前端，联调 `langchain4j-learning` 后端（端
 | 页面 | 说明 |
 |------|------|
 | 💬 AI 对话 | 多轮会话对话，支持简单模式/会话模式切换 |
-| 📚 学习示例 | 5 个交互式示例：简单对话、角色扮演、通用问答、AI 翻译、代码分析 |
 | 🤖 模型管理 | 查看可用模型列表，一键切换模型（百炼/火山引擎） |
 
 ## 快速开始
@@ -53,7 +52,6 @@ langchain4j-learning-web/
     │   └── chat.js             # API 请求封装
     └── views/
         ├── ChatView.vue        # AI 对话页面
-        ├── ExamplesView.vue    # 学习示例页面
         └── ModelView.vue       # 模型管理页面
 ```
 

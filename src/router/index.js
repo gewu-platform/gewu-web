@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ChatView from '@/views/ChatView.vue'
-import ExamplesView from '@/views/ExamplesView.vue'
 import ModelView from '@/views/ModelView.vue'
 import { useAuthStore } from '@/stores/auth'
 
@@ -15,12 +14,7 @@ const routes = [
     path: '/chat',
     redirect: '/'
   },
-  {
-    path: '/examples',
-    name: 'examples',
-    component: ExamplesView,
-    meta: { title: '学习示例' }
-  },
+
   {
     path: '/models',
     name: 'models',

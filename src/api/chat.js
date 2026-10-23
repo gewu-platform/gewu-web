@@ -281,17 +281,8 @@ export function getCurrentModel() {
 
 // ==================== Service 层 API ====================
 
-export function serviceAsk(question) {
-  return api.post('/service/ask', { question })
-}
 
-export function serviceTranslate(text, targetLang) {
-  return api.post('/service/translate', { text, targetLang })
-}
 
-export function serviceAnalyze(action, code) {
-  return api.post('/service/analyze', { action, code })
-}
 
 // 导出 api 实例供其他 API 模块复用（对齐 native）
 export default api
