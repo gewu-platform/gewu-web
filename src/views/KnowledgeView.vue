@@ -628,16 +628,15 @@ watch(activeTab, async (newTab) => {
 .knowledge-shell {
   display: flex;
   height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 /* ===== 左侧导航 ===== */
 .knowledge-nav {
-  width: 220px;
+  width: 260px;
   flex-shrink: 0;
-  padding: 24px 12px;
-  border-right: 1px solid #e2e8f0;
+  background: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 28px 0;
 }
 
 .nav-header {
@@ -728,11 +727,12 @@ watch(activeTab, async (newTab) => {
 /* ===== 内容区 ===== */
 .knowledge-content {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
-  padding: 24px;
+  padding: 32px 40px;
 }
 
-.knowledge-section { max-width: 860px; }
+.knowledge-section { width: 100%; }
 
 .section-heading {
   display: flex;

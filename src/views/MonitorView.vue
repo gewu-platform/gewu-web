@@ -299,8 +299,6 @@ onMounted(async () => {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
 }
 

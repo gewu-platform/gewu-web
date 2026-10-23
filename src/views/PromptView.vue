@@ -366,16 +366,15 @@ watch(extractedVars, (vars) => {
 .prompt-shell {
   display: flex;
   height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 /* ===== 左侧模板列表 ===== */
 .prompt-sidebar {
   width: 320px;
   flex-shrink: 0;
-  padding: 24px 12px;
-  border-right: 1px solid #e2e8f0;
+  background: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
