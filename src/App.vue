@@ -249,16 +249,21 @@ onUnmounted(() => {
 /* ===== 全局 CSS 变量（LC4J 浅色液态有机风）=====
    ChatView 等视图引用 var(--)，此前未定义导致按钮透明/边框丢失 */
 :root {
-  --accent: #0ea5e9;
-  --accent-hover: #0284c7;
+  /* 格物 Gewu 设计令牌 v1（PRD §8.1 方案 B：藏青+靛蓝） */
+  --nav: #1E3A5F;
+  --nav-hover: #16304F;
+  --accent: #4F46E5;
+  --accent-hover: #4338CA;
+  --accent-soft: #EEF2FF;
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
   --border-color: #e2e8f0;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
-  --danger: #ef4444;
-  --success: #10b981;
+  --success: #059669;
+  --danger: #E11D48;
+  --warning: #D97706;
 }
 </style>
 

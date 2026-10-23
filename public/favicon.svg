@@ -1,19 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <radialGradient id="b" cx="35%" cy="35%" r="80%">
-      <stop offset="0%" stop-color="#38bdf8"/>
-      <stop offset="55%" stop-color="#0ea5e9"/>
-      <stop offset="100%" stop-color="#075985"/>
-    </radialGradient>
-    <radialGradient id="p" cx="65%" cy="35%" r="80%">
-      <stop offset="0%" stop-color="#f472b6"/>
-      <stop offset="100%" stop-color="#ec4899"/>
-    </radialGradient>
-  </defs>
-  <!-- 主 blob：有机不规则圆（对齐头部 logo 的 blob-primary） -->
-  <path fill="url(#b)" d="M16 3c6.5 0 13 4 13 11 0 8-5 15-13.5 15C8 29 3 23.5 3 16 3 8.5 9.5 3 16 3z"/>
-  <!-- 次 blob：粉色右上重叠（blob-secondary） -->
-  <path fill="url(#p)" opacity="0.82" d="M22.5 3.5c4 0 7.5 2.8 7.5 6.8 0 4.2-3.4 7.2-7.2 7.2-3.6 0-6.3-2.7-6.3-6.3 0-4.3 2.5-7.7 6-7.7z"/>
-  <!-- 黄色气泡（bubble-1） -->
-  <circle cx="25.5" cy="25" r="2.6" fill="#f59e0b"/>
+  <!-- 格标：2x2 方块矩阵，右上块靛蓝点亮（探究/智能） -->
+  <rect x="3" y="3" width="12" height="12" rx="3" fill="#1E3A5F"/>
+  <rect x="17" y="3" width="12" height="12" rx="3" fill="#4F46E5"/>
+  <rect x="3" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.55"/>
+  <rect x="17" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.25"/>
 </svg>
