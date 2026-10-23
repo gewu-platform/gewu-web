@@ -60,7 +60,12 @@ const routes = [
   {
     path: '/settings',
     name: 'settings',
-    redirect: '/models'
+    component: () => import('@/views/SettingsView.vue'),
+    meta: { title: '设置' }
+  },
+  {
+    path: '/models',
+    redirect: '/settings'
   },
   {
     path: '/login',
