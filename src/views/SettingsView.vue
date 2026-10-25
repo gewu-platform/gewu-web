@@ -176,7 +176,111 @@
               </div>
             </section>
 
-            <!-- 数据管理 -->
+            <!-- 数据管理 -->            <!-- 模型服务 (T3) -->
+            <section class="settings-section" id="section-providers">
+              <div class="section-heading">
+                <div class="section-icon" style="background: linear-gradient(135deg, #4F46E5, #6366F1)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="section-title">模型服务</h2>
+                  <p class="section-desc">配置对话/向量模型服务，保存即生效，无需重启</p>
+                </div>
+              </div>
+
+              <div class="provider-toolbar">
+                <button class="provider-btn primary" @click="openProviderForm()">+ 新壟配置</button>
+              </div>
+
+              <a-spin :spinning="providersLoading">
+                <div v-if="providers.length === 0" class="provider-empty">暂无配置，点击上方“新壟配置”创建</div>
+                <div v-else class="provider-list">
+                  <div v-for="p in providers" :key="p.id" class="provider-card">
+                    <div class="provider-card-head">
+                      <span class="provider-card-name">{{ p.name }}</span>
+                      <span class="provider-chip" :class="p.providerType">{{ p.providerType === 'chat' ? '对话' : '向量' }}</span>
+                      <span v-if="p.isActive" class="model-card-badge">当前</span>
+                    </div>
+                    <div class="provider-card-meta">
+                      <span class="provider-chip">{{ p.vendor }}</span>
+                      <span class="model-card-name">{{ p.modelName }}</span>
+                      <span v-if="p.providerType === 'embedding' && p.dimension" class="dim-chip">{{ p.dimension }}d</span>
+                      <span class="key-chip">{{ p.hasApiKey ? p.apiKeyMasked : '未配置' }}</span>
+                    </div>
+                    <p v-if="p.description" class="model-card-desc">{{ p.description }}</p>
+                    <div class="provider-card-actions">
+                      <button class="provider-btn small" :disabled="testingId === p.id" @click="testProviderConn(p)">{{ testingId === p.id ? '测试中…' : '测试连通' }}</button>
+                      <button v-if="!p.isActive" class="provider-btn small" :disabled="actingId === p.id" @click="activateProviderRow(p)">激活</button>
+                      <button class="provider-btn small" @click="openProviderForm(p)">编辑</button>
+                      <button class="provider-btn small danger" @click="removeProvider(p)">删除</button>
+                    </div>
+                  </div>
+                </div>
+              </a-spin>
+
+              <a-modal
+                v-model:open="providerFormOpen"
+                :title="providerForm.id ? '编辑模型服务' : '新壟模型服务'"
+                :confirm-loading="providerSaving"
+                @ok="saveProviderForm"
+              >
+                <a-form layout="vertical" style="margin-top: 12px">
+                  <a-form-item :label="'配置名称'" required>
+                    <a-input v-model:value="providerForm.name" :disabled="!!providerForm.id" placeholder="my-chat-model" />
+                  </a-form-item>
+                  <a-form-item :label="'类型'" required>
+                    <a-radio-group v-model:value="providerForm.providerType" :disabled="!!providerForm.id">
+                      <a-radio value="chat">对话</a-radio>
+                      <a-radio value="embedding">向量</a-radio>
+                    </a-radio-group>
+                  </a-form-item>
+                  <a-form-item :label="'API Base URL'" required>
+                    <a-input v-model:value="providerForm.baseUrl" placeholder="https://ark.cn-beijing.volces.com/api/v3" />
+                  </a-form-item>
+                  <a-form-item :label="'服务商'" >
+                    <a-select v-model:value="providerForm.vendor">
+                      <a-select-option value="volcengine">volcengine</a-select-option>
+                      <a-select-option value="aliyun">aliyun</a-select-option>
+                      <a-select-option value="openai">openai</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                  <a-form-item :label="'API Key'" :extra="providerForm.id ? '留空保持原值' : '保存后加密存储，不再回显'">
+                    <a-input-password v-model:value="providerForm.apiSpecialKey" autocomplete="new-password" />
+                  </a-form-item>
+                  <a-form-item :label="'模型名称/端点 ID'" required>
+                    <a-input v-model:value="providerForm.modelName" placeholder="ep-xxxx / doubao-xxx" />
+                  </a-form-item>
+                  <template v-if="providerForm.providerType === 'embedding'">
+                    <a-form-item :label="'向量维度'" >
+                      <a-input-number v-model:value="providerForm.dimension" :min="64" :max="8192" style="width: 100%" />
+                    </a-form-item>
+                    <a-form-item :label="'embedding 模式'" >
+                      <a-radio-group v-model:value="providerForm.mode">
+                        <a-radio value="multimodal">multimodal</a-radio>
+                        <a-radio value="text">text</a-radio>
+                      </a-radio-group>
+                    </a-form-item>
+                  </template>
+                  <template v-else>
+                    <a-form-item :label="'随机性 (0-2)'" >
+                      <a-slider v-model:value="providerForm.temperatureNum" :min="0" :max="2" :step="0.1" />
+                    </a-form-item>
+                    <a-form-item :label="'最大 token'" >
+                      <a-input-number v-model:value="providerForm.maxTokens" :min="16" :max="32768" style="width: 100%" />
+                    </a-form-item>
+                  </template>
+                  <a-form-item :label="'描述'" >
+                    <a-input v-model:value="providerForm.description" />
+                  </a-form-item>
+                  <a-checkbox v-model:checked="providerForm.isActive">保存后激活为当前服务</a-checkbox>
+                </a-form>
+              </a-modal>
+            </section>
+
             <section class="settings-section" id="section-data">
               <div class="section-heading">
                 <div class="section-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626)">
@@ -270,6 +374,7 @@ import { message, Modal } from 'ant-design-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
 import { getModelList, switchModel as apiSwitchModel } from '@/api/chat'
+import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
 
 const router = useRouter()
@@ -378,6 +483,137 @@ async function submitPassword() {
 }
 
 // ==================== 模型设置 ====================
+// ---- T3 模型服务配置中心 ----
+const providers = ref([])
+const providersLoading = ref(false)
+const testingId = ref(null)
+const actingId = ref(null)
+const providerFormOpen = ref(false)
+const providerSaving = ref(false)
+const providerForm = reactive({
+  id: null, name: '', providerType: 'chat', vendor: 'volcengine', baseUrl: '',
+  apiSpecialKey: '', modelName: '', dimension: 2048, mode: 'multimodal',
+  temperatureNum: 0.7, maxTokens: 1024, description: '', isActive: false
+})
+
+async function loadProviders() {
+  providersLoading.value = true
+  try {
+    const res = await listProviders()
+    providers.value = res?.data !== undefined ? res.data : (res || [])
+  } catch (e) {
+    console.error('[Gewu] 加载模型服务失败:', e)
+  } finally {
+    providersLoading.value = false
+  }
+}
+
+function openProviderForm(row) {
+  if (row) {
+    Object.assign(providerForm, {
+      id: row.id, name: row.name, providerType: row.providerType, vendor: row.vendor || 'volcengine',
+      baseUrl: row.baseUrl || '', apiSpecialKey: '', modelName: row.modelName || '',
+      dimension: row.dimension || 2048, mode: row.mode || 'multimodal',
+      temperatureNum: row.temperature != null ? Number(row.temperature) : 0.7,
+      maxTokens: row.maxTokens || 1024, description: row.description || '',
+      isActive: !!row.isActive
+    })
+  } else {
+    Object.assign(providerForm, {
+      id: null, name: '', providerType: 'chat', vendor: 'volcengine', baseUrl: '',
+      apiSpecialKey: '', modelName: '', dimension: 2048, mode: 'multimodal',
+      temperatureNum: 0.7, maxTokens: 1024, description: '', isActive: false
+    })
+  }
+  providerFormOpen.value = true
+}
+
+async function saveProviderForm() {
+  if (!providerForm.name || !providerForm.baseUrl || !providerForm.modelName) {
+    message.warning('请填写名称、Base URL 与模型名称')
+    return
+  }
+  if (!providerForm.id && !providerForm.apiSpecialKey) {
+    message.warning('新增配置需要填写 API Key')
+    return
+  }
+  providerSaving.value = true
+  try {
+    const payload = {
+      name: providerForm.name.trim(), providerType: providerForm.providerType, vendor: providerForm.vendor,
+      baseUrl: providerForm.baseUrl.trim(), modelName: providerForm.modelName.trim(),
+      description: providerForm.description, isActive: providerForm.isActive
+    }
+    if (providerForm.apiSpecialKey) payload.apiSpecialKey = providerForm.apiSpecialKey
+    if (providerForm.providerType === 'embedding') {
+      payload.dimension = providerForm.dimension
+      payload.mode = providerForm.mode
+    } else {
+      payload.temperature = providerForm.temperatureNum
+      payload.maxTokens = providerForm.maxTokens
+    }
+    if (providerForm.id) { await updateProvider(providerForm.id, payload) }
+    else { await createProvider(payload) }
+    message.success('已保存，配置即时生效')
+    providerFormOpen.value = false
+    await loadProviders()
+    await loadModels()
+  } catch (e) {
+    message.error(e.message || '保存失败')
+  } finally {
+    providerSaving.value = false
+  }
+}
+
+async function removeProvider(row) {
+  Modal.confirm({
+    title: '删除模型服务配置',
+    content: '确定删除 「' + row.name + '」？删除后相关服务回退 yml 配置。',
+    okType: 'danger',
+    async onOk() {
+      try {
+        await deleteProvider(row.id)
+        message.success('已删除')
+        await loadProviders()
+        await loadModels()
+      } catch (e) {
+        message.error(e.message || '删除失败')
+      }
+    }
+  })
+}
+
+async function activateProviderRow(row) {
+  actingId.value = row.id
+  try {
+    await activateProvider(row.id)
+    message.success('已激活：' + row.name)
+    await loadProviders()
+    await loadModels()
+  } catch (e) {
+    message.error(e.message || '激活失败')
+  } finally {
+    actingId.value = null
+  }
+}
+
+async function testProviderConn(row) {
+  testingId.value = row.id
+  try {
+    const res = await apiTestProvider(row.id)
+    const d = res?.data !== undefined ? res.data : res
+    if (d && d.success) {
+      message.success(d.message || '连通正常', 4)
+    } else {
+      message.error((d && d.message) || '连通失败', 6)
+    }
+  } catch (e) {
+    message.error(e.message || '测试失败', 6)
+  } finally {
+    testingId.value = null
+  }
+}
+
 const models = ref([])
 const activeModel = ref('')
 const switching = ref(false)
@@ -478,6 +714,7 @@ function scrollToSection(id) {
 }
 
 onMounted(async () => {
+  loadProviders()
   await Promise.all([loadAccountInfo(), loadModels()])
 })
 </script>
@@ -641,6 +878,117 @@ onMounted(async () => {
 }
 
 /* ===== 区块 ===== */
+
+/* ---- T3 模型服务配置中心 ---- */
+.provider-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.provider-btn {
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-secondary, #ffffff);
+  color: var(--text-primary, #1e293b);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.provider-btn:hover:not(:disabled) {
+  border-color: var(--accent, #4F46E5);
+  color: var(--accent, #4F46E5);
+}
+
+.provider-btn.primary {
+  background: var(--accent, #4F46E5);
+  border-color: var(--accent, #4F46E5);
+  color: #ffffff;
+}
+
+.provider-btn.primary:hover:not(:disabled) {
+  opacity: 0.9;
+  color: #ffffff;
+}
+
+.provider-btn.small {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.provider-btn.danger:hover:not(:disabled) {
+  border-color: var(--danger, #ef4444);
+  color: var(--danger, #ef4444);
+}
+
+.provider-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.provider-empty {
+  text-align: center;
+  color: var(--text-secondary, #64748b);
+  padding: 32px 0;
+  font-size: 13px;
+}
+
+.provider-list {
+  display: grid;
+  gap: 12px;
+}
+
+.provider-card {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--bg-secondary, #ffffff);
+  transition: border-color 0.2s ease;
+}
+
+.provider-card:hover {
+  border-color: var(--accent, #4F46E5);
+}
+
+.provider-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.provider-card-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary, #1e293b);
+}
+
+.provider-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.dim-chip,
+.key-chip {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+  background: var(--bg-tertiary, #f1f5f9);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: monospace;
+}
+
+.provider-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 .settings-section {
   width: 100%;
   margin-bottom: 36px;
