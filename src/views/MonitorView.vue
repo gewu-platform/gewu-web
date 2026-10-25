@@ -92,7 +92,55 @@
           </div>
         </section>
 
-        <!-- 调用日志 -->
+        <!-- T6 用量报表 -->
+      <div class="monitor-card">
+        <div class="section-heading">
+          <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">📈</div>
+          <div>
+            <h2 class="section-title">用量报表</h2>
+            <p class="section-desc">按天 / 用户 / Agent 三视图（近 {{ usageDays }} 天）</p>
+          </div>
+          <div class="usage-controls">
+            <select v-model="usageView" class="usage-select" @change="loadUsageReport">
+              <option value="day">按天</option>
+              <option value="user">按用户</option>
+              <option value="agent">按 Agent</option>
+            </select>
+            <select v-model.number="usageDays" class="usage-select" @change="loadUsageReport">
+              <option :value="7">近 7 天</option>
+              <option :value="14">近 14 天</option>
+              <option :value="30">近 30 天</option>
+            </select>
+          </div>
+        </div>
+        <table class="usage-table">
+          <thead>
+            <tr>
+              <th>{{ usageView === 'day' ? '日期' : (usageView === 'user' ? '用户' : '来源') }}</th>
+              <th>调用次数</th>
+              <th>输入 tokens</th>
+              <th>输出 tokens</th>
+              <th>总 tokens</th>
+              <th>费用（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in usageRows" :key="row.groupKey">
+              <td>{{ row.label || row.groupKey }}</td>
+              <td>{{ row.callCount }}</td>
+              <td>{{ fmt(row.inputTokens) }}</td>
+              <td>{{ fmt(row.outputTokens) }}</td>
+              <td class="usage-strong">{{ fmt(row.totalTokens) }}</td>
+              <td>{{ row.totalCost != null ? Number(row.totalCost).toFixed(4) : '-' }}</td>
+            </tr>
+            <tr v-if="usageRows.length === 0">
+              <td colspan="6" class="usage-empty">暂无数据</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 调用日志 -->
         <section class="monitor-section">
           <div class="section-heading">
             <div class="section-icon" style="background: linear-gradient(135deg, #10b981, #059669)">
@@ -170,7 +218,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import { getMonitorStats, getCallLogs } from '@/api/monitor'
+import { getMonitorStats, getCallLogs, getUsageReport } from '@/api/monitor'
 
 const loading = ref(false)
 const stats = ref(null)
@@ -270,7 +318,24 @@ async function loadLogs() {
   }
 }
 
+// T6 用量报表
+const usageView = ref('day')
+const usageDays = ref(7)
+const usageRows = ref([])
+const fmt = (n) => (n == null ? '-' : Number(n).toLocaleString())
+
+async function loadUsageReport() {
+  try {
+    const res = await getUsageReport({ view: usageView.value, days: usageDays.value })
+    const data = res?.data !== undefined ? res.data : res
+    usageRows.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    console.error('[Gewu] 用量报表加载失败:', e)
+  }
+}
+
 onMounted(async () => {
+  loadUsageReport()
   loading.value = true
   try {
     await Promise.all([loadStats(), loadLogs()])
@@ -281,6 +346,20 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
+/* ---- T6 用量报表 ---- */
+.usage-controls { margin-left: auto; display: flex; gap: 8px; }
+.usage-select {
+  background: var(--bg-secondary, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px; padding: 4px 8px; font-size: 12px; color: var(--text-primary, #1e293b);
+}
+.usage-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.usage-table th { text-align: left; padding: 8px 10px; color: var(--text-secondary, #64748b); font-weight: 600; border-bottom: 1px solid var(--border-color, #e2e8f0); }
+.usage-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color, #f1f5f9); color: var(--text-primary, #1e293b); }
+.usage-strong { font-weight: 600; }
+.usage-empty { text-align: center; color: var(--text-secondary, #64748b); padding: 18px 0; }
+
 /* ===== 整体 ===== */
 .monitor-view {
   height: 100%;

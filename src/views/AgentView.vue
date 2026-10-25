@@ -222,8 +222,22 @@
     <!-- Agent 编辑弹窗 -->
     <div v-if="modalVisible" class="modal-mask" @click.self="modalVisible = false">
       <div class="modal-card">
-        <h3>{{ editingId ? '编辑 Agent' : '新建 Agent' }}</h3>
-        <div class="form-grid">
+        <h3>{{ editingId ? '编辑 Agent' : (wizardStep === 1 ? '新建 Agent · 选择模板' : '新建 Agent · 配置') }}</h3>
+        <!-- T5 向导第一步：选择模板 -->
+        <div v-if="!editingId && wizardStep === 1" class="tpl-grid">
+          <button v-for="tpl in agentTemplates" :key="tpl.id" class="tpl-card" @click="applyTemplate(tpl)">
+            <div class="tpl-name">{{ tpl.name }}</div>
+            <p class="tpl-desc">{{ tpl.description }}</p>
+          </button>
+          <button class="tpl-card blank" @click="wizardStep = 2">
+            <div class="tpl-name">空白开始</div>
+            <p class="tpl-desc">不使用模板，从零配置</p>
+          </button>
+        </div>
+
+        <!-- 第二步：配置表单（编辑模式或向导第二步） -->
+        <div v-if="editingId || wizardStep === 2">
+          <div class="form-grid">
           <label>名称 *</label>
           <input v-model="form.name" placeholder="例如：数据分析助手" />
           <label>描述</label>
@@ -236,6 +250,15 @@
               <input type="checkbox" :value="t.name" v-model="form.toolIds" /> {{ t.name }}
             </label>
           </div>
+          <label>绑定知识库（对话时自动检索注入，空=不绑定）</label>
+          <div class="checkbox-row kb-row">
+            <label v-for="d in knowledgeDocs" :key="d.id" class="checkbox-item kb-item" :title="d.fileName">
+              <input type="checkbox" :value="d.id" v-model="form.knowledgeDocumentIds" /> {{ d.fileName }}
+            </label>
+            <span v-if="knowledgeDocs.length === 0" class="kb-empty">知识库暂无已完成索引的文档</span>
+          </div>
+          <label>检索条数 topK（1-10）</label>
+          <input v-model.number="form.ragTopK" type="number" min="1" max="10" class="kb-topk" />
           <label>迭代上限</label>
           <input v-model.number="form.maxIterations" type="number" min="1" max="10" />
           <label>温度</label>
@@ -248,9 +271,11 @@
           </select>
           <label>启用</label>
           <input v-model="form.enabled" type="checkbox" class="single-check" />
+          </div>
         </div>
         <div class="modal-actions">
           <button class="btn-sm" @click="modalVisible = false">取消</button>
+          <button v-if="!editingId" class="btn-sm" @click="wizardStep = 1">← 重选模板</button>
           <button class="btn-sm ok" :disabled="!form.name" @click="submitModal">保存</button>
         </div>
       </div>
@@ -268,6 +293,7 @@ import {
   agentChatStream, listDefinitions, createDefinition,
   updateDefinition, deleteDefinition, setDefinitionEnabled, reloadDefinitions
 } from '@/api/agent'
+import { getDocuments } from '@/api/knowledge'
 
 // ========== 管理台状态 ==========
 const definitions = reactive([])
@@ -280,8 +306,38 @@ const editingId = ref(null)
 const form = reactive({
   name: '', description: '', systemPrompt: '',
   toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true,
-  requireApproval: null
+  requireApproval: null,
+  knowledgeDocumentIds: [], ragTopK: 4
 })
+
+// T5 创建向导：模板与知识库数据
+const agentTemplates = computed(() => definitions.filter(d => (d.id || '').startsWith('template-')))
+const knowledgeDocs = ref([])
+const wizardStep = ref(1) // 1=选模板 2=配置（创建模式专用）
+
+async function loadKnowledgeDocs() {
+  try {
+    const res = await getDocuments()
+    const data = res?.data !== undefined ? res.data : res
+    knowledgeDocs.value = (Array.isArray(data) ? data : []).filter(d => d.status === 2)
+  } catch (e) { console.error('[Gewu] 知识库列表加载失败:', e) }
+}
+
+function applyTemplate(tpl) {
+  Object.assign(form, {
+    name: (tpl.name || '').replace(/（模板）/g, ''),
+    description: tpl.description || '',
+    systemPrompt: tpl.systemPrompt || '',
+    toolIds: [...(tpl.toolIds || [])],
+    maxIterations: tpl.config?.maxIterations ?? 5,
+    temperature: tpl.config?.temperature ?? 0.7,
+    requireApproval: tpl.config?.requireApproval ?? null,
+    knowledgeDocumentIds: [...(tpl.config?.knowledgeDocumentIds || [])],
+    ragTopK: tpl.config?.ragTopK ?? 4,
+    enabled: true
+  })
+  wizardStep.value = 2
+}
 
 // P8b 审批策略展示文案
 const approvalLabel = (v) => v === true ? '全部审批' : v === false ? '免审批' : '继承默认'
@@ -391,7 +447,9 @@ async function rejectPending(id) {
 
 function openCreateModal() {
   editingId.value = null
-  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null })
+  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null, knowledgeDocumentIds: [], ragTopK: 4 })
+  wizardStep.value = 1
+  loadKnowledgeDocs()
   modalVisible.value = true
 }
 
@@ -405,7 +463,9 @@ function openEditModal(agent) {
     maxIterations: agent.config?.maxIterations ?? 5,
     temperature: agent.config?.temperature ?? 0.7,
     enabled: agent.enabled !== false,
-    requireApproval: agent.config?.requireApproval ?? null
+    requireApproval: agent.config?.requireApproval ?? null,
+    knowledgeDocumentIds: [...(agent.config?.knowledgeDocumentIds || [])],
+    ragTopK: agent.config?.ragTopK ?? 4
   })
   modalVisible.value = true
 }
@@ -420,7 +480,9 @@ async function submitModal() {
     maxIterations: form.maxIterations,
     temperature: form.temperature,
     enabled: form.enabled,
-    requireApproval: form.requireApproval
+    requireApproval: form.requireApproval,
+    knowledgeDocumentIds: form.knowledgeDocumentIds,
+    ragTopK: form.ragTopK
   }
   try {
     let res
@@ -1291,6 +1353,70 @@ onUnmounted(() => {
 }
 
 /* ===== 弹窗 ===== */
+/* ---- T5 创建向导：模板卡片与知识库绑定 ---- */
+.tpl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.tpl-card {
+  text-align: left;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-secondary, #ffffff);
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tpl-card:hover {
+  border-color: var(--accent, #4F46E5);
+  transform: translateY(-1px);
+}
+
+.tpl-card.blank {
+  border-style: dashed;
+  color: var(--text-secondary, #64748b);
+}
+
+.tpl-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 4px;
+}
+
+.tpl-desc {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kb-row {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.kb-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.kb-empty {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
 .modal-mask {
   position: fixed;
   inset: 0;

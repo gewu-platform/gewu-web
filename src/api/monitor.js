@@ -21,3 +21,10 @@ export function getCallLogs(data) {
 export function getModelRanking() {
   return api.get('/monitor/models')
 }
+
+/**
+ * T6 用量报表（view=day|user|agent，days 近 N 天）
+ */
+export function getUsageReport(params) {
+  return api.get('/monitor/usage/report', { params })
+}
