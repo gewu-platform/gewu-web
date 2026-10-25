@@ -41,14 +41,14 @@
       <div class="messages-container" ref="messagesContainer">
         <div v-if="chatStore.messages.length === 0 && !chatStore.isLoading" class="welcome">
           <div class="welcome-icon">🔗</div>
-          <h2>LangChain4j 对话</h2>
+          <h2>Gewu 智能对话</h2>
           <p>支持同步调用、流式输出、会话记忆、角色扮演</p>
           <div class="quick-actions">
-            <button class="quick-btn" @click="applyQuickQuestion('介绍一下 LangChain4j 的核心概念')">
-              🤔 LangChain4j 是什么？
+            <button class="quick-btn" @click="applyQuickQuestion('介绍一下 Gewu 的核心能力')">
+              🌱 Gewu 是什么？
             </button>
-            <button class="quick-btn" @click="applyQuickQuestion('Spring AI 和 LangChain4j 有什么区别？')">
-              ⚡ Spring AI vs LangChain4j？
+            <button class="quick-btn" @click="applyQuickQuestion('Gewu 的 Agent 工具编排和审批网关怎么用？')">
+              ⚡ Agent 工具编排怎么用？
             </button>
             <button class="quick-btn" @click="applyQuickQuestion('用Java写一个工具调用的示例')">
               🛠 写个 Tool Calling 示例

@@ -20,7 +20,7 @@
             </div>
             <!-- 品牌名称 -->
             <div class="brand-name">
-              <span class="brand-primary">LC4J</span>
+              <span class="brand-primary">Gewu</span>
             </div>
           </router-link>
         </div>
@@ -201,7 +201,7 @@ const handleRegister = async (credentials) => {
   const result = await authStore.register(credentials)
   if (result.success) {
     authStore.hideModal()
-    message.success('注册成功！欢迎使用 LC4J')
+    message.success('注册成功！欢迎使用 Gewu')
   }
 }
 
@@ -246,7 +246,7 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* ===== 全局 CSS 变量（LC4J 浅色液态有机风）=====
+/* ===== 全局 CSS 变量（Gewu 浅色液态有机风）=====
    ChatView 等视图引用 var(--)，此前未定义导致按钮透明/边框丢失 */
 :root {
   /* 格物 Gewu 设计令牌 v1（PRD §8.1 方案 B：藏青+靛蓝） */

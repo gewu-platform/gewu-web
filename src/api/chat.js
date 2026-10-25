@@ -21,7 +21,7 @@ api.interceptors.request.use(
     return config
   },
   error => {
-    console.error('[LC4J] 请求错误:', error)
+    console.error('[Gewu] 请求错误:', error)
     return Promise.reject(error)
   }
 )
@@ -30,7 +30,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   response => response.data,
   error => {
-    console.error('[LC4J] 响应错误:', error.response?.status, error.message)
+    console.error('[Gewu] 响应错误:', error.response?.status, error.message)
 
     // 优先处理 401 认证错误
     if (error.response?.status === 401) {
@@ -52,7 +52,7 @@ api.interceptors.response.use(
       return Promise.reject(authError)
     }
 
-    let message = 'LC4J 连接失败'
+    let message = 'Gewu 连接失败'
     if (error.response?.data?.message) {
       message = error.response.data.message
     } else if (error.code === 'ECONNABORTED') {

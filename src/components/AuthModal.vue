@@ -15,16 +15,12 @@
       <!-- Header -->
       <div class="auth-header">
         <div class="logo-wrapper">
-          <svg class="auth-logo" viewBox="0 0 48 48" fill="none">
-            <defs>
-              <linearGradient id="lc4jLogoGrad" x1="0" y1="0" x2="48" y2="48">
-                <stop offset="0%" stop-color="#0ea5e9"/>
-                <stop offset="100%" stop-color="#ec4899"/>
-              </linearGradient>
-            </defs>
-            <circle cx="24" cy="24" r="20" stroke="url(#lc4jLogoGrad)" stroke-width="2.5"/>
-            <path d="M16 24 Q24 16 32 24 Q24 32 16 24Z" fill="url(#lc4jLogoGrad)"/>
-          </svg>
+          <svg class="auth-logo" viewBox="0 0 32 32" width="48" height="48" aria-hidden="true">
+        <rect x="3" y="3" width="12" height="12" rx="3" fill="#1E3A5F"/>
+        <rect x="17" y="3" width="12" height="12" rx="3" fill="#4F46E5"/>
+        <rect x="3" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.55"/>
+        <rect x="17" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.25"/>
+      </svg>
         </div>
         <h2 class="auth-title">{{ currentView === 'login' ? '欢迎回来' : '创建账户' }}</h2>
         <p class="auth-subtitle">
