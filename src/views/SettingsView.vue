@@ -193,11 +193,11 @@
               </div>
 
               <div class="provider-toolbar">
-                <button class="provider-btn primary" @click="openProviderForm()">+ 新壟配置</button>
+                <button class="provider-btn primary" @click="openProviderForm()">+ 新增配置</button>
               </div>
 
               <a-spin :spinning="providersLoading">
-                <div v-if="providers.length === 0" class="provider-empty">暂无配置，点击上方“新壟配置”创建</div>
+                <div v-if="providers.length === 0" class="provider-empty">暂无配置，点击上方“新增配置”创建</div>
                 <div v-else class="provider-list">
                   <div v-for="p in providers" :key="p.id" class="provider-card">
                     <div class="provider-card-head">
@@ -224,7 +224,7 @@
 
               <a-modal
                 v-model:open="providerFormOpen"
-                :title="providerForm.id ? '编辑模型服务' : '新壟模型服务'"
+                :title="providerForm.id ? '编辑模型服务' : '新增模型服务'"
                 :confirm-loading="providerSaving"
                 @ok="saveProviderForm"
               >
