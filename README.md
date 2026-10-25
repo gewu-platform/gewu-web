@@ -1,6 +1,6 @@
 # LangChain4j Learning Web
 
-LangChain4j 学习平台 Web 前端，联调 `langchain4j-learning` 后端（端口 8081）。
+LangChain4j 学习平台 Web 前端，联调 `gewu` 后端（端口 8081）。
 
 ## 技术栈
 
@@ -35,7 +35,7 @@ pnpm run build
 ## 项目结构
 
 ```
-langchain4j-learning-web/
+gewu-web/
 ├── index.html
 ├── vite.config.js              # Vite 配置 + API 代理
 ├── package.json
@@ -57,7 +57,7 @@ langchain4j-learning-web/
 
 ## 后端联调
 
-确保 `langchain4j-learning` 后端已启动（端口 8081）：
+确保 `gewu` 后端已启动（端口 8081）：
 
 ```bash
 # 后端启动后访问
