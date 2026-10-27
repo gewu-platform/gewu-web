@@ -1,5 +1,8 @@
 # Gewu Web — 企业级 AI Agent 平台前端（Vue 3）
 
+<p align="center"><img src="docs/banner.png" alt="Gewu" width="680" /></p>
+
+
 [![Vue](https://img.shields.io/badge/Vue-3-42b883)](https://vuejs.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646cff)](https://vitejs.dev)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue)]../gewu/LICENSE)
