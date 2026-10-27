@@ -223,7 +223,7 @@
               </a-spin>
 
               <a-modal
-                v-model:open="providerFormOpen"
+                v-model:visible="providerFormOpen"
                 :title="providerForm.id ? '编辑模型服务' : '新增模型服务'"
                 :confirm-loading="providerSaving"
                 @ok="saveProviderForm"
@@ -343,7 +343,7 @@
 
     <!-- 修改密码弹窗 -->
     <a-modal
-      v-model:open="pwdModalOpen"
+      v-model:visible="pwdModalOpen"
       title="修改密码"
       :confirm-loading="changingPwd"
       ok-text="确认修改"
