@@ -131,6 +131,58 @@ export function getSessions() {
 }
 
 /**
+ * T2.1 会话重命名（remark 即标题）
+ */
+export function renameSession(sessionId, remark) {
+  return api.patch(`/chat/session/${sessionId}/title`, { remark })
+}
+
+/**
+ * T2.2 会话归组 / 移组
+ */
+export function setSessionGroup(sessionId, groupName) {
+  return api.patch(`/chat/session/${sessionId}/group`, { groupName })
+}
+
+/**
+ * T2.2 当前用户分组清单
+ */
+export function listGroups() {
+  return api.get('/chat/groups')
+}
+
+/**
+ * T2.3 删除分组（会话回落默认）
+ */
+export function dissolveGroup(groupName) {
+  return api.delete(`/chat/groups/${encodeURIComponent(groupName)}`)
+}
+
+// ==================== T3 上下文压缩（v1.0.1 B3） ====================
+/**
+ * T3.2 读当前用户压缩配置
+ */
+export function getCompactSettings() {
+  return api.get('/chat/settings/compact')
+}
+
+/**
+ * T3.3 写当前用户压缩配置（部分更新）
+ */
+export function saveCompactSettings(patch) {
+  return api.post('/chat/settings/compact', patch)
+}
+
+/**
+ * T3.1 手动压缩会话（可选保留最近条数）
+ */
+export function compactSession(sessionId, keepRecent) {
+  return api.post(`/chat/session/${sessionId}/compact`, null, {
+    params: keepRecent ? { keepRecent } : {}
+  })
+}
+
+/**
  * 获取会话详情
  */
 export function getSession(sessionId) {

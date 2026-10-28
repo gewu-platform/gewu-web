@@ -7,17 +7,63 @@
         <button class="btn-icon" @click="handleCreateSession" title="新建会话">+</button>
       </div>
       <div class="session-list">
-        <div
-          v-for="s in chatStore.sessions"
-          :key="s.id"
-          class="session-item"
-          :class="{ active: s.id === chatStore.sessionId }"
-          @click="handleSelectSession(s.id)"
-        >
-          <span class="session-name">{{ sessionTitle(s) }}</span>
-          <button class="btn-del" @click.stop="handleDeleteSession(s.id)">×</button>
-        </div>
+        <template v-for="group in groupedSessions" :key="group.name">
+          <div v-if="group.name" class="session-group-header" @click="toggleGroup(group.name)">
+            <span class="group-caret" :class="{ collapsed: collapsedGroups.has(group.name) }">▾</span>
+            <span class="group-name">{{ group.name }}</span>
+            <span class="group-count">{{ group.items.length }}</span>
+            <button class="group-del" title="删除分组（会话回到默认）" @click.stop="handleDissolveGroup(group.name)">×</button>
+          </div>
+          <template v-for="s in group.items" :key="s.id">
+            <div
+              v-show="!group.name || !collapsedGroups.has(group.name)"
+              class="session-item"
+              :class="{ active: s.id === chatStore.sessionId }"
+              @click="handleSelectSession(s.id)"
+            >
+              <span class="session-name">{{ sessionTitle(s) }}</span>
+              <span class="session-actions">
+                <button class="btn-op" title="重命名" @click.stop="openRename(s)">✎</button>
+                <button class="btn-op" title="移动到分组" @click.stop="openMove(s)">📁</button>
+                <button class="btn-del" title="删除会话" @click.stop="handleDeleteSession(s.id)">×</button>
+              </span>
+            </div>
+          </template>
+        </template>
         <div v-if="chatStore.sessions.length === 0" class="empty-hint">暂无会话</div>
+      </div>
+
+      <!-- T2.1 重命名弹窗 -->
+      <div v-if="renameOpen" class="modal-mask" @click.self="renameOpen = false">
+        <div class="mini-modal">
+          <div class="mini-modal-title">重命名会话</div>
+          <input v-model="renameValue" class="mini-input" maxlength="100" @keyup.enter="confirmRename" />
+          <div class="mini-modal-actions">
+            <button class="mini-btn" @click="renameOpen = false">取消</button>
+            <button class="mini-btn primary" @click="confirmRename">保存</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- T2.2 归组弹窗 -->
+      <div v-if="moveOpen" class="modal-mask" @click.self="moveOpen = false">
+        <div class="mini-modal">
+          <div class="mini-modal-title">移动「{{ moveTargetTitle }}」到分组</div>
+          <div class="group-choices">
+            <button
+              v-for="g in availableGroups"
+              :key="g"
+              class="group-choice"
+              @click="confirmMove(g)"
+            >{{ g }}</button>
+          </div>
+          <div class="mini-modal-title" style="margin-top: 10px">或新建分组</div>
+          <input v-model="newGroupName" class="mini-input" maxlength="50" placeholder="分组名（留空 = 默认）" @keyup.enter="confirmMove(newGroupName)" />
+          <div class="mini-modal-actions">
+            <button class="mini-btn" @click="confirmMove('')">移到默认</button>
+            <button class="mini-btn" @click="moveOpen = false">取消</button>
+          </div>
+        </div>
       </div>
 
       <!-- 模型快捷切换 -->
@@ -32,6 +78,27 @@
           <span class="dot" :class="{ online: backendOnline }"></span>
           <span>{{ backendOnline ? '后端在线' : '后端离线' }}</span>
         </div>
+      </div>
+
+      <!-- T3 上下文压缩设置 -->
+      <div class="panel-section">
+        <div class="section-title">📦 上下文压缩</div>
+        <label class="compact-toggle">
+          <input type="checkbox" v-model="compactConf.autoCompact" @change="saveCompactConf" />
+          <span>自动压缩（超阈值时触发）</span>
+        </label>
+        <div class="compact-field">
+          <label>阈值（tokens）</label>
+          <input type="number" v-model.number="compactConf.compactThreshold" min="1000" max="200000" @change="saveCompactConf" />
+        </div>
+        <div class="compact-field">
+          <label>保留最近（条）</label>
+          <input type="number" v-model.number="compactConf.compactKeepRecent" min="2" max="200" @change="saveCompactConf" />
+        </div>
+        <button class="compact-btn" :disabled="compacting || !chatStore.sessionId" @click="manualCompact">
+          {{ compacting ? '压缩中…' : '立即压缩当前会话' }}
+        </button>
+        <div v-if="compactResult" class="compact-result">{{ compactResult }}</div>
       </div>
     </aside>
 
@@ -175,7 +242,7 @@ import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
-import { getModelList, switchModel as apiSwitchModel, healthCheck } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
@@ -240,6 +307,151 @@ function formatTime(ts) {
 function sessionTitle(s) {
   return s.remark || s.title || (s.id ? String(s.id).substring(0, 8) : '会话')
 }
+
+// ==================== T2 会话管理：重命名 / 分组 ====================
+const renameOpen = ref(false)
+const renameValue = ref('')
+const renameTargetId = ref('')
+const moveOpen = ref(false)
+const moveTargetId = ref('')
+const moveTargetTitle = ref('')
+const newGroupName = ref('')
+const knownGroups = ref([])
+const collapsedGroups = ref(new Set())
+
+const availableGroups = computed(() => knownGroups.value)
+
+// 分组聚合：有组名的按组、无组名的归「默认」
+const groupedSessions = computed(() => {
+  const list = chatStore.sessions || []
+  const map = new Map()
+  for (const s of list) {
+    const g = (s.groupName && String(s.groupName).trim()) || ''
+    const key = g || '默认'
+    if (!map.has(key)) map.set(key, [])
+    map.get(key).push(s)
+  }
+  const groups = []
+  const named = [...map.entries()].filter(([k]) => k !== '默认').sort((a, b) => a[0].localeCompare(b[0], 'zh'))
+  for (const [name, items] of named) groups.push({ name, items })
+  if (map.has('默认')) groups.push({ name: '', items: map.get('默认') })
+  return groups
+})
+
+function toggleGroup(name) {
+  const set = new Set(collapsedGroups.value)
+  set.has(name) ? set.delete(name) : set.add(name)
+  collapsedGroups.value = set
+}
+
+function openRename(s) {
+  renameTargetId.value = s.id
+  renameValue.value = sessionTitle(s)
+  renameOpen.value = true
+}
+
+async function confirmRename() {
+  const v = renameValue.value.trim()
+  if (!v) { message.warning('名称不能为空'); return }
+  try {
+    await apiRenameSession(renameTargetId.value, v)
+    const s = (chatStore.sessions || []).find(x => x.id === renameTargetId.value)
+    if (s) s.remark = v
+    renameOpen.value = false
+    message.success('已重命名')
+  } catch (e) {
+    message.error('[Gewu] 重命名失败: ' + (e.response?.data?.message || e.message))
+  }
+}
+
+function openMove(s) {
+  moveTargetId.value = s.id
+  moveTargetTitle.value = sessionTitle(s)
+  moveOpen.value = true
+  apiListGroups().then(r => {
+    knownGroups.value = (r.data || r || []).filter(g => g && g !== (s.groupName || ''))
+  }).catch(() => { knownGroups.value = [] })
+}
+
+async function confirmMove(g) {
+  const name = (g || '').trim()
+  try {
+    await apiSetSessionGroup(moveTargetId.value, name || null)
+    const s = (chatStore.sessions || []).find(x => x.id === moveTargetId.value)
+    if (s) s.groupName = name || null
+    moveOpen.value = false
+    newGroupName.value = ''
+    message.success(name ? '已移入分组: ' + name : '已移到默认')
+  } catch (e) {
+    message.error('[Gewu] 归组失败: ' + (e.response?.data?.message || e.message))
+  }
+}
+
+async function handleDissolveGroup(name) {
+  try {
+    const r = await apiDissolveGroup(name)
+    const affected = r.data && r.data.affected
+    for (const s of (chatStore.sessions || [])) {
+      if (s.groupName === name) s.groupName = null
+    }
+    collapsedGroups.value = new Set([...collapsedGroups.value].filter(x => x !== name))
+    message.success('分组已删除' + (affected != null ? '（' + affected + ' 个会话回到默认）' : ''))
+  } catch (e) {
+    message.error('[Gewu] 删除分组失败: ' + (e.response?.data?.message || e.message))
+  }
+}
+
+// ==================== T3 上下文压缩（v1.0.1 B3） ====================
+const compactConf = reactive({ autoCompact: true, compactThreshold: 8000, compactKeepRecent: 20 })
+const compacting = ref(false)
+const compactResult = ref('')
+
+async function loadCompactConf() {
+  try {
+    const r = await getCompactSettings()
+    const d = r.data || r
+    if (d) {
+      compactConf.autoCompact = !!d.autoCompact
+      compactConf.compactThreshold = d.compactThreshold ?? 8000
+      compactConf.compactKeepRecent = d.compactKeepRecent ?? 20
+    }
+  } catch (e) {
+    console.warn('[Gewu] 压缩配置加载失败（用默认）', e)
+  }
+}
+
+async function saveCompactConf() {
+  try {
+    await saveCompactSettings({
+      autoCompact: compactConf.autoCompact,
+      compactThreshold: Number(compactConf.compactThreshold),
+      compactKeepRecent: Number(compactConf.compactKeepRecent)
+    })
+    message.success('压缩设置已保存')
+  } catch (e) {
+    message.error('[Gewu] 保存压缩设置失败: ' + (e.response?.data?.message || e.message))
+  }
+}
+
+async function manualCompact() {
+  if (!chatStore.sessionId) return
+  compacting.value = true
+  compactResult.value = ''
+  try {
+    const r = await apiCompactSession(chatStore.sessionId)
+    const d = r.data || r
+    const len = d && d.summary ? d.summary.length : 0
+    compactResult.value = `已生成 ${len} 字摘要（保留最近 ${d?.keepRecent ?? '-'} 条原文）`
+    message.success('压缩完成')
+  } catch (e) {
+    message.error('[Gewu] 压缩失败: ' + (e.response?.data?.message || e.message))
+    compactResult.value = '压缩失败，请重试'
+  } finally {
+    compacting.value = false
+  }
+}
+
+onMounted(() => { loadCompactConf() })
 
 function scrollToBottom() {
   nextTick(() => {
@@ -652,6 +864,138 @@ async function initialize() {
   opacity: 0;
   &:hover { color: var(--danger); }
   .session-item:hover & { opacity: 1; }
+}
+
+// ==================== T2 会话管理样式 ====================
+.session-group-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+
+  .group-caret {
+    display: inline-block;
+    transition: transform 0.15s;
+    &.collapsed { transform: rotate(-90deg); }
+  }
+  .group-name { flex: 1; font-weight: 600; }
+  .group-count { opacity: 0.6; }
+  .group-del {
+    width: 18px; height: 18px;
+    border: none; background: transparent;
+    color: var(--text-secondary); cursor: pointer;
+    border-radius: 4px; font-size: 13px;
+    opacity: 0;
+    &:hover { color: var(--danger); }
+  }
+  &:hover .group-del { opacity: 1; }
+}
+
+.session-actions {
+  display: flex; gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  .session-item:hover & { opacity: 1; }
+}
+
+.btn-op {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  background: transparent; border: none;
+  color: var(--text-secondary); cursor: pointer;
+  font-size: 13px;
+  &:hover { color: var(--accent); background: var(--bg-tertiary); }
+}
+
+.modal-mask {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.mini-modal {
+  width: 320px;
+  background: var(--bg-secondary, #fff);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+}
+
+.mini-modal-title {
+  font-size: 14px; font-weight: 600; margin-bottom: 10px;
+}
+
+.mini-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  border-radius: 6px;
+  font-size: 13px;
+  &:focus { outline: none; border-color: var(--accent); }
+}
+
+.mini-modal-actions {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;
+}
+
+.mini-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  background: transparent; cursor: pointer; font-size: 13px;
+  &.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+}
+
+.group-choices {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 4px;
+}
+
+.group-choice {
+  padding: 5px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  background: transparent; cursor: pointer; font-size: 12px;
+  &:hover { border-color: var(--accent); color: var(--accent); }
+}
+
+// ==================== T3 上下文压缩样式 ====================
+.compact-toggle {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; margin-bottom: 10px;
+  input { accent-color: var(--accent); }
+}
+
+.compact-field {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; margin-bottom: 8px;
+  label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
+  input {
+    width: 92px; padding: 5px 8px;
+    border: 1px solid var(--border-color, #d9d9d9);
+    border-radius: 6px; font-size: 12px;
+    &:focus { outline: none; border-color: var(--accent); }
+  }
+}
+
+.compact-btn {
+  width: 100%; padding: 7px 0;
+  border-radius: 6px; border: 1px solid var(--accent);
+  background: transparent; color: var(--accent);
+  font-size: 12px; cursor: pointer;
+  &:hover:not(:disabled) { background: rgba(88, 166, 255, 0.1); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.compact-result {
+  margin-top: 8px; font-size: 11px;
+  color: var(--text-secondary); word-break: break-all;
 }
 
 .empty-hint {
