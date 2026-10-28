@@ -182,6 +182,66 @@ export function compactSession(sessionId, keepRecent) {
   })
 }
 
+// ==================== T3.1 斜杠命令（v1.0.1 B4） ====================
+/**
+ * 命令清单（输入 / 时补全提示用）
+ */
+export function getCommands() {
+  return api.get('/chat/commands')
+}
+
+let cmdLoginModalShown = false
+/**
+ * 流式执行斜杠命令（SSE：后端 Flux<String> 形态，纯 data 行；事件 type=chunk/done/error）
+ * @param {Object} data - { sessionId, message }
+ * @param {Function} onEvent - 每个事件回调 (jsonData)
+ */
+export async function sendCommandStream(data, onEvent) {
+  const token = localStorage.getItem('auth-token')
+  const response = await fetch('/api/chat/command/stream', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify(data)
+  })
+  if (!response.ok) {
+    if (response.status === 401) {
+      const errorMessage = '登录已过期，请重新登录'
+      if (!cmdLoginModalShown) {
+        cmdLoginModalShown = true
+        setTimeout(() => { cmdLoginModalShown = false }, 3000)
+        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth-expired'))
+      }
+      const err = new Error(errorMessage)
+      err.isAuthError = true
+      throw err
+    }
+    throw new Error(`请求失败 (${response.status})`)
+  }
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    const lines = buffer.split('\n')
+    buffer = lines.pop()
+    for (const line of lines) {
+      if (line.startsWith('data:')) {
+        try {
+          const jsonData = JSON.parse(line.slice(5).trim())
+          onEvent?.(jsonData)
+        } catch (e) {
+          console.warn('[命令SSE] 解析失败:', line, e)
+        }
+      }
+    }
+  }
+}
+
 /**
  * 获取会话详情
  */

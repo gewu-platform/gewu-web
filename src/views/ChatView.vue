@@ -176,11 +176,24 @@
 
       <!-- 输入区 -->
       <div class="input-area">
+        <!-- T3.1 斜杠命令补全 -->
+        <div v-if="showCmdMenu && filteredCommands.length" class="command-menu">
+          <div
+            v-for="cmd in filteredCommands"
+            :key="cmd.name"
+            class="command-item"
+            @mousedown.prevent="applyCommand(cmd)"
+          >
+            <span class="cmd-name">{{ cmd.usage }}</span>
+            <span class="cmd-desc">{{ cmd.desc }}</span>
+          </div>
+        </div>
         <div class="input-wrapper">
           <textarea
             ref="inputBoxRef"
             v-model="inputMessage"
             @keydown.enter.exact.prevent="sendMessage"
+            @keydown.esc.prevent="showCmdMenu = false"
             class="input-box"
             placeholder="输入问题... (Enter 发送)"
             :disabled="chatStore.isLoading"
@@ -242,7 +255,7 @@ import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
-import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession, getCommands, sendCommandStream } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
@@ -453,6 +466,79 @@ async function manualCompact() {
 
 onMounted(() => { loadCompactConf() })
 
+// ==================== T3.1 斜杠命令（v1.0.1 B4） ====================
+const commandList = ref([])
+const showCmdMenu = ref(false)
+const commandsLoaded = ref(false)
+
+const filteredCommands = computed(() => {
+  const v = inputMessage.value
+  if (!v.startsWith('/')) return []
+  const q = v.slice(1).split(' ')[0].toLowerCase()
+  return commandList.value.filter(c => c.name.toLowerCase().startsWith(q))
+})
+
+function applyCommand(cmd) {
+  inputMessage.value = cmd.usage + ' '
+  showCmdMenu.value = false
+  inputBoxRef.value?.focus()
+}
+
+watch(inputMessage, (v) => {
+  if (v.startsWith('/')) {
+    showCmdMenu.value = true
+    if (!commandsLoaded.value) {
+      commandsLoaded.value = true
+      getCommands().then(r => {
+        let d = r && (r.data !== undefined ? r.data : r)
+        if (d && d.data !== undefined) d = d.data
+        commandList.value = Array.isArray(d) ? d : []
+      }).catch(() => {})
+    }
+  } else {
+    showCmdMenu.value = false
+  }
+})
+
+/**
+ * 流式执行斜杠命令：命令入列留痕 → AI 占位 → SSE chunk/done/error
+ * /reset 完成后自动切换新会话；/clear 完成后本地列表清空只留结果
+ */
+async function executeCommand(text) {
+  if (!chatStore.sessionId) {
+    await chatStore.initSession()
+  }
+  chatStore.messages.push({ role: 'user', content: text, timestamp: Date.now() })
+  const aiMsg = reactive({ role: 'assistant', content: '', timestamp: Date.now(), streaming: true })
+  chatStore.messages.push(aiMsg)
+  chatStore.isLoading = true
+  try {
+    await sendCommandStream({ sessionId: chatStore.sessionId, message: text }, (e) => {
+      if (e.type === 'chunk') {
+        aiMsg.content += (e.chunk || '')
+      } else if (e.type === 'done') {
+        aiMsg.content = e.reply || aiMsg.content
+        if (e.newSessionId) {
+          chatStore.selectSession(e.newSessionId)
+        } else if (text.trim().toLowerCase().startsWith('/clear')) {
+          chatStore.messages.splice(0, chatStore.messages.length,
+            { role: 'assistant', content: aiMsg.content, timestamp: Date.now() })
+        }
+      } else if (e.type === 'error') {
+        aiMsg.content = '❌ ' + (e.error || '命令执行失败')
+      }
+      scrollToBottom()
+    })
+  } catch (e) {
+    if (e.isAuthError) { chatStore.isLoading = false; throw e }
+    aiMsg.content = '❌ ' + (e.message || '命令执行失败')
+  } finally {
+    aiMsg.streaming = false
+    chatStore.isLoading = false
+    scrollToBottom()
+  }
+}
+
 function scrollToBottom() {
   nextTick(() => {
     if (messagesContainer.value) {
@@ -593,6 +679,18 @@ async function sendMessage() {
   if (!text || chatStore.isLoading) return
 
   inputMessage.value = ''
+
+  // T3.1 斜杠命令路由（/ 前缀走命令通道，流式执行）
+  if (text.startsWith('/')) {
+    showCmdMenu.value = false
+    try {
+      await executeCommand(text)
+    } catch (e) {
+      if (e.isAuthError) return
+      console.error('[ChatView] 命令执行失败', e)
+    }
+    return
+  }
 
   // P8a 方案 D：智能模式走编排层（工具循环+会话留档），普通模式走纯对话
   if (smartMode.value) {
@@ -996,6 +1094,31 @@ async function initialize() {
 .compact-result {
   margin-top: 8px; font-size: 11px;
   color: var(--text-secondary); word-break: break-all;
+}
+
+// ==================== T3.1 命令菜单样式 ====================
+.input-area { position: relative; }
+
+.command-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0; right: 0;
+  max-height: 220px; overflow-y: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  z-index: 50;
+  padding: 4px;
+}
+
+.command-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 6px;
+  cursor: pointer; font-size: 13px;
+  &:hover { background: var(--bg-tertiary); }
+  .cmd-name { font-family: monospace; color: var(--accent); font-weight: 600; white-space: nowrap; }
+  .cmd-desc { flex: 1; color: var(--text-secondary); font-size: 12px; }
 }
 
 .empty-hint {
