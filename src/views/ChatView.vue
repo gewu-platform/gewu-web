@@ -66,40 +66,6 @@
         </div>
       </div>
 
-      <!-- 模型快捷切换 -->
-      <div class="panel-section">
-        <div class="section-title">🤖 当前模型</div>
-        <select v-model="activeModelId" @change="onModelSwitch" class="model-select">
-          <option v-for="m in modelList" :key="m.id" :value="m.id">
-            {{ m.description || m.modelName }}
-          </option>
-        </select>
-        <div class="model-status">
-          <span class="dot" :class="{ online: backendOnline }"></span>
-          <span>{{ backendOnline ? '后端在线' : '后端离线' }}</span>
-        </div>
-      </div>
-
-      <!-- T3 上下文压缩设置 -->
-      <div class="panel-section">
-        <div class="section-title">📦 上下文压缩</div>
-        <label class="compact-toggle">
-          <input type="checkbox" v-model="compactConf.autoCompact" @change="saveCompactConf" />
-          <span>自动压缩（超阈值时触发）</span>
-        </label>
-        <div class="compact-field">
-          <label>阈值（tokens）</label>
-          <input type="number" v-model.number="compactConf.compactThreshold" min="1000" max="200000" @change="saveCompactConf" />
-        </div>
-        <div class="compact-field">
-          <label>保留最近（条）</label>
-          <input type="number" v-model.number="compactConf.compactKeepRecent" min="2" max="200" @change="saveCompactConf" />
-        </div>
-        <button class="compact-btn" :disabled="compacting || !chatStore.sessionId" @click="manualCompact">
-          {{ compacting ? '压缩中…' : '立即压缩当前会话' }}
-        </button>
-        <div v-if="compactResult" class="compact-result">{{ compactResult }}</div>
-      </div>
     </aside>
 
     <!-- 主聊天区 -->
@@ -213,6 +179,31 @@
         </div>
         <div class="input-actions">
           <div class="actions-left">
+            <div ref="ctxWidgetRef" class="ctx-widget">
+              <button class="ctx-ring-btn" :title="ctxTitle" @click="toggleCtxPanel">
+                <svg class="ctx-ring" width="18" height="18" viewBox="0 0 36 36">
+                  <circle class="ctx-ring-bg" cx="18" cy="18" r="15.9"></circle>
+                  <circle class="ctx-ring-fg" :class="ringLevel" cx="18" cy="18" r="15.9" :stroke-dasharray="ringDash"></circle>
+                </svg>
+              </button>
+              <select v-model="activeModelId" @change="onModelSwitch" class="model-inline" title="切换模型">
+                <option v-for="m in modelList" :key="m.id" :value="m.id">{{ m.description || m.modelName }}</option>
+              </select>
+              <span class="online-dot" :class="{ on: backendOnline }" :title="backendOnline ? '后端在线' : '后端离线'"></span>
+
+              <!-- U2.1 用量详情层 -->
+              <div v-if="ctxPanelOpen" class="ctx-panel">
+                <div class="ctx-panel-row">
+                  <span class="ctx-panel-label">提示词预算</span>
+                  <span class="ctx-panel-value">{{ ctxUsage.used.toLocaleString() }} / {{ ctxUsage.threshold.toLocaleString() }} · {{ ctxUsage.percent }}%</span>
+                </div>
+                <div class="ctx-panel-bar"><div class="ctx-panel-bar-fill" :class="ringLevel" :style="{ width: ctxUsage.percent + '%' }"></div></div>
+                <div class="ctx-panel-sub">最近一次运行的词元数</div>
+                <div class="ctx-panel-row ctx-panel-muted">
+                  <span>输入 {{ (ctxUsage.lastPromptTokens || 0).toLocaleString() }} · 输出 {{ (ctxUsage.lastCompletionTokens || 0).toLocaleString() }} · 预估费用 ${{ lastCostText }}</span>
+                </div>
+              </div>
+            </div>
             <label class="smart-toggle" :class="{ on: smartMode }" title="开启后模型可自主调用工具（计算/时间/搜索等），支持会话记忆与工具留档">
               <input type="checkbox" v-model="smartMode" />
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
@@ -226,7 +217,6 @@
           </div>
           <div class="actions-right">
             <button class="action-link" @click="handleClearHistory">🗑 清除会话历史</button>
-            <button class="action-link" @click="handleNewChat">✨ 新对话</button>
           </div>
         </div>
 
@@ -250,12 +240,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
-import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession, getCommands, sendCommandStream } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
@@ -414,57 +404,6 @@ async function handleDissolveGroup(name) {
   }
 }
 
-// ==================== T3 上下文压缩（v1.0.1 B3） ====================
-const compactConf = reactive({ autoCompact: true, compactThreshold: 8000, compactKeepRecent: 20 })
-const compacting = ref(false)
-const compactResult = ref('')
-
-async function loadCompactConf() {
-  try {
-    const r = await getCompactSettings()
-    const d = r.data || r
-    if (d) {
-      compactConf.autoCompact = !!d.autoCompact
-      compactConf.compactThreshold = d.compactThreshold ?? 8000
-      compactConf.compactKeepRecent = d.compactKeepRecent ?? 20
-    }
-  } catch (e) {
-    console.warn('[Gewu] 压缩配置加载失败（用默认）', e)
-  }
-}
-
-async function saveCompactConf() {
-  try {
-    await saveCompactSettings({
-      autoCompact: compactConf.autoCompact,
-      compactThreshold: Number(compactConf.compactThreshold),
-      compactKeepRecent: Number(compactConf.compactKeepRecent)
-    })
-    message.success('压缩设置已保存')
-  } catch (e) {
-    message.error('[Gewu] 保存压缩设置失败: ' + (e.response?.data?.message || e.message))
-  }
-}
-
-async function manualCompact() {
-  if (!chatStore.sessionId) return
-  compacting.value = true
-  compactResult.value = ''
-  try {
-    const r = await apiCompactSession(chatStore.sessionId)
-    const d = r.data || r
-    const len = d && d.summary ? d.summary.length : 0
-    compactResult.value = `已生成 ${len} 字摘要（保留最近 ${d?.keepRecent ?? '-'} 条原文）`
-    message.success('压缩完成')
-  } catch (e) {
-    message.error('[Gewu] 压缩失败: ' + (e.response?.data?.message || e.message))
-    compactResult.value = '压缩失败，请重试'
-  } finally {
-    compacting.value = false
-  }
-}
-
-onMounted(() => { loadCompactConf() })
 
 // ==================== T3.1 斜杠命令（v1.0.1 B4） ====================
 const commandList = ref([])
@@ -654,11 +593,6 @@ function handleClearHistory() {
   })
 }
 
-// 新对话：清空本地消息视图，下次发送时自动复用/创建会话
-function handleNewChat() {
-  chatStore.clearMessages()
-  inputMessage.value = ''
-}
 
 // 快捷问题回填输入框并聚焦（修复点击后焦点丢失）
 function applyQuickQuestion(text) {
@@ -840,6 +774,59 @@ watch(() => authStore.isAuthenticated, (val) => {
     if (modelList.value.length === 0) loadModels().catch(() => {})
   }
 })
+
+// ==================== U2 上下文用量环形指示 + 内联模型切换 ====================
+const ctxUsage = reactive({ used: 0, threshold: 0, percent: 0, autoCompact: true, lastPromptTokens: 0, lastCompletionTokens: 0, lastCost: 0 })
+const RING_CIRC = 2 * Math.PI * 15.9
+const ringDash = computed(() => ((ctxUsage.percent / 100) * RING_CIRC).toFixed(1) + ' ' + RING_CIRC.toFixed(1))
+const ringLevel = computed(() => {
+  if (!chatStore.sessionId || ctxUsage.percent <= 0) return 'lvl-idle'
+  if (ctxUsage.percent < 60) return 'lvl-ok'
+  if (ctxUsage.percent < 85) return 'lvl-warn'
+  return 'lvl-danger'
+})
+const ctxTitle = computed(() => {
+  if (!chatStore.sessionId) return '上下文用量：暂无会话（发送消息后展示）'
+  let tip = `上下文用量：约 ${ctxUsage.used} / ${ctxUsage.threshold} tokens（${ctxUsage.percent}%）`
+  tip += ctxUsage.autoCompact ? '，超阈值自动压缩' : '，自动压缩已关闭'
+  return tip
+})
+async function refreshContextUsage() {
+  if (!chatStore.sessionId) { ctxUsage.used = 0; ctxUsage.percent = 0; return }
+  try {
+    const r = await getSessionContextUsage(chatStore.sessionId)
+    let d = r && (r.data !== undefined ? r.data : r)
+    if (d && d.data !== undefined) d = d.data
+    if (d) Object.assign(ctxUsage, d)
+  } catch (e) { /* 指示失败静默 */ }
+}
+const ctxPanelOpen = ref(false)
+function toggleCtxPanel() {
+  ctxPanelOpen.value = !ctxPanelOpen.value
+  if (ctxPanelOpen.value) refreshContextUsage()
+}
+const lastCostText = computed(() => {
+  const c = Number(ctxUsage.lastCost || 0)
+  return c === 0 ? '0.00' : c.toFixed(4)
+})
+
+// U2.2 点击面板外自动关闭（mousedown 先于 click，避免与按钮 toggle 竞态）
+const ctxWidgetRef = ref(null)
+function onDocMouseDown(e) {
+  if (ctxPanelOpen.value && ctxWidgetRef.value && !ctxWidgetRef.value.contains(e.target)) {
+    ctxPanelOpen.value = false
+  }
+}
+onMounted(() => document.addEventListener('mousedown', onDocMouseDown))
+onBeforeUnmount(() => document.removeEventListener('mousedown', onDocMouseDown))
+watch(() => chatStore.sessionId, () => refreshContextUsage())
+// 发送完成（streaming true→false）后刷新；消息数减少（/clear 等）后刷新
+watch(() => {
+  const ms = chatStore.messages
+  const last = ms[ms.length - 1]
+  return last ? last.streaming : undefined
+}, (nv, ov) => { if (ov === true && nv === false) refreshContextUsage() })
+watch(() => chatStore.messages.length, (nv, ov) => { if (nv < ov) refreshContextUsage() })
 
 onMounted(async () => {
   loadModels()
@@ -1062,65 +1049,6 @@ async function initialize() {
   &:hover { border-color: var(--accent); color: var(--accent); }
 }
 
-// ==================== T3 上下文压缩样式 ====================
-.compact-toggle {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 12px; color: var(--text-secondary);
-  cursor: pointer; margin-bottom: 10px;
-  input { accent-color: var(--accent); }
-}
-
-.compact-field {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 8px; margin-bottom: 8px;
-  label { font-size: 12px; color: var(--text-secondary); white-space: nowrap; }
-  input {
-    width: 92px; padding: 5px 8px;
-    border: 1px solid var(--border-color, #d9d9d9);
-    border-radius: 6px; font-size: 12px;
-    &:focus { outline: none; border-color: var(--accent); }
-  }
-}
-
-.compact-btn {
-  width: 100%; padding: 7px 0;
-  border-radius: 6px; border: 1px solid var(--accent);
-  background: transparent; color: var(--accent);
-  font-size: 12px; cursor: pointer;
-  &:hover:not(:disabled) { background: rgba(88, 166, 255, 0.1); }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
-}
-
-.compact-result {
-  margin-top: 8px; font-size: 11px;
-  color: var(--text-secondary); word-break: break-all;
-}
-
-// ==================== T3.1 命令菜单样式 ====================
-.input-area { position: relative; }
-
-.command-menu {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0; right: 0;
-  max-height: 220px; overflow-y: auto;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  z-index: 50;
-  padding: 4px;
-}
-
-.command-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: 6px;
-  cursor: pointer; font-size: 13px;
-  &:hover { background: var(--bg-tertiary); }
-  .cmd-name { font-family: monospace; color: var(--accent); font-weight: 600; white-space: nowrap; }
-  .cmd-desc { flex: 1; color: var(--text-secondary); font-size: 12px; }
-}
-
 .empty-hint {
   text-align: center;
   padding: 24px;
@@ -1128,10 +1056,6 @@ async function initialize() {
   font-size: 13px;
 }
 
-.panel-section {
-  padding: 16px;
-  border-top: 1px solid var(--border-color);
-}
 
 .section-title {
   font-size: 12px;
@@ -1139,33 +1063,126 @@ async function initialize() {
   margin-bottom: 8px;
 }
 
-.model-select {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 6px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  font-size: 13px;
-  cursor: pointer;
-  outline: none;
-}
-
-.model-status {
+.ctx-widget {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--text-secondary);
+  margin-right: 6px;
 }
 
-.dot {
-  width: 7px;
-  height: 7px;
+.ctx-ring-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.ctx-ring circle {
+  fill: none;
+  stroke-width: 3.6;
+}
+
+.ctx-ring-bg { stroke: rgba(128, 128, 128, 0.25); }
+
+.ctx-ring-fg {
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dasharray 0.3s;
+  &.lvl-idle { stroke: rgba(128, 128, 128, 0.4); }
+  &.lvl-ok { stroke: var(--success, #3fb950); }
+  &.lvl-warn { stroke: #d29922; }
+  &.lvl-danger { stroke: var(--danger, #f85149); }
+}
+
+.model-inline {
+  max-width: 190px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+  &:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+  &:focus { border-color: var(--border-color); }
+}
+
+.online-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--danger);
-  &.online { background: var(--success); box-shadow: 0 0 4px rgba(63, 185, 80, 0.5); }
+  flex-shrink: 0;
+  &.on { background: var(--success); box-shadow: 0 0 4px rgba(63, 185, 80, 0.5); }
+}
+
+/* U2.1 用量详情层 */
+.ctx-panel {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  width: 320px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  cursor: default;
+}
+
+.ctx-panel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+  &.ctx-panel-muted { margin-top: 6px; margin-bottom: 0; }
+}
+
+.ctx-panel-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ctx-panel-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ctx-panel-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(128, 128, 128, 0.2);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.ctx-panel-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s;
+  &.lvl-ok { background: var(--success, #3fb950); }
+  &.lvl-warn { background: #d29922; }
+  &.lvl-danger { background: var(--danger, #f85149); }
+  &.lvl-idle { background: rgba(128, 128, 128, 0.4); }
+}
+
+.ctx-panel-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.ctx-panel-muted {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 /* 主聊天区 */

@@ -182,6 +182,13 @@ export function compactSession(sessionId, keepRecent) {
   })
 }
 
+/**
+ * U2 上下文用量（环形指示）：used/threshold/percent/autoCompact
+ */
+export function getSessionContextUsage(sessionId) {
+  return api.get(`/chat/session/${sessionId}/context-usage`)
+}
+
 // ==================== T3.1 斜杠命令（v1.0.1 B4） ====================
 /**
  * 命令清单（输入 / 时补全提示用）
