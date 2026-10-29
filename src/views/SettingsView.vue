@@ -281,6 +281,54 @@
               </a-modal>
             </section>
 
+            <!-- 对话设置 (T3 上下文压缩，v1.0.1 自对话侧栏迁入) -->
+            <section class="settings-section" id="section-chat">
+              <div class="section-heading">
+                <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #f97316)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2 class="section-title">对话设置</h2>
+                  <p class="section-desc">上下文自动压缩：长对话超过阈值时自动把旧消息合并为摘要，控制 token 占用</p>
+                </div>
+              </div>
+
+              <div class="settings-panel">
+                <label class="compact-opt-row">
+                  <input type="checkbox" v-model="compactConf.autoCompact" @change="saveCompactConf" />
+                  <div class="compact-opt-text">
+                    <span class="compact-opt-label">自动压缩</span>
+                    <span class="compact-opt-desc">发送消息前估算 token，未压缩内容超过阈值时自动压缩历史</span>
+                  </div>
+                </label>
+                <div class="compact-opt-row">
+                  <div class="compact-opt-text">
+                    <span class="compact-opt-label">压缩阈值（tokens）</span>
+                    <span class="compact-opt-desc">超过该值触发自动压缩（1000 - 200000）</span>
+                  </div>
+                  <input class="compact-opt-input" type="number" v-model.number="compactConf.compactThreshold" min="1000" max="200000" @change="saveCompactConf" />
+                </div>
+                <div class="compact-opt-row">
+                  <div class="compact-opt-text">
+                    <span class="compact-opt-label">保留最近消息（条）</span>
+                    <span class="compact-opt-desc">压缩时保留最近 N 条原文不进摘要（2 - 200）</span>
+                  </div>
+                  <input class="compact-opt-input" type="number" v-model.number="compactConf.compactKeepRecent" min="2" max="200" @change="saveCompactConf" />
+                </div>
+                <div class="compact-manual">
+                  <button class="compact-manual-btn" :disabled="compacting || !chatStore.sessionId" @click="manualCompact">
+                    {{ compacting ? '压缩中…' : '立即压缩当前会话' }}
+                  </button>
+                  <span class="compact-manual-hint">{{ chatStore.sessionId ? '当前会话：' + chatStore.sessionId.slice(0, 8) + '…' : '暂无活跃会话（去对话页发起/选择会话后可压缩）' }}</span>
+                  <div v-if="compactResult" class="compact-manual-result">{{ compactResult }}</div>
+                </div>
+              </div>
+            </section>
+
             <section class="settings-section" id="section-data">
               <div class="section-heading">
                 <div class="section-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626)">
@@ -373,7 +421,7 @@ import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useAuthStore } from '@/stores/auth'
 import { useChatStore } from '@/stores/chat'
-import { getModelList, switchModel as apiSwitchModel } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
 import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
 
@@ -390,8 +438,67 @@ const activeCategory = ref('section-account')
 const categories = [
   { id: 'section-account', label: '账户设置', color: '#6366F1' },
   { id: 'section-model', label: '模型设置', color: '#0ea5e9' },
+  { id: 'section-chat', label: '对话设置', color: '#f59e0b' },
   { id: 'section-data', label: '数据管理', color: '#ef4444' },
 ]
+
+
+// ==================== 对话设置（T3 上下文压缩，自对话侧栏迁入） ====================
+const compactConf = reactive({ autoCompact: true, compactThreshold: 8000, compactKeepRecent: 20 })
+const compacting = ref(false)
+const compactResult = ref('')
+
+async function loadCompactConf() {
+  try {
+    const r = await getCompactSettings()
+    let d = r && (r.data !== undefined ? r.data : r)
+    if (d && d.data !== undefined) d = d.data
+    if (d) {
+      compactConf.autoCompact = !!d.autoCompact
+      compactConf.compactThreshold = d.compactThreshold ?? 8000
+      compactConf.compactKeepRecent = d.compactKeepRecent ?? 20
+    }
+  } catch (e) {
+    console.warn('[Settings] 压缩配置加载失败（用默认）', e)
+  }
+}
+
+async function saveCompactConf() {
+  try {
+    await saveCompactSettings({
+      autoCompact: compactConf.autoCompact,
+      compactThreshold: Number(compactConf.compactThreshold),
+      compactKeepRecent: Number(compactConf.compactKeepRecent)
+    })
+    message.success('压缩设置已保存，全局生效')
+  } catch (e) {
+    message.error(e.response?.data?.message || e.message || '保存失败')
+  }
+}
+
+async function manualCompact() {
+  if (!chatStore.sessionId) {
+    message.warning('没有活跃会话——先到对话页发起或选择一个会话')
+    return
+  }
+  compacting.value = true
+  compactResult.value = ''
+  try {
+    const r = await apiCompactSession(chatStore.sessionId)
+    let d = r && (r.data !== undefined ? r.data : r)
+    if (d && d.data !== undefined) d = d.data
+    const len = d && d.summary ? d.summary.length : 0
+    compactResult.value = `已生成 ${len} 字摘要（保留最近 ${d?.keepRecent ?? '-'} 条原文）`
+    message.success('压缩完成')
+  } catch (e) {
+    message.error(e.response?.data?.message || e.message || '压缩失败')
+    compactResult.value = '压缩失败，请重试'
+  } finally {
+    compacting.value = false
+  }
+}
+
+onMounted(() => { loadCompactConf() })
 
 // ==================== 账户 ====================
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -1339,5 +1446,91 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .action-bar-fixed { flex-direction: column; }
   .btn { justify-content: center; }
+}
+
+/* ==================== 对话设置（T3 上下文压缩） ==================== */
+.compact-opt-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(128, 128, 128, 0.22);
+}
+
+.compact-opt-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #6366f1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.compact-opt-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compact-opt-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.compact-opt-desc {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.compact-opt-input {
+  width: 110px;
+  padding: 6px 10px;
+  border: 1px solid rgba(128, 128, 128, 0.35);
+  border-radius: 8px;
+  font-size: 13px;
+  background: transparent;
+}
+
+.compact-opt-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.compact-manual {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 14px;
+}
+
+.compact-manual-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #6366f1;
+  background: transparent;
+  color: #6366f1;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.compact-manual-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.compact-manual-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.compact-manual-hint {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+.compact-manual-result {
+  width: 100%;
+  font-size: 12px;
+  opacity: 0.75;
 }
 </style>
