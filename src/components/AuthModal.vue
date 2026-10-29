@@ -154,6 +154,32 @@ const visible = ref(props.modelValue)
 const currentView = ref(props.initialView)
 const loading = ref(false)
 const rememberMe = ref(false)
+
+// U3 记住我：localStorage 持久化凭据便于回填（口令仅便利存储，非安全方案）
+const REMEMBER_KEY = 'remember-me-user'
+function restoreRemembered() {
+  try {
+    const raw = localStorage.getItem(REMEMBER_KEY)
+    if (!raw) return
+    const saved = JSON.parse(raw)
+    if (saved && saved.username) {
+      formData.username = saved.username
+      rememberMe.value = true
+      if (typeof saved.secret === 'string') formData.password = saved.secret
+    }
+  } catch (e) {
+    try { localStorage.removeItem(REMEMBER_KEY) } catch (e2) {}
+  }
+}
+function saveRememberMe(username, password) {
+  try {
+    if (rememberMe.value && username) {
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ username, secret: password, savedAt: Date.now() }))
+    } else {
+      localStorage.removeItem(REMEMBER_KEY)
+    }
+  } catch (e) { /* 存储异常静默 */ }
+}
 const showPassword = ref(false)
 
 const formData = reactive({
@@ -172,10 +198,14 @@ const errors = reactive({
 
 watch(() => props.modelValue, (newVal) => {
   visible.value = newVal
+  if (!newVal && formData.username) {
+    saveRememberMe(formData.username, formData.password)
+  }
   if (newVal) {
     currentView.value = props.initialView
     Object.keys(formData).forEach(key => formData[key] = '')
     Object.keys(errors).forEach(key => errors[key] = '')
+    restoreRemembered()
   }
 })
 
@@ -235,6 +265,7 @@ const handleSubmit = async () => {
         password: formData.password
       })
       if (result.success) {
+        saveRememberMe(formData.username, formData.password)
         emit('login', formData)
         emit('update:modelValue', false)
       }
@@ -245,6 +276,7 @@ const handleSubmit = async () => {
         password: formData.password
       })
       if (result.success) {
+        try { localStorage.removeItem(REMEMBER_KEY) } catch (e) {}
         emit('register', formData)
         emit('update:modelValue', false)
       }
