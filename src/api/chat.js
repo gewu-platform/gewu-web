@@ -129,6 +129,10 @@ export function deleteSession(sessionId) {
 export function getSessions() {
   return api.get('/chat/sessions')
 }
+export function deriveSession(sessionId) {
+  return api.post(`/chat/session/${sessionId}/derive`)
+}
+
 
 /**
  * T2.1 会话重命名（remark 即标题）

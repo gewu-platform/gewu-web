@@ -18,13 +18,14 @@
             <div
               v-show="!group.name || !collapsedGroups.has(group.name)"
               class="session-item"
-              :class="{ active: s.id === chatStore.sessionId }"
+              :class="{ active: s.id === chatStore.sessionId, child: s.parentSessionId }"
               @click="handleSelectSession(s.id)"
             >
-              <span class="session-name">{{ sessionTitle(s) }}</span>
+              <span class="session-name"><span v-if="s.parentSessionId" class="child-tag">↳ 子</span>{{ sessionTitle(s) }}</span>
               <span class="session-actions">
                 <button class="btn-op" title="重命名" @click.stop="openRename(s)">✎</button>
                 <button class="btn-op" title="移动到分组" @click.stop="openMove(s)">📁</button>
+                <button class="btn-op" title="派生子会话" @click.stop="handleDerive(s)">🌱</button>
                 <button class="btn-del" title="删除会话" @click.stop="handleDeleteSession(s.id)">×</button>
               </span>
             </div>
@@ -245,7 +246,7 @@ import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
-import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage, deriveSession as apiDeriveSession } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
@@ -334,6 +335,18 @@ const groupedSessions = computed(() => {
     if (!map.has(key)) map.set(key, [])
     map.get(key).push(s)
   }
+  // C1/T1.3 组内父→子排序：父会话在前，子会话紧跟其后
+  for (const [, items] of map) {
+    items.sort((a, b) => {
+      if (a.parentSessionId === b.parentSessionId) return 0
+      if (!a.parentSessionId) return -1
+      if (!b.parentSessionId) return 1
+      if (a.parentSessionId === b.id) return -1
+      if (b.parentSessionId === a.id) return 1
+      return 0
+    })
+  }
+
   const groups = []
   const named = [...map.entries()].filter(([k]) => k !== '默认').sort((a, b) => a[0].localeCompare(b[0], 'zh'))
   for (const [name, items] of named) groups.push({ name, items })
@@ -401,6 +414,18 @@ async function handleDissolveGroup(name) {
     message.success('分组已删除' + (affected != null ? '（' + affected + ' 个会话回到默认）' : ''))
   } catch (e) {
     message.error('[Gewu] 删除分组失败: ' + (e.response?.data?.message || e.message))
+  }
+}
+
+async function handleDerive(s) {
+  try {
+    const r = await apiDeriveSession(s.id)
+    const data = r.data || r
+    await chatStore.loadSessions()
+    message.success('子会话已创建')
+    if (data && data.sessionId) handleSelectSession(data.sessionId)
+  } catch (e) {
+    message.error('[Gewu] 派生失败: ' + (e.response?.data?.message || e.message))
   }
 }
 
@@ -935,6 +960,21 @@ async function initialize() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.session-item.child {
+  padding-left: 26px;
+}
+
+.child-tag {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: rgba(88, 166, 255, 0.15);
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .btn-del {
