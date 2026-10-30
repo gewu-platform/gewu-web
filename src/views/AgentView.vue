@@ -30,7 +30,9 @@
           </thead>
           <tbody>
             <tr v-for="agent in definitions" :key="agent.id">
-              <td class="td-name">{{ agent.name }}</td>
+              <td class="td-name">{{ agent.name }}
+                <span v-if="agent.config?.role === 'master'" class="role-badge master" title="主 Agent：可派发子 Agent">master</span>
+              </td>
               <td class="td-desc">{{ agent.description || '—' }}</td>
               <td>
                 <span v-for="t in (agent.toolIds || [])" :key="t" class="tool-chip">{{ t }}</span>
@@ -263,6 +265,18 @@
           <input v-model.number="form.maxIterations" type="number" min="1" max="10" />
           <label>温度</label>
           <input v-model.number="form.temperature" type="number" min="0" max="2" step="0.1" />
+          <label>角色</label>
+          <select v-model="form.role" class="approval-select">
+            <option :value="null">普通 Agent（不可派发）</option>
+            <option value="master">master（可派发子 Agent）</option>
+          </select>
+          <label v-if="form.role === 'master'">允许派发的子 Agent（多选，仅列非 master）</label>
+          <div v-if="form.role === 'master'" class="checkbox-row kb-row">
+            <label v-for="w in workerCandidates" :key="w.id" class="checkbox-item kb-item" :title="w.description">
+              <input type="checkbox" :value="w.id" v-model="form.allowedWorkers" /> {{ w.name }}
+            </label>
+            <span v-if="workerCandidates.length === 0" class="kb-empty">暂无可选子 Agent（先创建普通 Agent）</span>
+          </div>
           <label>审批策略</label>
           <select v-model="form.requireApproval" class="approval-select">
             <option :value="null">继承默认（search 等外部工具需审批）</option>
@@ -307,6 +321,7 @@ const form = reactive({
   name: '', description: '', systemPrompt: '',
   toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true,
   requireApproval: null,
+  role: null, allowedWorkers: [],
   knowledgeDocumentIds: [], ragTopK: 4
 })
 
@@ -332,6 +347,8 @@ function applyTemplate(tpl) {
     maxIterations: tpl.config?.maxIterations ?? 5,
     temperature: tpl.config?.temperature ?? 0.7,
     requireApproval: tpl.config?.requireApproval ?? null,
+    role: tpl.config?.role ?? null,
+    allowedWorkers: [...(tpl.config?.allowedWorkers || [])],
     knowledgeDocumentIds: [...(tpl.config?.knowledgeDocumentIds || [])],
     ragTopK: tpl.config?.ragTopK ?? 4,
     enabled: true
@@ -341,6 +358,10 @@ function applyTemplate(tpl) {
 
 // P8b 审批策略展示文案
 const approvalLabel = (v) => v === true ? '全部审批' : v === false ? '免审批' : '继承默认'
+// R1: master 可派发的子 Agent 候选（排除模板/自身/其他 master）
+const workerCandidates = computed(() => definitions.filter(d =>
+  !(d.id || '').startsWith('template-') && d.id !== editingId.value && d.config?.role !== 'master'
+))
 let healthTimer = null
 let pendingTimer = null
 
@@ -447,7 +468,7 @@ async function rejectPending(id) {
 
 function openCreateModal() {
   editingId.value = null
-  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null, knowledgeDocumentIds: [], ragTopK: 4 })
+  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null, role: null, allowedWorkers: [], knowledgeDocumentIds: [], ragTopK: 4 })
   wizardStep.value = 1
   loadKnowledgeDocs()
   modalVisible.value = true
@@ -464,6 +485,8 @@ function openEditModal(agent) {
     temperature: agent.config?.temperature ?? 0.7,
     enabled: agent.enabled !== false,
     requireApproval: agent.config?.requireApproval ?? null,
+    role: agent.config?.role ?? null,
+    allowedWorkers: [...(agent.config?.allowedWorkers || [])],
     knowledgeDocumentIds: [...(agent.config?.knowledgeDocumentIds || [])],
     ragTopK: agent.config?.ragTopK ?? 4
   })
@@ -481,6 +504,8 @@ async function submitModal() {
     temperature: form.temperature,
     enabled: form.enabled,
     requireApproval: form.requireApproval,
+    role: form.role,
+    allowedWorkers: form.allowedWorkers,
     knowledgeDocumentIds: form.knowledgeDocumentIds,
     ragTopK: form.ragTopK
   }
@@ -1489,5 +1514,19 @@ onUnmounted(() => {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 18px;
+}
+.role-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.role-badge.master {
+  background: rgba(250, 173, 20, 0.15);
+  color: #d48806;
+  border: 1px solid rgba(250, 173, 20, 0.45);
 }
 </style>
