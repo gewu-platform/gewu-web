@@ -41,6 +41,10 @@
                 <line x1="1" y1="9" x2="4" y2="9"/>
                 <line x1="1" y1="14" x2="4" y2="14"/>
               </svg>
+              <svg v-if="cat.id === 'section-skill'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
               <svg v-if="cat.id === 'section-plugin'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M9 3v18M15 3v18"/>
@@ -398,7 +402,14 @@
             <div class="plugin-panel">
               <div class="plugin-toolbar">
                 <button class="btn btn-secondary" @click="loadPlugins">刷新清单</button>
-                <span class="plugin-hint">内置样例端点为占位地址，需先自建 MCP server 并修改端点</span>
+                <span class="plugin-hint">内置样例端点为占位地址，需先自建 MCP server 并修改端点；工具白名单留空=不限</span>
+                <div class="plugin-add-row">
+                  <a-input v-model:value="newPlugin.code" placeholder="编码（如 my-plugin）" style="width: 150px" />
+                  <a-input v-model:value="newPlugin.name" placeholder="名称" style="width: 130px" />
+                  <a-input v-model:value="newPlugin.endpoint" placeholder="端点 SSE URL" style="flex: 1" />
+                  <a-input v-model:value="newPlugin.toolAllow" placeholder="工具白名单：a,b 或留空不限" style="width: 220px" />
+                  <button class="btn-sm ok" @click="addPluginRow">新增</button>
+                </div>
               </div>
 
               <table v-if="plugins.length" class="plugin-table">
@@ -408,6 +419,7 @@
                     <th>名称</th>
                     <th>描述</th>
                     <th>端点</th>
+                    <th>工具白名单</th>
                     <th>状态</th>
                     <th>操作</th>
                   </tr>
@@ -418,6 +430,7 @@
                     <td>{{ p.name }}</td>
                     <td class="td-desc">{{ p.description || '—' }}</td>
                     <td class="td-endpoint">{{ p.endpoint }}</td>
+                    <td class="td-allow">{{ p.toolAllow || '不限（全部桥接）' }}</td>
                     <td>
                       <span class="plugin-status" :class="p.installed ? 'on' : 'off'">
                         {{ p.installed ? '已安装' : '未安装' }}
@@ -432,6 +445,39 @@
                 </tbody>
               </table>
               <p v-else class="plugin-empty">暂无插件条目</p>
+            </div>
+          </section>
+
+          <!-- 公共 Skill（V2.0.0 R2 / v2.0.1 T2.3 目录可配置） -->
+          <section class="settings-section" id="section-skill">
+            <div class="section-heading">
+              <div class="section-icon" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">公共 Skill</h2>
+                <p class="section-desc">扫描目录中的 SKILL.md，作为提示词包供 Agent 勾选启用</p>
+              </div>
+            </div>
+
+            <div class="skill-panel">
+              <div class="skill-dir-row">
+                <label class="skill-dir-label">扫描目录</label>
+                <a-input v-model:value="skillDirInput" placeholder="例如 C:\Users\25333\.agents\skills" style="flex: 1" />
+                <button class="btn btn-secondary" @click="applySkillDir">应用并重扫</button>
+                <button class="btn btn-secondary" @click="loadSkillDir">刷新</button>
+              </div>
+              <div class="skill-meta">
+                <span>当前生效：{{ skillDirInfo.dir || "—" }}</span>
+                <span class="skill-readable" :class="skillDirInfo.readable ? 'on' : 'off'">
+                  {{ skillDirInfo.readable ? "目录可读" : "目录不存在或不可读" }}
+                </span>
+                <span>Skill 数：{{ skillDirInfo.count !== undefined ? skillDirInfo.count : "—" }}</span>
+              </div>
+              <p class="skill-hint">说明：此处修改为运行时生效（仅内存），重启后回退到配置文件 / 环境变量 GEWU_SKILLS_DIR 的值。</p>
             </div>
           </section>
 
@@ -484,6 +530,7 @@ import { getModelList, switchModel as apiSwitchModel, getCompactSettings, saveCo
 import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
 import { listPlugins, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
+import { listSkills, rescanSkills, getSkillsDir, setSkillsDir } from '@/api/settings'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -501,6 +548,7 @@ const categories = [
   { id: 'section-chat', label: '对话设置', color: '#f59e0b' },
   { id: 'section-data', label: '数据管理', color: '#ef4444' },
   { id: 'section-plugin', label: '插件仓库', color: '#8b5cf6' },
+  { id: 'section-skill', label: '公共 Skill', color: '#0ea5e9' },
 ]
 
 
@@ -563,6 +611,21 @@ onMounted(() => { loadCompactConf() })
 
 // ==================== 插件仓库（V2.0.0 R3） ====================
 const plugins = ref([])
+const newPlugin = reactive({ code: '', name: '', endpoint: '', toolAllow: '' })
+async function addPluginRow() {
+  if (!newPlugin.code || !newPlugin.endpoint) { message.warning('编码与端点必填'); return }
+  try {
+    const res = await createPlugin({
+      code: newPlugin.code,
+      name: newPlugin.name || newPlugin.code,
+      transport: 'http_sse',
+      endpoint: newPlugin.endpoint,
+      toolAllow: newPlugin.toolAllow || null
+    })
+    if (res.code === 200) { message.success('已新增：' + newPlugin.code); newPlugin.code = ''; newPlugin.name = ''; newPlugin.endpoint = ''; newPlugin.toolAllow = ''; await loadPlugins() }
+    else message.error(res.message || '新增失败')
+  } catch (e) { message.error('异常：' + e.message) }
+}
 async function loadPlugins() {
   try {
     const res = await listPlugins()
@@ -593,6 +656,32 @@ async function deletePluginRow(p) {
   } catch (e) { message.error('异常：' + e.message) }
 }
 loadPlugins()
+
+// ==================== 公共 Skill 目录（v2.0.1 T2.3） ====================
+const skillDirInput = ref('')
+const skillDirInfo = reactive({ dir: '', readable: false, count: undefined })
+async function loadSkillDir() {
+  try {
+    const res = await getSkillsDir()
+    const d = res?.data !== undefined ? res.data : res
+    skillDirInfo.dir = d.dir || ''
+    skillDirInfo.readable = !!d.readable
+    skillDirInput.value = d.dir || ''
+    const sl = await listSkills()
+    const arr = sl?.data !== undefined ? sl.data : sl
+    skillDirInfo.count = Array.isArray(arr) ? arr.length : 0
+  } catch (e) { console.error('[Gewu] Skill 目录加载失败:', e) }
+}
+async function applySkillDir() {
+  if (!skillDirInput.value) { message.warning('请输入目录'); return }
+  try {
+    const res = await setSkillsDir(skillDirInput.value)
+    const d = res?.data !== undefined ? res.data : res
+    if (d.changed) { message.success('目录已切换并重扫：' + d.dir); await loadSkillDir() }
+    else message.error(d.message || '切换失败（目录不存在或不可读）')
+  } catch (e) { message.error('异常：' + e.message) }
+}
+loadSkillDir()
 
 // ==================== 账户 ====================
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -1639,5 +1728,17 @@ onMounted(async () => {
 .plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 .plugin-empty { font-size: 13px; color: #94a3b8; }
+
+.skill-panel { display: flex; flex-direction: column; gap: 10px; }
+.skill-dir-row { display: flex; align-items: center; gap: 10px; }
+.skill-dir-label { min-width: 72px; font-size: 13px; color: #64748b; }
+.skill-meta { display: flex; gap: 16px; font-size: 12px; color: #64748b; }
+.skill-readable { padding: 1px 8px; border-radius: 10px; font-weight: 600; }
+.skill-readable.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.skill-readable.off { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.skill-hint { font-size: 12px; color: #94a3b8; }
+
+.plugin-add-row { display: flex; gap: 8px; align-items: center; }
+.td-allow { font-size: 12px; color: #64748b; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 </style>

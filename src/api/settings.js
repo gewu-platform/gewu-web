@@ -101,3 +101,14 @@ export function uninstallPlugin(id) {
 export function deletePlugin(id) {
   return api.delete(`/settings/plugins/${id}`)
 }
+
+
+/** 查看当前生效的 Skill 目录（含是否可读） */
+export function getSkillsDir() {
+  return api.get('/settings/skills/dir')
+}
+
+/** 运行时切换 Skill 目录并立即重扫（仅内存态，重启回退到配置值） */
+export function setSkillsDir(dir) {
+  return api.post('/settings/skills/dir', { dir })
+}
