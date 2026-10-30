@@ -259,7 +259,13 @@
             </label>
             <span v-if="knowledgeDocs.length === 0" class="kb-empty">知识库暂无已完成索引的文档</span>
           </div>
-          <label>检索条数 topK（1-10）</label>
+          <label>公共 Skill（提示词包，勾选后注入指令段）</label>
+          <div class="checkbox-row kb-row">
+            <label v-for="s in skillOptions" :key="s.id" class="checkbox-item kb-item" :title="s.description">
+              <input type="checkbox" :value="s.id" v-model="form.skillIds" /> {{ s.name }}
+            </label>
+            <span v-if="skillOptions.length === 0" class="kb-empty">Skill 目录为空或未扫描到 SKILL.md</span>
+          </div>          <label>检索条数 topK（1-10）</label>
           <input v-model.number="form.ragTopK" type="number" min="1" max="10" class="kb-topk" />
           <label>迭代上限</label>
           <input v-model.number="form.maxIterations" type="number" min="1" max="10" />
@@ -308,6 +314,7 @@ import {
   updateDefinition, deleteDefinition, setDefinitionEnabled, reloadDefinitions
 } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
+import { listSkills } from '@/api/settings'
 
 // ========== 管理台状态 ==========
 const definitions = reactive([])
@@ -322,7 +329,8 @@ const form = reactive({
   toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true,
   requireApproval: null,
   role: null, allowedWorkers: [],
-  knowledgeDocumentIds: [], ragTopK: 4
+  knowledgeDocumentIds: [], ragTopK: 4,
+  skillIds: []
 })
 
 // T5 创建向导：模板与知识库数据
@@ -351,6 +359,7 @@ function applyTemplate(tpl) {
     allowedWorkers: [...(tpl.config?.allowedWorkers || [])],
     knowledgeDocumentIds: [...(tpl.config?.knowledgeDocumentIds || [])],
     ragTopK: tpl.config?.ragTopK ?? 4,
+    skillIds: [...(tpl.config?.skillIds || [])],
     enabled: true
   })
   wizardStep.value = 2
@@ -362,6 +371,16 @@ const approvalLabel = (v) => v === true ? '全部审批' : v === false ? '免审
 const workerCandidates = computed(() => definitions.filter(d =>
   !(d.id || '').startsWith('template-') && d.id !== editingId.value && d.config?.role !== 'master'
 ))
+
+// R2：公共 Skill 库选项（只读展示，目录扫描产物）
+const skillOptions = ref([])
+async function loadSkills() {
+  try {
+    const res = await listSkills()
+    const data = res?.data !== undefined ? res.data : res
+    skillOptions.value = Array.isArray(data) ? data : []
+  } catch (e) { console.error('[Gewu] Skill 列表加载失败:', e) }
+}
 let healthTimer = null
 let pendingTimer = null
 
@@ -468,9 +487,10 @@ async function rejectPending(id) {
 
 function openCreateModal() {
   editingId.value = null
-  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null, role: null, allowedWorkers: [], knowledgeDocumentIds: [], ragTopK: 4 })
+  Object.assign(form, { name: '', description: '', systemPrompt: '', toolIds: [], maxIterations: 5, temperature: 0.7, enabled: true, requireApproval: null, role: null, allowedWorkers: [], knowledgeDocumentIds: [], ragTopK: 4, skillIds: [] })
   wizardStep.value = 1
   loadKnowledgeDocs()
+  loadSkills()
   modalVisible.value = true
 }
 
@@ -488,7 +508,8 @@ function openEditModal(agent) {
     role: agent.config?.role ?? null,
     allowedWorkers: [...(agent.config?.allowedWorkers || [])],
     knowledgeDocumentIds: [...(agent.config?.knowledgeDocumentIds || [])],
-    ragTopK: agent.config?.ragTopK ?? 4
+    ragTopK: agent.config?.ragTopK ?? 4,
+    skillIds: [...(agent.config?.skillIds || [])]
   })
   modalVisible.value = true
 }
@@ -507,7 +528,8 @@ async function submitModal() {
     role: form.role,
     allowedWorkers: form.allowedWorkers,
     knowledgeDocumentIds: form.knowledgeDocumentIds,
-    ragTopK: form.ragTopK
+    ragTopK: form.ragTopK,
+    skillIds: form.skillIds,
   }
   try {
     let res

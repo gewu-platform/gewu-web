@@ -41,6 +41,10 @@
                 <line x1="1" y1="9" x2="4" y2="9"/>
                 <line x1="1" y1="14" x2="4" y2="14"/>
               </svg>
+              <svg v-if="cat.id === 'section-plugin'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M9 3v18M15 3v18"/>
+              </svg>
               <svg v-if="cat.id === 'section-data'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <ellipse cx="12" cy="5" rx="9" ry="3"/>
                 <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
@@ -376,6 +380,61 @@
           </div>
         </div>
 
+          <!-- 插件仓库（V2.0.0 R3） -->
+          <section class="settings-section" id="section-plugin">
+            <div class="section-heading">
+              <div class="section-icon" style="background: linear-gradient(135deg, #8B5CF6, #A855F7)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M9 3v18M15 3v18"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="section-title">插件仓库</h2>
+                <p class="section-desc">常用插件清单（首版形态＝外部 MCP server），一键安装即桥接工具</p>
+              </div>
+            </div>
+
+            <div class="plugin-panel">
+              <div class="plugin-toolbar">
+                <button class="btn btn-secondary" @click="loadPlugins">刷新清单</button>
+                <span class="plugin-hint">内置样例端点为占位地址，需先自建 MCP server 并修改端点</span>
+              </div>
+
+              <table v-if="plugins.length" class="plugin-table">
+                <thead>
+                  <tr>
+                    <th>编码</th>
+                    <th>名称</th>
+                    <th>描述</th>
+                    <th>端点</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="p in plugins" :key="p.id">
+                    <td class="td-code">{{ p.code }}</td>
+                    <td>{{ p.name }}</td>
+                    <td class="td-desc">{{ p.description || '—' }}</td>
+                    <td class="td-endpoint">{{ p.endpoint }}</td>
+                    <td>
+                      <span class="plugin-status" :class="p.installed ? 'on' : 'off'">
+                        {{ p.installed ? '已安装' : '未安装' }}
+                      </span>
+                    </td>
+                    <td class="td-actions">
+                      <button v-if="!p.installed" class="btn-sm ok" @click="installPluginRow(p)">安装</button>
+                      <button v-else class="btn-sm" @click="uninstallPluginRow(p)">卸载</button>
+                      <button v-if="!p.builtin" class="btn-sm danger" @click="deletePluginRow(p)">删除</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p v-else class="plugin-empty">暂无插件条目</p>
+            </div>
+          </section>
+
         <!-- 固定底部操作栏 -->
         <div class="action-bar-fixed">
           <button class="btn btn-secondary" @click="resetSettings">
@@ -424,6 +483,7 @@ import { useChatStore } from '@/stores/chat'
 import { getModelList, switchModel as apiSwitchModel, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
 import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
+import { listPlugins, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -440,6 +500,7 @@ const categories = [
   { id: 'section-model', label: '模型设置', color: '#0ea5e9' },
   { id: 'section-chat', label: '对话设置', color: '#f59e0b' },
   { id: 'section-data', label: '数据管理', color: '#ef4444' },
+  { id: 'section-plugin', label: '插件仓库', color: '#8b5cf6' },
 ]
 
 
@@ -499,6 +560,39 @@ async function manualCompact() {
 }
 
 onMounted(() => { loadCompactConf() })
+
+// ==================== 插件仓库（V2.0.0 R3） ====================
+const plugins = ref([])
+async function loadPlugins() {
+  try {
+    const res = await listPlugins()
+    const data = res?.data !== undefined ? res.data : res
+    plugins.value = Array.isArray(data) ? data : []
+  } catch (e) { console.error('[Gewu] 插件清单加载失败:', e) }
+}
+async function installPluginRow(p) {
+  try {
+    const res = await installPlugin(p.id)
+    if (res.code === 200) { message.success('安装成功：' + p.code); await loadPlugins() }
+    else message.error(res.message || '安装失败')
+  } catch (e) { message.error('异常：' + e.message) }
+}
+async function uninstallPluginRow(p) {
+  try {
+    const res = await uninstallPlugin(p.id)
+    if (res.code === 200) { message.success('卸载成功：' + p.code); await loadPlugins() }
+    else message.error(res.message || '卸载失败')
+  } catch (e) { message.error('异常：' + e.message) }
+}
+async function deletePluginRow(p) {
+  if (!window.confirm('确定删除插件条目「' + p.code + '」？')) return
+  try {
+    const res = await deletePlugin(p.id)
+    if (res.code === 200) { message.success('已删除'); await loadPlugins() }
+    else message.error(res.message || '删除失败')
+  } catch (e) { message.error('异常：' + e.message) }
+}
+loadPlugins()
 
 // ==================== 账户 ====================
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -1533,4 +1627,17 @@ onMounted(async () => {
   font-size: 12px;
   opacity: 0.75;
 }
+.plugin-panel { display: flex; flex-direction: column; gap: 12px; }
+.plugin-toolbar { display: flex; align-items: center; gap: 12px; }
+.plugin-hint { font-size: 12px; color: #94a3b8; }
+.plugin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.plugin-table th, .plugin-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.plugin-table th { font-weight: 600; color: #64748b; }
+.td-code { font-family: monospace; }
+.td-endpoint { font-size: 12px; color: #94a3b8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.plugin-status { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+.plugin-empty { font-size: 13px; color: #94a3b8; }
+
 </style>

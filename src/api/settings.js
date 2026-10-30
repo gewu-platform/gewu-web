@@ -60,3 +60,44 @@ export function activateProvider(id) {
 export function testProvider(id) {
   return api.post(`/settings/providers/${id}/test`, {})
 }
+
+
+// ==================== V2.0.0 R2 公共 Skill 库 ====================
+
+/** Skill 库列表（目录扫描产物，只读展示） */
+export function listSkills() {
+  return api.get('/settings/skills')
+}
+
+/** 手动重扫目录（增删 SKILL.md 后生效） */
+export function rescanSkills() {
+  return api.post('/settings/skills/rescan', {})
+}
+
+
+// ==================== V2.0.0 R3 插件仓库 ====================
+
+/** 插件清单（内置样例自动灌入） */
+export function listPlugins() {
+  return api.get('/settings/plugins')
+}
+
+/** 新增自定义插件条目 */
+export function createPlugin(data) {
+  return api.post('/settings/plugins', data)
+}
+
+/** 一键安装（登记进 mcp_server 并桥接工具） */
+export function installPlugin(id) {
+  return api.post(`/settings/plugins/${id}/install`, {})
+}
+
+/** 卸载（删除登记并断开桥接） */
+export function uninstallPlugin(id) {
+  return api.post(`/settings/plugins/${id}/uninstall`, {})
+}
+
+/** 删除条目（内置不可删，已安装需先卸载） */
+export function deletePlugin(id) {
+  return api.delete(`/settings/plugins/${id}`)
+}
