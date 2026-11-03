@@ -363,7 +363,7 @@ export async function sendMessageStream(data, onChunk, onDone, onError) {
             const jsonData = JSON.parse(line.slice(5).trim())
 
             if (jsonData.type === 'chunk') {
-              // 后端 chunk 事件字段名是 chunk（非 content），对齐 ChatStreamResponseDTO
+              // 后端 chunk 事件字段名是 chunk（非 content），对齐 ChatStreamResponse
               fullReply += (jsonData.chunk || '')
               onChunk?.(jsonData.chunk || '')
             } else if (jsonData.type === 'done') {
