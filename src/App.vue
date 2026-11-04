@@ -1,4 +1,5 @@
 <template>
+  <a-config-provider :locale="antdLocale">
   <div class="app-root">
     <!-- 顶部导航栏 -->
     <header class="header">
@@ -31,14 +32,14 @@
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              对话
+              {{ $t('nav.chat') }}
             </router-link>
             <router-link to="/knowledge" class="nav-tab" active-class="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
-              知识库
+              {{ $t('nav.knowledge') }}
             </router-link>
             <router-link to="/prompt" class="nav-tab" active-class="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -47,7 +48,7 @@
                 <line x1="16" y1="13" x2="8" y2="13"/>
                 <line x1="16" y1="17" x2="8" y2="17"/>
               </svg>
-              模板
+              {{ $t('nav.prompt') }}
             </router-link>
             <router-link to="/monitor" class="nav-tab" active-class="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -55,21 +56,21 @@
                 <line x1="8" y1="21" x2="16" y2="21"/>
                 <line x1="12" y1="17" x2="12" y2="21"/>
               </svg>
-              监控
+              {{ $t('nav.monitor') }}
             </router-link>
             <router-link v-if="authStore.isAdmin" to="/agent" class="nav-tab" active-class="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 8v4l3 3"/>
               </svg>
-              Agent
+              {{ $t('nav.agent') }}
             </router-link>
             <router-link to="/settings" class="nav-tab" active-class="active">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
               </svg>
-              设置
+              {{ $t('nav.settings') }}
             </router-link>
           </nav>
         </div>
@@ -77,7 +78,22 @@
         <div class="header-right">
           <div class="status-pill" :class="{ online: backendHealth }">
             <span class="pill-dot"></span>
-            <span>{{ backendHealth ? '在线' : '离线' }}</span>
+            <span>{{ backendHealth ? $t('header.online') : $t('header.offline') }}</span>
+          </div>
+
+          <!-- V2.6.0 i18n：语言切换器 -->
+          <div class="locale-switch">
+            <button
+              class="locale-btn"
+              :class="{ active: currentLocale === 'zh-CN' }"
+              @click="switchLocale('zh-CN')"
+            >中</button>
+            <span class="locale-sep">/</span>
+            <button
+              class="locale-btn"
+              :class="{ active: currentLocale === 'en-US' }"
+              @click="switchLocale('en-US')"
+            >EN</button>
           </div>
 
           <!-- 用户信息 -->
@@ -158,6 +174,7 @@
       @register="handleRegister"
     />
   </div>
+  </a-config-provider>
 </template>
 
 <script setup>
@@ -165,10 +182,22 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { healthCheck } from '@/api/chat'
+import { useI18n } from 'vue-i18n'
+import { setLocale, currentLocale as getLocale } from '@/i18n'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import enUS from 'ant-design-vue/es/locale/en_US'
+import { computed } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { message } from 'ant-design-vue'
 
 const authStore = useAuthStore()
+const { t: tFn } = useI18n()
+const currentLocale = ref(getLocale())
+const antdLocale = computed(() => currentLocale.value === 'zh-CN' ? zhCN : enUS)
+function switchLocale(loc) {
+  setLocale(loc)
+  currentLocale.value = loc
+}
 const router = useRouter()
 const backendHealth = ref(false)
 const showDropdown = ref(false)
@@ -568,6 +597,37 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* V2.6.0 i18n：语言切换器 */
+.locale-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 10px;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: transparent;
+}
+.locale-btn {
+  border: none;
+  background: transparent;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover { color: var(--primary-color, #0ea5e9); }
+  &.active {
+    background: var(--primary-color, #0ea5e9);
+    color: #fff;
+  }
+}
+.locale-sep {
+  color: var(--border-color);
+  font-size: 11px;
 }
 
 .status-pill {
