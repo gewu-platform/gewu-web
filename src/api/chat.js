@@ -291,6 +291,18 @@ export function getMode() {
 // ==================== 消息发送 ====================
 
 /**
+ * V2.5.0 M1.4：上传对话图片附件
+ * @param {File} file - 图片文件（jpg/jpeg/png/webp/gif，≤10MB）
+ * @returns {Promise<{url: string, maxSizeBytes: number}>}
+ */
+export async function uploadChatImage(file) {
+  const form = new FormData()
+  form.append('file', file)
+  // 不手动设 Content-Type：浏览器需自动带 multipart boundary
+  return api.post('/chat/upload', form)
+}
+
+/**
  * 发送聊天消息（同步）
  */
 export function sendMessage(data) {

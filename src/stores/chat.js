@@ -172,8 +172,10 @@ export const useChatStore = defineStore('chat', () => {
   /**
    * 发送用户消息（SSE 流式）
    */
-  async function sendUserMessage(content) {
-    if (!content.trim()) return null
+  async function sendUserMessage(content, imageKeys, imageUrls) {
+    // V2.5.0 M1.4：允许“仅图片无文字”发送（内容为空但带图时应放行）
+    const hasImages = Array.isArray(imageKeys) && imageKeys.length > 0
+    if (!content.trim() && !hasImages) return null
 
     try {
       isLoading.value = true
@@ -184,10 +186,12 @@ export const useChatStore = defineStore('chat', () => {
         await initSession()
       }
 
-      // 用户消息入列
+      // 用户消息入列。注意：imageUrls 存的是可访问 URL（供气泡渲染缩略图），
+      // imageKeys 存 object key（供后端从 MinIO 取图），两者不能混用
       messages.value.push({
         role: 'user',
         content: content,
+        imageUrls: hasImages ? (Array.isArray(imageUrls) && imageUrls.length ? imageUrls : imageKeys) : undefined,
         timestamp: Date.now()
       })
 
@@ -205,6 +209,10 @@ export const useChatStore = defineStore('chat', () => {
         sessionId: sessionId.value,
         message: content,
         model: currentModel.value || undefined
+      }
+      // V2.5.0 M1.4：图片 object key 列表（后端据此从 MinIO 读出字节转 base64）
+      if (hasImages) {
+        requestData.imageKeys = imageKeys
       }
 
       // Promise 包装流式回调

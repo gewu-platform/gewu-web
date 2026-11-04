@@ -126,6 +126,20 @@
               @toggle="msg.showReasoning = !msg.showReasoning"
             />
 
+            <!-- V2.5.0 M1.4：用户消息附图（缩略图，点击可放大） -->
+            <div v-if="msg.imageUrls && msg.imageUrls.length" class="message-images">
+              <a
+                v-for="(u, i) in msg.imageUrls"
+                :key="i"
+                :href="u"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="message-image-link"
+              >
+                <img :src="u" alt="附图" class="message-image" />
+              </a>
+            </div>
+
             <div class="message-text" v-html="renderMarkdown(msg.content)"></div>
           </div>
         </div>
@@ -156,19 +170,40 @@
           </div>
         </div>
         <div class="input-wrapper">
+          <!-- V2.5.0 M1.4：待发送图片预览（粘贴或选择后出现） -->
+          <div v-if="pendingImages.length" class="attachment-strip">
+            <div v-for="(img, idx) in pendingImages" :key="img.key" class="attachment-item">
+              <img :src="img.url" :alt="img.name" class="attachment-thumb" />
+              <button class="attachment-remove" title="移除" @click="removePendingImage(idx)">×</button>
+            </div>
+            <span class="attachment-count">{{ pendingImages.length }} 张图片</span>
+          </div>
           <textarea
             ref="inputBoxRef"
             v-model="inputMessage"
             @keydown.enter.exact.prevent="sendMessage"
             @keydown.esc.prevent="showCmdMenu = false"
+            @paste="handlePaste"
             class="input-box"
-            placeholder="输入问题... (Enter 发送)"
+            :placeholder="pendingImages.length ? '已附加 ' + pendingImages.length + ' 张图片，可继续输入...' : '输入问题... (Enter 发送，可直接粘贴图片)'"
             :disabled="chatStore.isLoading"
             rows="1"
           ></textarea>
           <button
+            class="attach-btn"
+            :disabled="chatStore.isLoading || uploading"
+            title="上传图片（或直接 Ctrl+V 粘贴）"
+            @click="pickImage"
+          >
+            <span v-if="uploading" class="spinner"></span>
+            <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </button>
+          <input ref="fileInputRef" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden-file-input" @change="onFilePicked" />
+          <button
             class="send-btn"
-            :disabled="!inputMessage.trim() || chatStore.isLoading"
+            :disabled="(!inputMessage.trim() && !pendingImages.length) || chatStore.isLoading"
             @click="sendMessage"
           >
             <svg v-if="!chatStore.isLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -246,7 +281,7 @@ import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
-import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage, deriveSession as apiDeriveSession } from '@/api/chat'
+import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage, deriveSession as apiDeriveSession, uploadChatImage } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
@@ -289,7 +324,11 @@ const chatStore = useChatStore()
 const authStore = useAuthStore()
 const messagesContainer = ref(null)
 const inputBoxRef = ref(null)
+const fileInputRef = ref(null)
 const inputMessage = ref('')
+// V2.5.0 M1.4：待发送图片（{key, url, name}）与上传中标志
+const pendingImages = ref([])
+const uploading = ref(false)
 const activeModelId = ref('')
 const modelList = ref([])
 const backendOnline = ref(false)
@@ -632,10 +671,99 @@ function applyQuickQuestion(text) {
   })
 }
 
+// ========== V2.5.0 M1.4：图片附件（粘贴 / 选择 / 移除）==========
+
+/** 打开系统文件选择框 */
+function pickImage() {
+  fileInputRef.value?.click()
+}
+
+/** 文件选择框回调 */
+async function onFilePicked(e) {
+  const files = Array.from(e.target.files || [])
+  e.target.value = '' // 允许重复选同一文件
+  await addFiles(files)
+}
+
+/** 粘贴监听：抓取剪贴板里的图片（截图 Ctrl+V 直接入框） */
+async function handlePaste(e) {
+  const items = e.clipboardData?.items
+  if (!items) return
+  const files = []
+  for (const item of items) {
+    if (item.kind === 'file' && item.type.startsWith('image/')) {
+      const f = item.getAsFile()
+      if (f) files.push(f)
+    }
+  }
+  if (!files.length) return // 无图片则走浏览器默认粘贴（文本正常）
+  e.preventDefault()
+  await addFiles(files)
+}
+
+/** 逐个上传并加入待发送列表 */
+async function addFiles(files) {
+  for (const f of files) {
+    // 前端先挡一道，减少无效请求（后端仍做权威校验）
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(f.type)) {
+      message.warning(`已跳过非图片文件：${f.name}`)
+      continue
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      message.warning(`已跳过超过 10MB 的图片：${f.name}`)
+      continue
+    }
+    uploading.value = true
+    try {
+      const res = await uploadChatImage(f)
+      const data = res?.data ?? res
+      const url = data?.url || data?.data?.url
+      if (!url) {
+        message.error('上传失败：服务端未返回地址')
+        continue
+      }
+      // 从预签名 URL 中提取 object key（后端存的是 key，发消息时回传 key）
+      pendingImages.value.push({
+        key: extractObjectKey(url),
+        url,
+        name: f.name
+      })
+    } catch (err) {
+      if (err.isAuthError) return
+      message.error('图片上传失败：' + (err.message || '未知错误'))
+    } finally {
+      uploading.value = false
+    }
+  }
+}
+
+/** 移除待发送图片 */
+function removePendingImage(idx) {
+  pendingImages.value.splice(idx, 1)
+}
+
+/** 从预签名 URL 中提取 object key（去域名、去 query） */
+function extractObjectKey(url) {
+  try {
+    const u = new URL(url)
+    // path 形如 /gewu/chat/20261104/xxx.png → 去掉桶名（第一段）
+    const parts = u.pathname.split('/').filter(Boolean)
+    return parts.slice(1).join('/')
+  } catch (e) {
+    return url
+  }
+}
+
 // 发送消息（SSE 流式）
 async function sendMessage() {
   const text = inputMessage.value.trim()
-  if (!text || chatStore.isLoading) return
+  // V2.5.0 M1.4：允许仅图片无文字发送
+  if ((!text && !pendingImages.value.length) || chatStore.isLoading) return
+
+  // 取出本次要发送的图片：key 给后端、url 给气泡渲染（二者不能混用）
+  const imageKeys = pendingImages.value.map(p => p.key).filter(Boolean)
+  const imageUrls = pendingImages.value.map(p => p.url).filter(Boolean)
+  pendingImages.value = []
 
   inputMessage.value = ''
 
@@ -664,7 +792,7 @@ async function sendMessage() {
   }
 
   try {
-    await chatStore.sendUserMessage(text)
+    await chatStore.sendUserMessage(text, imageKeys, imageUrls)
   } catch (e) {
     if (e.isAuthError) return
     console.error('[ChatView] 发送消息失败:', e)
@@ -1327,6 +1455,31 @@ async function initialize() {
 
 .time { color: var(--text-secondary); opacity: 0.6; }
 
+/* V2.5.0 M1.4：消息内附图缩略图 */
+.message-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.message-image-link {
+  display: block;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.message-image {
+  display: block;
+  max-width: 220px;
+  max-height: 220px;
+  object-fit: cover;
+  transition: opacity 0.2s ease;
+  &:hover { opacity: 0.9; }
+}
+
 .message-text {
   line-height: 1.6;
   font-size: 14px;
@@ -1384,6 +1537,7 @@ async function initialize() {
 }
 
 .input-wrapper {
+  position: relative;
   display: flex;
   gap: 12px;
   align-items: flex-end;
@@ -1400,6 +1554,85 @@ async function initialize() {
     border-color: rgba(14, 165, 233, 0.35);
     box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(14, 165, 233, 0.08);
   }
+}
+
+/* V2.5.0 M1.4：待发送图片预览与附件按钮 */
+.attachment-strip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+}
+
+.attachment-item {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.attachment-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.attachment-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  line-height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.65);
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  &:hover { background: rgba(15, 23, 42, 0.85); }
+}
+
+.attachment-count {
+  font-size: 12px;
+  color: var(--text-tertiary, #94a3b8);
+  padding: 0 4px;
+}
+
+.attach-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  &:hover:not(:disabled) {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--primary-color, #0ea5e9);
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.hidden-file-input {
+  display: none;
 }
 
 .input-box {
