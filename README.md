@@ -23,12 +23,14 @@ English: Web frontend of **Gewu** — an enterprise AI-native platform. Vue 3 + 
 | 🧩 Prompt 管理 | 模板版本制（创建自增 +1）、变量提取、渲染执行、一键回滚 |
 | 📊 监控与报表 | LLM 调用链路、今日统计卡、24h 分布、模型排行；用量报表三视图（按天/用户/Agent） |
 | ⚙️ 模型配置中心 | chat/embedding 双类型 Provider 管理，API Key 掩码显示，连通性测试，保存即生效 |
+| 🌐 国际化 | 内置中英文切换（vue-i18n），浏览器语言自动探测，偏好按浏览器持久化 |
 
 ## 🛠 技术栈
 
 - Vue 3（Composition API）+ Vite 5
 - Pinia 状态管理 / Vue Router 路由
 - Axios HTTP 请求
+- vue-i18n 国际化（中英双语，内置语言切换器）
 - Marked.js Markdown 渲染 + Highlight.js 代码高亮
 
 ## 🚀 快速开始
@@ -62,7 +64,8 @@ gewu-web/
 ├── vite.config.js              # Vite 配置 + /api 代理
 ├── src/
 │   ├── main.js                 # 应用入口
-│   ├── App.vue                 # 主布局 + 侧边导航
+│   ├── App.vue                 # 主布局 + 顶部导航 + 语言切换器
+│   ├── i18n/                   # 国际化语言包（zh-CN / en-US）
 │   ├── router/index.js         # 路由（/chat /agent /knowledge /prompt /monitor /models）
 │   ├── stores/                 # Pinia 状态
 │   ├── api/                    # 后端 API 封装（chat/agent/knowledge/monitor/settings）
