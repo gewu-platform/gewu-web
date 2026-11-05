@@ -1,7 +1,7 @@
 /**
- * 中文语言包（按模块组织）
+ * 中文语言包（按模块组织，与 en-US.js 键结构同构）
  * 模块：nav/common/header/login（批次2）+ model/approval/placeholder/reasoning（3a）
- *      + promptView/knowledge（3b）
+ *      + promptView/knowledge（3b）+ monitor（3c）
  */
 export default {
   nav: {
@@ -49,7 +49,7 @@ export default {
     title: '登录',
     register: '注册',
     username: '用户名',
-    password: '密码',
+    password: '***',
     email: '邮箱',
     submit: '登录',
     toRegister: '没有账号？去注册',
@@ -132,5 +132,26 @@ export default {
       emptyKeyword: '请输入搜索关键词', found: '找到 {n} 条相关知识',
       notFound: '未找到相关知识', searchFailed: '搜索失败: '
     }
+  },
+  monitor: {
+    hours: { title: '24 小时调用分布', desc: '今日按小时统计', tip: '{h}:00 — {n} 次' },
+    ranking: { title: '模型使用排行', desc: '按调用次数排序', colModel: '模型', colCalls: '调用次数', colTokens: 'Token 总量', colCost: '总费用 (元)' },
+    usage: {
+      title: '用量报表', desc: '按天 / 用户 / Agent 三视图（近 {n} 天）',
+      byDay: '按天', byUser: '按用户', byAgent: '按 Agent',
+      d7: '近 7 天', d14: '近 14 天', d30: '近 30 天',
+      colDate: '日期', colUser: '用户', colAgent: '来源', colCalls: '调用次数',
+      colIn: '输入 tokens', colOut: '输出 tokens', colTotal: '总 tokens', colCost: '费用（元）'
+    },
+    logs: {
+      title: '调用日志', desc: '最近的大模型调用记录',
+      allModels: '全部模型', allStatus: '全部状态',
+      success: '成功', failed: '失败', timeout: '超时',
+      colTime: '时间', colModel: '模型', colStatus: '状态', colLatency: '延迟', colCost: '费用',
+      empty: '暂无日志记录', prev: '上一页', next: '下一页',
+      pageInfo: '第 {p} 页 / 共 {m} 页（{t} 条）', loadFailed: '加载日志失败: '
+    },
+    msgs: { loadFailed: '加载监控数据失败: ' },
+    stats: { todayCalls: '今日调用', todayTokens: '今日 Token', todayCost: '今日费用', avgLatency: '平均延迟' }
   }
 }

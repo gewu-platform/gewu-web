@@ -28,8 +28,8 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">24 小时调用分布</h2>
-              <p class="section-desc">今日按小时统计</p>
+              <h2 class="section-title">{{ $t('monitor.hours.title') }}</h2>
+              <p class="section-desc">{{ $t('monitor.hours.desc') }}</p>
             </div>
           </div>
 
@@ -39,7 +39,7 @@
                 v-for="h in hourlyDistribution"
                 :key="h.hour"
                 class="bar-col"
-                :title="`${h.hour}:00 — ${h.callCount} 次`"
+                :title="$t('monitor.hours.tip', { h: h.hour, n: h.callCount })"
               >
                 <div class="bar-track">
                   <div
@@ -62,18 +62,18 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">模型使用排行</h2>
-              <p class="section-desc">按调用次数排序</p>
+              <h2 class="section-title">{{ $t('monitor.ranking.title') }}</h2>
+              <p class="section-desc">{{ $t('monitor.ranking.desc') }}</p>
             </div>
           </div>
 
           <div class="ranking-table">
             <div class="ranking-header">
               <span class="rank-col">#</span>
-              <span class="name-col">模型</span>
-              <span class="count-col">调用次数</span>
-              <span class="token-col">Token 总量</span>
-              <span class="cost-col">总费用 (元)</span>
+              <span class="name-col">{{ $t('monitor.ranking.colModel') }}</span>
+              <span class="count-col">{{ $t('monitor.ranking.colCalls') }}</span>
+              <span class="token-col">{{ $t('monitor.ranking.colTokens') }}</span>
+              <span class="cost-col">{{ $t('monitor.ranking.colCost') }}</span>
             </div>
             <div
               v-for="(item, index) in modelRanking"
@@ -88,7 +88,7 @@
               <span class="token-col">{{ formatTokens(item.totalTokens) }}</span>
               <span class="cost-col">{{ item.totalCost?.toFixed(4) || '0.0000' }}</span>
             </div>
-            <div v-if="modelRanking.length === 0" class="empty-hint">暂无数据</div>
+            <div v-if="modelRanking.length === 0" class="empty-hint">{{ $t('common.none') }}</div>
           </div>
         </section>
 
@@ -97,31 +97,31 @@
         <div class="section-heading">
           <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">📈</div>
           <div>
-            <h2 class="section-title">用量报表</h2>
-            <p class="section-desc">按天 / 用户 / Agent 三视图（近 {{ usageDays }} 天）</p>
+            <h2 class="section-title">{{ $t('monitor.usage.title') }}</h2>
+            <p class="section-desc">{{ $t('monitor.usage.desc', { n: usageDays }) }}</p>
           </div>
           <div class="usage-controls">
             <select v-model="usageView" class="usage-select" @change="loadUsageReport">
-              <option value="day">按天</option>
-              <option value="user">按用户</option>
-              <option value="agent">按 Agent</option>
+              <option value="day">{{ $t('monitor.usage.byDay') }}</option>
+              <option value="user">{{ $t('monitor.usage.byUser') }}</option>
+              <option value="agent">{{ $t('monitor.usage.byAgent') }}</option>
             </select>
             <select v-model.number="usageDays" class="usage-select" @change="loadUsageReport">
-              <option :value="7">近 7 天</option>
-              <option :value="14">近 14 天</option>
-              <option :value="30">近 30 天</option>
+              <option :value="7">{{ $t('monitor.usage.d7') }}</option>
+              <option :value="14">{{ $t('monitor.usage.d14') }}</option>
+              <option :value="30">{{ $t('monitor.usage.d30') }}</option>
             </select>
           </div>
         </div>
         <table class="usage-table">
           <thead>
             <tr>
-              <th>{{ usageView === 'day' ? '日期' : (usageView === 'user' ? '用户' : '来源') }}</th>
-              <th>调用次数</th>
-              <th>输入 tokens</th>
-              <th>输出 tokens</th>
-              <th>总 tokens</th>
-              <th>费用（元）</th>
+              <th>{{ usageView === 'day' ? $t('monitor.usage.colDate') : (usageView === 'user' ? $t('monitor.usage.colUser') : $t('monitor.usage.colAgent')) }}</th>
+              <th>{{ $t('monitor.usage.colCalls') }}</th>
+              <th>{{ $t('monitor.usage.colIn') }}</th>
+              <th>{{ $t('monitor.usage.colOut') }}</th>
+              <th>{{ $t('monitor.usage.colTotal') }}</th>
+              <th>{{ $t('monitor.usage.colCost') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -134,7 +134,7 @@
               <td>{{ row.totalCost != null ? Number(row.totalCost).toFixed(4) : '-' }}</td>
             </tr>
             <tr v-if="usageRows.length === 0">
-              <td colspan="6" class="usage-empty">暂无数据</td>
+              <td colspan="6" class="usage-empty">{{ $t('common.none') }}</td>
             </tr>
           </tbody>
         </table>
@@ -152,22 +152,22 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">调用日志</h2>
-              <p class="section-desc">最近的大模型调用记录</p>
+              <h2 class="section-title">{{ $t('monitor.logs.title') }}</h2>
+              <p class="section-desc">{{ $t('monitor.logs.desc') }}</p>
             </div>
           </div>
 
           <!-- 筛选栏 -->
           <div class="filter-bar">
             <select v-model="query.modelName" class="filter-select" @change="loadLogs">
-              <option :value="null">全部模型</option>
+              <option :value="null">{{ $t('monitor.logs.allModels') }}</option>
               <option v-for="m in modelNames" :key="m" :value="m">{{ m }}</option>
             </select>
             <select v-model="query.status" class="filter-select" @change="loadLogs">
-              <option :value="null">全部状态</option>
-              <option value="success">成功</option>
-              <option value="error">失败</option>
-              <option value="timeout">超时</option>
+              <option :value="null">{{ $t('monitor.logs.allStatus') }}</option>
+              <option value="success">{{ $t('monitor.logs.success') }}</option>
+              <option value="error">{{ $t('monitor.logs.failed') }}</option>
+              <option value="timeout">{{ $t('monitor.logs.timeout') }}</option>
             </select>
             <input type="date" v-model="query.startDate" class="filter-date" @change="loadLogs" />
             <input type="date" v-model="query.endDate" class="filter-date" @change="loadLogs" />
@@ -175,12 +175,12 @@
 
           <div class="log-table">
             <div class="log-header">
-              <span class="log-col col-time">时间</span>
-              <span class="log-col col-model">模型</span>
-              <span class="log-col col-status">状态</span>
+              <span class="log-col col-time">{{ $t('monitor.logs.colTime') }}</span>
+              <span class="log-col col-model">{{ $t('monitor.logs.colModel') }}</span>
+              <span class="log-col col-status">{{ $t('monitor.logs.colStatus') }}</span>
               <span class="log-col col-tokens">Tokens</span>
-              <span class="log-col col-latency">延迟</span>
-              <span class="log-col col-cost">费用</span>
+              <span class="log-col col-latency">{{ $t('monitor.logs.colLatency') }}</span>
+              <span class="log-col col-cost">{{ $t('monitor.logs.colCost') }}</span>
             </div>
             <div
               v-for="log in logs"
@@ -199,14 +199,14 @@
               <span class="log-col col-latency">{{ log.latency != null ? log.latency + 'ms' : '-' }}</span>
               <span class="log-col col-cost">{{ log.cost?.toFixed(4) || '-' }}</span>
             </div>
-            <div v-if="logs.length === 0" class="empty-hint">暂无日志记录</div>
+            <div v-if="logs.length === 0" class="empty-hint">{{ $t('monitor.logs.empty') }}</div>
           </div>
 
           <!-- 分页 -->
           <div class="pagination-bar">
-            <button class="page-btn" :disabled="query.page <= 1" @click="query.page--; loadLogs()">上一页</button>
-            <span class="page-info">第 {{ query.page }} 页 / 共 {{ totalPages }} 页（{{ total }} 条）</span>
-            <button class="page-btn" :disabled="query.page >= totalPages" @click="query.page++; loadLogs()">下一页</button>
+            <button class="page-btn" :disabled="query.page <= 1" @click="query.page--; loadLogs()">{{ $t('monitor.logs.prev') }}</button>
+            <span class="page-info">{{ $t('monitor.logs.pageInfo', { p: query.page, m: totalPages, t: total }) }}</span>
+            <button class="page-btn" :disabled="query.page >= totalPages" @click="query.page++; loadLogs()">{{ $t('monitor.logs.next') }}</button>
           </div>
         </section>
 
@@ -216,7 +216,10 @@
 </template>
 
 <script setup>
+
+const { t } = useI18n()
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { getMonitorStats, getCallLogs, getUsageReport } from '@/api/monitor'
 
@@ -234,12 +237,12 @@ const query = reactive({
   endDate: null
 })
 
-const statsCards = [
-  { label: '今日调用', icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#0ea5e9', key: 'todayCalls' },
-  { label: '今日 Token', icon: '<path d="M12 2v4m0 12v4m-4-8H4m16 0h-4m-2.636-5.364-2.828-2.828m0 11.314 2.828 2.828M9.172 6.344 6.344 9.172m11.314 5.656 2.828 2.828"/>', color: '#10b981', key: 'todayTokens' },
-  { label: '今日费用', icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', color: '#f59e0b', key: 'todayCost' },
-  { label: '平均延迟', icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', color: '#ef4444', key: 'avgLatency' }
-]
+const statsCards = computed(() => [
+  { label: t('monitor.stats.todayCalls'), icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#0ea5e9', key: 'todayCalls' },
+  { label: t('monitor.stats.todayTokens'), icon: '<path d="M12 2v4m0 12v4m-4-8H4m16 0h-4m-2.636-5.364-2.828-2.828m0 11.314 2.828 2.828M9.172 6.344 6.344 9.172m11.314 5.656 2.828 2.828"/>', color: '#10b981', key: 'todayTokens' },
+  { label: t('monitor.stats.todayCost'), icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', color: '#f59e0b', key: 'todayCost' },
+  { label: t('monitor.stats.avgLatency'), icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', color: '#ef4444', key: 'avgLatency' }
+])
 
 const modelRanking = computed(() => stats.value?.topModels || [])
 const hourlyDistribution = computed(() => stats.value?.hourlyDistribution || [])
@@ -283,7 +286,7 @@ function formatTime(t) {
 }
 
 function statusLabel(s) {
-  return { success: '成功', error: '失败', timeout: '超时' }[s] || s
+  return { success: t('monitor.logs.success'), error: t('monitor.logs.failed'), timeout: t('monitor.logs.timeout') }[s] || s
 }
 
 async function loadStats() {
@@ -293,7 +296,7 @@ async function loadStats() {
       stats.value = res.data
     }
   } catch (err) {
-    if (!err.isAuthError) message.error('加载监控数据失败: ' + err.message)
+    if (!err.isAuthError) message.error(t('monitor.msgs.loadFailed') + err.message)
   }
 }
 
@@ -314,7 +317,7 @@ async function loadLogs() {
       total.value = res.data.total || 0
     }
   } catch (err) {
-    if (!err.isAuthError) message.error('加载日志失败: ' + err.message)
+    if (!err.isAuthError) message.error(t('monitor.logs.loadFailed') + err.message)
   }
 }
 

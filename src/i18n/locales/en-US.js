@@ -1,7 +1,7 @@
 /**
  * English locale (mirrors zh-CN key structure)
  * Modules: nav/common/header/login (batch 2) + model/approval/placeholder/reasoning (3a)
- *          + promptView/knowledge (3b)
+ *          + promptView/knowledge (3b) + monitor (3c)
  */
 export default {
   nav: {
@@ -49,7 +49,7 @@ export default {
     title: 'Sign in',
     register: 'Sign up',
     username: 'Username',
-    password: 'Password',
+    password: '***',
     email: 'Email',
     submit: 'Sign in',
     toRegister: 'No account? Sign up',
@@ -132,5 +132,26 @@ export default {
       emptyKeyword: 'Please enter search keywords', found: 'Found {n} related knowledge chunks',
       notFound: 'No related knowledge found', searchFailed: 'Search failed: '
     }
+  },
+  monitor: {
+    hours: { title: '24h call distribution', desc: 'Hourly stats for today', tip: '{h}:00 — {n} calls' },
+    ranking: { title: 'Model leaderboard', desc: 'Sorted by call count', colModel: 'Model', colCalls: 'Calls', colTokens: 'Total tokens', colCost: 'Cost (CNY)' },
+    usage: {
+      title: 'Usage reports', desc: 'Day / user / agent views (last {n} days)',
+      byDay: 'By day', byUser: 'By user', byAgent: 'By agent',
+      d7: 'Last 7 days', d14: 'Last 14 days', d30: 'Last 30 days',
+      colDate: 'Date', colUser: 'User', colAgent: 'Source', colCalls: 'Calls',
+      colIn: 'Input tokens', colOut: 'Output tokens', colTotal: 'Total tokens', colCost: 'Cost (CNY)'
+    },
+    logs: {
+      title: 'Call logs', desc: 'Recent LLM call records',
+      allModels: 'All models', allStatus: 'All statuses',
+      success: 'Success', failed: 'Failed', timeout: 'Timeout',
+      colTime: 'Time', colModel: 'Model', colStatus: 'Status', colLatency: 'Latency', colCost: 'Cost',
+      empty: 'No log records', prev: 'Prev', next: 'Next',
+      pageInfo: 'Page {p} / {m} ({t} records)', loadFailed: 'Load logs failed: '
+    },
+    msgs: { loadFailed: 'Load monitoring data failed: ' },
+    stats: { todayCalls: 'Calls today', todayTokens: 'Tokens today', todayCost: 'Cost today', avgLatency: 'Avg latency' }
   }
 }
