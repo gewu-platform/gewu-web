@@ -8,18 +8,20 @@
         </svg>
       </div>
       <h2 class="placeholder-title">{{ placeholder }}</h2>
-      <p class="placeholder-desc">该模块正在对齐 java-ai-native 逐步交付，敬请期待</p>
-      <router-link to="/" class="back-link">返回对话</router-link>
+      <p class="placeholder-desc">{{ $t('placeholder.desc') }}</p>
+      <router-link to="/" class="back-link">{{ $t('placeholder.backToChat') }}</router-link>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const placeholder = computed(() => route.meta.placeholder || '开发中')
+const { t } = useI18n()
+const placeholder = computed(() => route.meta.placeholder || t('placeholder.developing'))
 </script>
 
 <style scoped>

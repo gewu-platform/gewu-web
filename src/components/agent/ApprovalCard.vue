@@ -1,14 +1,14 @@
 <template>
   <div class="approval-box">
-    <div class="approval-title">⚠️ 工具调用需要审批</div>
+    <div class="approval-title">{{ $t('approval.title') }}</div>
     <div class="approval-detail">
-      工具 <b>{{ toolName }}</b>，参数：<code>{{ toolInput }}</code>
+      {{ $t('approval.body') }} <b>{{ toolName }}</b>{{ $t('approval.paramsPrefix') }}<code>{{ toolInput }}</code>
     </div>
     <div v-if="isAdmin" class="approval-actions">
-      <button class="btn-approve" :disabled="done" @click="$emit('approve')">✅ 批准执行</button>
-      <button class="btn-reject" :disabled="done" @click="$emit('reject')">❌ 拒绝</button>
+      <button class="btn-approve" :disabled="done" @click="$emit('approve')">{{ $t('approval.approve') }}</button>
+      <button class="btn-reject" :disabled="done" @click="$emit('reject')">{{ $t('approval.reject') }}</button>
     </div>
-    <div v-else class="approval-readonly">⏳ 审批由管理员处理，请等待管理员在 Agent 页操作</div>
+    <div v-else class="approval-readonly">{{ $t('approval.readonly') }}</div>
     <div v-if="result" class="approval-result">{{ result }}</div>
   </div>
 </template>

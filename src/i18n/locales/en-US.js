@@ -36,6 +36,30 @@ export default {
     enabled: 'Enabled',
     disabled: 'Disabled'
   },
+    "model": {
+      "title": "🤖 Model Management",
+      "subtitle": "View available models and switch the active AI model",
+      "currentLabel": "Active model",
+      "currentBadge": "Current",
+      "switching": "Switching...",
+      "switchFailed": "Model switch failed: "
+    },
+    "approval": {
+      "title": "⚠️ Tool call requires approval",
+      "body": "Tool",
+      "paramsPrefix": ", args: ",
+      "approve": "✅ Approve",
+      "reject": "❌ Reject",
+      "readonly": "⏳ Waiting for an admin to handle the approval on the Agent page"
+    },
+    "placeholder": {
+      "desc": "This module is being delivered incrementally against java-ai-native — stay tuned",
+      "backToChat": "Back to chat",
+      "developing": "Under development"
+    },
+    "reasoning": {
+      "title": "Reasoning ({n} tool calls)"
+    },
   header: {
     logout: 'Sign out',
     login: 'Sign in / Sign up',

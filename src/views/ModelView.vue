@@ -1,12 +1,12 @@
 <template>
   <div class="model-view">
     <div class="page-header">
-      <h2>🤖 模型管理</h2>
-      <p>查看可用模型并切换当前使用的 AI 模型</p>
+      <h2>{{ $t('model.title') }}</h2>
+      <p>{{ $t('model.subtitle') }}</p>
     </div>
 
     <div class="current-model">
-      <div class="label">当前激活模型</div>
+      <div class="label">{{ $t('model.currentLabel') }}</div>
       <div class="value">
         <span class="model-id">{{ activeModel }}</span>
         <span class="model-name">{{ currentModelName }}</span>
@@ -24,7 +24,7 @@
         <div class="model-info">
           <div class="model-header">
             <span class="model-id">{{ m.id }}</span>
-            <span v-if="m.id === activeModel" class="badge">当前</span>
+            <span v-if="m.id === activeModel" class="badge">{{ $t('model.currentBadge') }}</span>
           </div>
           <div class="model-desc">
             <span class="provider-badge">{{ m.provider }}</span>
@@ -37,13 +37,14 @@
 
     <div v-if="switching" class="switch-overlay">
       <span class="spinner"></span>
-      <span>切换中...</span>
+      <span>{{ $t('model.switching') }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getModelList, switchModel as apiSwitchModel } from '@/api/chat'
 
 // 统一解包 R<T>：{ code, message, data }
@@ -54,6 +55,7 @@ function unwrap(response) {
   return response
 }
 
+const { t } = useI18n()
 const models = ref([])
 const activeModel = ref('')
 const switching = ref(false)
@@ -84,7 +86,7 @@ async function switchTo(modelId) {
     console.log('模型已切换:', data.oldModel, '->', data.newModel)
   } catch (e) {
     console.error('切换失败:', e)
-    alert('切换模型失败: ' + (e.message || '未知错误'))
+    alert(t('model.switchFailed') + (e.message || t('common.failed')))
   } finally {
     switching.value = false
   }

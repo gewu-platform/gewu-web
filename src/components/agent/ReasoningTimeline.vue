@@ -2,7 +2,7 @@
   <div class="reasoning-block">
     <button class="reasoning-toggle" @click="$emit('toggle')">
       <span class="toggle-arrow" :class="{ open: show }">▸</span>
-      推理过程（{{ iterations.length }} 次工具调用）
+      {{ $t('reasoning.title', { n: iterations.length }) }}
     </button>
     <div v-show="show" class="reasoning-timeline">
       <div v-for="(iter, i) in iterations" :key="i" class="timeline-step">
