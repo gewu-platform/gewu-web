@@ -3,8 +3,8 @@
     <!-- 左侧：会话列表 -->
     <aside class="sidebar-panel">
       <div class="panel-header">
-        <h3>💬 会话</h3>
-        <button class="btn-icon" @click="handleCreateSession" title="新建会话">+</button>
+        <h3>💬 {{ $t('chat.sessions.title') }}</h3>
+        <button class="btn-icon" @click="handleCreateSession" :title="$t('chat.sessions.newSession')">+</button>
       </div>
       <div class="session-list">
         <template v-for="group in groupedSessions" :key="group.name">
@@ -12,7 +12,7 @@
             <span class="group-caret" :class="{ collapsed: collapsedGroups.has(group.name) }">▾</span>
             <span class="group-name">{{ group.name }}</span>
             <span class="group-count">{{ group.items.length }}</span>
-            <button class="group-del" title="删除分组（会话回到默认）" @click.stop="handleDissolveGroup(group.name)">×</button>
+            <button class="group-del" :title="$t('chat.sessions.delGroup')" @click.stop="handleDissolveGroup(group.name)">×</button>
           </div>
           <template v-for="s in group.items" :key="s.id">
             <div
@@ -21,27 +21,27 @@
               :class="{ active: s.id === chatStore.sessionId, child: s.parentSessionId }"
               @click="handleSelectSession(s.id)"
             >
-              <span class="session-name"><span v-if="s.parentSessionId" class="child-tag">↳ 子</span>{{ sessionTitle(s) }}</span>
+              <span class="session-name"><span v-if="s.parentSessionId" class="child-tag">{{ $t('chat.sessions.childTag') }}</span>{{ sessionTitle(s) }}</span>
               <span class="session-actions">
-                <button class="btn-op" title="重命名" @click.stop="openRename(s)">✎</button>
-                <button class="btn-op" title="移动到分组" @click.stop="openMove(s)">📁</button>
-                <button class="btn-op" title="派生子会话" @click.stop="handleDerive(s)">🌱</button>
-                <button class="btn-del" title="删除会话" @click.stop="handleDeleteSession(s.id)">×</button>
+                <button class="btn-op" :title="$t('chat.sessions.rename')" @click.stop="openRename(s)">✎</button>
+                <button class="btn-op" :title="$t('chat.sessions.moveToGroup')" @click.stop="openMove(s)">📁</button>
+                <button class="btn-op" :title="$t('chat.sessions.derive')" @click.stop="handleDerive(s)">🌱</button>
+                <button class="btn-del" :title="$t('chat.sessions.delSession')" @click.stop="handleDeleteSession(s.id)">×</button>
               </span>
             </div>
           </template>
         </template>
-        <div v-if="chatStore.sessions.length === 0" class="empty-hint">暂无会话</div>
+        <div v-if="chatStore.sessions.length === 0" class="empty-hint">{{ $t('chat.sessions.empty') }}</div>
       </div>
 
       <!-- T2.1 重命名弹窗 -->
       <div v-if="renameOpen" class="modal-mask" @click.self="renameOpen = false">
         <div class="mini-modal">
-          <div class="mini-modal-title">重命名会话</div>
+          <div class="mini-modal-title">{{ $t('chat.rename.title') }}</div>
           <input v-model="renameValue" class="mini-input" maxlength="100" @keyup.enter="confirmRename" />
           <div class="mini-modal-actions">
-            <button class="mini-btn" @click="renameOpen = false">取消</button>
-            <button class="mini-btn primary" @click="confirmRename">保存</button>
+            <button class="mini-btn" @click="renameOpen = false">{{ $t('common.cancel') }}</button>
+            <button class="mini-btn primary" @click="confirmRename">{{ $t('chat.rename.save') }}</button>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
       <!-- T2.2 归组弹窗 -->
       <div v-if="moveOpen" class="modal-mask" @click.self="moveOpen = false">
         <div class="mini-modal">
-          <div class="mini-modal-title">移动「{{ moveTargetTitle }}」到分组</div>
+          <div class="mini-modal-title">{{ $t('chat.move.title', { name: moveTargetTitle }) }}</div>
           <div class="group-choices">
             <button
               v-for="g in availableGroups"
@@ -58,11 +58,11 @@
               @click="confirmMove(g)"
             >{{ g }}</button>
           </div>
-          <div class="mini-modal-title" style="margin-top: 10px">或新建分组</div>
-          <input v-model="newGroupName" class="mini-input" maxlength="50" placeholder="分组名（留空 = 默认）" @keyup.enter="confirmMove(newGroupName)" />
+          <div class="mini-modal-title" style="margin-top: 10px">{{ $t('chat.move.orNew') }}</div>
+          <input v-model="newGroupName" class="mini-input" maxlength="50" :placeholder="$t('chat.move.namePh')" @keyup.enter="confirmMove(newGroupName)" />
           <div class="mini-modal-actions">
-            <button class="mini-btn" @click="confirmMove('')">移到默认</button>
-            <button class="mini-btn" @click="moveOpen = false">取消</button>
+            <button class="mini-btn" @click="confirmMove('')">{{ $t('chat.move.toDefault') }}</button>
+            <button class="mini-btn" @click="moveOpen = false">{{ $t('common.cancel') }}</button>
           </div>
         </div>
       </div>
@@ -75,17 +75,17 @@
       <div class="messages-container" ref="messagesContainer">
         <div v-if="chatStore.messages.length === 0 && !chatStore.isLoading" class="welcome">
           <div class="welcome-icon">🔗</div>
-          <h2>Gewu 智能对话</h2>
-          <p>支持同步调用、流式输出、会话记忆、角色扮演</p>
+          <h2>{{ $t('chat.hero.title') }}</h2>
+          <p>{{ $t('chat.hero.sub') }}</p>
           <div class="quick-actions">
-            <button class="quick-btn" @click="applyQuickQuestion('介绍一下 Gewu 的核心能力')">
-              🌱 Gewu 是什么？
+            <button class="quick-btn" @click="applyQuickQuestion($t('chat.hero.q1'))">
+              {{ $t('chat.hero.q1Label') }}
             </button>
-            <button class="quick-btn" @click="applyQuickQuestion('Gewu 的 Agent 工具编排和审批网关怎么用？')">
-              ⚡ Agent 工具编排怎么用？
+            <button class="quick-btn" @click="applyQuickQuestion($t('chat.hero.q2'))">
+              {{ $t('chat.hero.q2Label') }}
             </button>
-            <button class="quick-btn" @click="applyQuickQuestion('用Java写一个工具调用的示例')">
-              🛠 写个 Tool Calling 示例
+            <button class="quick-btn" @click="applyQuickQuestion($t('chat.hero.q3'))">
+              {{ $t('chat.hero.q3Label') }}
             </button>
           </div>
         </div>
@@ -101,14 +101,14 @@
           </div>
           <div class="message-bubble">
             <div class="message-meta">
-              <span class="role-label">{{ msg.role === 'user' ? '我' : 'AI' }}</span>
+              <span class="role-label">{{ msg.role === 'user' ? $t('chat.msg.me') : 'AI' }}</span>
               <span v-if="msg.model" class="model-tag">{{ msg.model }}</span>
               <span class="time">{{ formatTime(msg.timestamp) }}</span>
             </div>
 
             <!-- P8a 智能模式：RAG 提示 + 审批卡片 + 工具时间线 -->
             <div v-if="msg.role === 'assistant' && msg.ragHits !== undefined" class="rag-badge" :class="{ miss: msg.ragHits <= 0 }">
-              {{ msg.ragHits > 0 ? `📚 已从知识库检索 ${msg.ragHits} 条相关内容` : msg.ragHits === 0 ? '📚 知识库无命中' : '📚 知识库检索失败' }}
+              {{ msg.ragHits > 0 ? $t('chat.msg.ragHits', { n: msg.ragHits }) : msg.ragHits === 0 ? $t('chat.msg.ragEmpty') : $t('chat.msg.ragFailed') }}
             </div>
             <ApprovalCard
               v-if="msg.approval"
@@ -136,7 +136,7 @@
                 rel="noopener noreferrer"
                 class="message-image-link"
               >
-                <img :src="u" alt="附图" class="message-image" />
+                <img :src="u" :alt="$t('chat.msg.attachAlt')" class="message-image" />
               </a>
             </div>
 
@@ -174,9 +174,9 @@
           <div v-if="pendingImages.length" class="attachment-strip">
             <div v-for="(img, idx) in pendingImages" :key="img.key" class="attachment-item">
               <img :src="img.url" :alt="img.name" class="attachment-thumb" />
-              <button class="attachment-remove" title="移除" @click="removePendingImage(idx)">×</button>
+              <button class="attachment-remove" :title="$t('chat.input.remove')" @click="removePendingImage(idx)">×</button>
             </div>
-            <span class="attachment-count">{{ pendingImages.length }} 张图片</span>
+            <span class="attachment-count">{{ $t('chat.input.images', { n: pendingImages.length }) }}</span>
           </div>
           <textarea
             ref="inputBoxRef"
@@ -185,14 +185,14 @@
             @keydown.esc.prevent="showCmdMenu = false"
             @paste="handlePaste"
             class="input-box"
-            :placeholder="pendingImages.length ? '已附加 ' + pendingImages.length + ' 张图片，可继续输入...' : '输入问题... (Enter 发送，可直接粘贴图片)'"
+            :placeholder="pendingImages.length ? $t('chat.input.withImages', { n: pendingImages.length }) : $t('chat.input.placeholder')"
             :disabled="chatStore.isLoading"
             rows="1"
           ></textarea>
           <button
             class="attach-btn"
             :disabled="chatStore.isLoading || uploading"
-            title="上传图片（或直接 Ctrl+V 粘贴）"
+            :title="$t('chat.input.upload')"
             @click="pickImage"
           >
             <span v-if="uploading" class="spinner"></span>
@@ -222,43 +222,43 @@
                   <circle class="ctx-ring-fg" :class="ringLevel" cx="18" cy="18" r="15.9" :stroke-dasharray="ringDash"></circle>
                 </svg>
               </button>
-              <select v-model="activeModelId" @change="onModelSwitch" class="model-inline" title="切换模型">
+              <select v-model="activeModelId" @change="onModelSwitch" class="model-inline" :title="$t('chat.input.switchModel')">
                 <option v-for="m in modelList" :key="m.id" :value="m.id">{{ m.description || m.modelName }}</option>
               </select>
-              <span class="online-dot" :class="{ on: backendOnline }" :title="backendOnline ? '后端在线' : '后端离线'"></span>
+              <span class="online-dot" :class="{ on: backendOnline }" :title="backendOnline ? $t('chat.panel.online') : $t('chat.panel.offline')"></span>
 
               <!-- U2.1 用量详情层 -->
               <div v-if="ctxPanelOpen" class="ctx-panel">
                 <div class="ctx-panel-row">
-                  <span class="ctx-panel-label">提示词预算</span>
+                  <span class="ctx-panel-label">{{ $t('chat.panel.budget') }}</span>
                   <span class="ctx-panel-value">{{ ctxUsage.used.toLocaleString() }} / {{ ctxUsage.threshold.toLocaleString() }} · {{ ctxUsage.percent }}%</span>
                 </div>
                 <div class="ctx-panel-bar"><div class="ctx-panel-bar-fill" :class="ringLevel" :style="{ width: ctxUsage.percent + '%' }"></div></div>
-                <div class="ctx-panel-sub">最近一次运行的词元数</div>
+                <div class="ctx-panel-sub">{{ $t('chat.panel.lastTokens') }}</div>
                 <div class="ctx-panel-row ctx-panel-muted">
-                  <span>输入 {{ (ctxUsage.lastPromptTokens || 0).toLocaleString() }} · 输出 {{ (ctxUsage.lastCompletionTokens || 0).toLocaleString() }} · 预估费用 ${{ lastCostText }}</span>
+                  <span>{{ $t('chat.panel.in') }} {{ (ctxUsage.lastPromptTokens || 0).toLocaleString() }} · {{ $t('chat.panel.out') }} {{ (ctxUsage.lastCompletionTokens || 0).toLocaleString() }} · {{ $t('chat.panel.estCost', { cost: lastCostText }) }}</span>
                 </div>
               </div>
             </div>
-            <label class="smart-toggle" :class="{ on: smartMode }" title="开启后模型可自主调用工具（计算/时间/搜索等），支持会话记忆与工具留档">
+            <label class="smart-toggle" :class="{ on: smartMode }" :title="$t('chat.panel.smartTitle')">
               <input type="checkbox" v-model="smartMode" />
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
-              <span class="toggle-text">🧠 智能{{ smartMode ? '：工具已启用' : '' }}</span>
+              <span class="toggle-text">{{ $t('chat.panel.smart') }}{{ smartMode ? $t('chat.panel.smartOn') : '' }}</span>
             </label>
-            <label v-if="smartMode && knowledgeDocs.length" class="kb-toggle" :class="{ on: kbEnabled }" title="开启后向已选知识文档检索，命中内容注入上下文（RAG）">
+            <label v-if="smartMode && knowledgeDocs.length" class="kb-toggle" :class="{ on: kbEnabled }" :title="$t('chat.panel.kbTitle')">
               <input type="checkbox" v-model="kbEnabled" />
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
-              <span class="toggle-text">📚 知识库</span>
+              <span class="toggle-text">{{ $t('chat.panel.kb') }}</span>
             </label>
           </div>
           <div class="actions-right">
-            <button class="action-link" @click="handleClearHistory">🗑 清除会话历史</button>
+            <button class="action-link" @click="handleClearHistory">🗑 {{ $t('chat.panel.clearHistory') }}</button>
           </div>
         </div>
 
         <!-- P8b 知识库选择抽条 -->
         <div v-if="smartMode && kbEnabled && knowledgeDocs.length" class="kb-selector">
-          <span class="kb-label">选择文档：</span>
+          <span class="kb-label">{{ $t('chat.panel.pickDoc') }}</span>
           <span
             v-for="d in knowledgeDocs"
             :key="d.id"
@@ -268,7 +268,7 @@
           >
             {{ d.status === 2 ? '' : '⏳ ' }}{{ d.fileName }}
           </span>
-          <span v-if="!knowledgeDocs.length" class="kb-empty">知识库为空，请先在「知识库」页上传文档</span>
+          <span v-if="!knowledgeDocs.length" class="kb-empty">{{ $t('chat.panel.kbEmpty') }}</span>
         </div>
       </div>
     </main>
@@ -277,6 +277,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'
@@ -320,6 +321,7 @@ function unwrap(response) {
   return response
 }
 
+const { t } = useI18n()
 const chatStore = useChatStore()
 const authStore = useAuthStore()
 const messagesContainer = ref(null)
@@ -348,7 +350,7 @@ function formatTime(ts) {
 }
 
 function sessionTitle(s) {
-  return s.remark || s.title || (s.id ? String(s.id).substring(0, 8) : '会话')
+  return s.remark || s.title || (s.id ? String(s.id).substring(0, 8) : t('chat.sessions.fallback'))
 }
 
 // ==================== T2 会话管理：重命名 / 分组 ====================
@@ -407,15 +409,15 @@ function openRename(s) {
 
 async function confirmRename() {
   const v = renameValue.value.trim()
-  if (!v) { message.warning('名称不能为空'); return }
+  if (!v) { message.warning(t('chat.msgs.renameEmpty')); return }
   try {
     await apiRenameSession(renameTargetId.value, v)
     const s = (chatStore.sessions || []).find(x => x.id === renameTargetId.value)
     if (s) s.remark = v
     renameOpen.value = false
-    message.success('已重命名')
+    message.success(t('chat.msgs.renamed'))
   } catch (e) {
-    message.error('[Gewu] 重命名失败: ' + (e.response?.data?.message || e.message))
+    message.error(t('chat.msgs.renameFailed') + (e.response?.data?.message || e.message))
   }
 }
 
@@ -436,9 +438,9 @@ async function confirmMove(g) {
     if (s) s.groupName = name || null
     moveOpen.value = false
     newGroupName.value = ''
-    message.success(name ? '已移入分组: ' + name : '已移到默认')
+    message.success(name ? t('chat.msgs.moved', { name }) : t('chat.msgs.movedDefault'))
   } catch (e) {
-    message.error('[Gewu] 归组失败: ' + (e.response?.data?.message || e.message))
+    message.error(t('chat.msgs.moveFailed') + (e.response?.data?.message || e.message))
   }
 }
 
@@ -450,9 +452,9 @@ async function handleDissolveGroup(name) {
       if (s.groupName === name) s.groupName = null
     }
     collapsedGroups.value = new Set([...collapsedGroups.value].filter(x => x !== name))
-    message.success('分组已删除' + (affected != null ? '（' + affected + ' 个会话回到默认）' : ''))
+    message.success(t('chat.msgs.dissolved', { n: affected ?? 0 }))
   } catch (e) {
-    message.error('[Gewu] 删除分组失败: ' + (e.response?.data?.message || e.message))
+    message.error(t('chat.msgs.dissolveFailed') + (e.response?.data?.message || e.message))
   }
 }
 
@@ -461,10 +463,10 @@ async function handleDerive(s) {
     const r = await apiDeriveSession(s.id)
     const data = r.data || r
     await chatStore.loadSessions()
-    message.success('子会话已创建')
+    message.success(t('chat.msgs.childCreated'))
     if (data && data.sessionId) handleSelectSession(data.sessionId)
   } catch (e) {
-    message.error('[Gewu] 派生失败: ' + (e.response?.data?.message || e.message))
+    message.error(t('chat.msgs.deriveFailed') + (e.response?.data?.message || e.message))
   }
 }
 
@@ -528,13 +530,13 @@ async function executeCommand(text) {
             { role: 'assistant', content: aiMsg.content, timestamp: Date.now() })
         }
       } else if (e.type === 'error') {
-        aiMsg.content = '❌ ' + (e.error || '命令执行失败')
+        aiMsg.content = '❌ ' + (e.error || t('chat.msgs.cmdFailed'))
       }
       scrollToBottom()
     })
   } catch (e) {
     if (e.isAuthError) { chatStore.isLoading = false; throw e }
-    aiMsg.content = '❌ ' + (e.message || '命令执行失败')
+    aiMsg.content = '❌ ' + (e.message || t('chat.msgs.cmdFailed'))
   } finally {
     aiMsg.streaming = false
     chatStore.isLoading = false
@@ -585,11 +587,11 @@ async function onModelSwitch() {
     const res = await apiSwitchModel(activeModelId.value)
     const data = unwrap(res)
     chatStore.currentModel = data.newModel || activeModelId.value
-    message.success(`已切换到 ${data.modelName || activeModelId.value}`)
+    message.success(t('chat.msgs.switched', { name: data.modelName || activeModelId.value }))
   } catch (e) {
     if (e.isAuthError) return
     console.error('切换模型失败:', e)
-    message.error('切换模型失败')
+    message.error(t('chat.msgs.switchFailed'))
   }
 }
 
@@ -597,10 +599,10 @@ async function onModelSwitch() {
 async function handleCreateSession() {
   try {
     await chatStore.createNewSession()
-    message.success('新会话已创建')
+    message.success(t('chat.msgs.created'))
   } catch (e) {
     if (e.isAuthError) return
-    message.error('创建会话失败: ' + (e.message || '未知错误'))
+    message.error(t('chat.msgs.createFailed') + (e.message || t('common.failed')))
   }
 }
 
@@ -611,24 +613,24 @@ async function handleSelectSession(id) {
     await chatStore.selectSession(id)
   } catch (e) {
     console.warn('[ChatView] 加载会话消息失败:', e)
-    message.error('加载会话失败')
+    message.error(t('chat.msgs.loadFailed'))
   }
 }
 
 // 删除会话
 function handleDeleteSession(id) {
   Modal.confirm({
-    title: '删除会话',
-    content: '此操作将永久删除该会话及其所有对话记录，是否继续？',
-    okText: '确定',
-    cancelText: '取消',
+    title: t('chat.msgs.delTitle'),
+    content: t('chat.msgs.delContent'),
+    okText: t('chat.msgs.ok'),
+    cancelText: t('common.cancel'),
     okType: 'danger',
     async onOk() {
       try {
         await chatStore.removeSession(id)
-        message.success('会话已删除')
+        message.success(t('chat.msgs.deleted'))
       } catch (e) {
-        message.error('删除失败: ' + (e.message || '未知错误'))
+        message.error(t('chat.msgs.delFailed') + (e.message || t('common.failed')))
       }
     }
   })
@@ -638,20 +640,20 @@ function handleDeleteSession(id) {
 function handleClearHistory() {
   if (!chatStore.sessionId) {
     chatStore.clearMessages()
-    message.success('会话已清除')
+    message.success(t('chat.msgs.cleared'))
     return
   }
   Modal.confirm({
-    title: '清除会话',
-    content: '确定要清除当前会话的所有消息吗？（会话本身保留）',
+    title: t('chat.msgs.clearTitle'),
+    content: t('chat.msgs.clearContent'),
     okText: '确定',
     cancelText: '取消',
     onOk() {
       chatStore.clearHistory()
-        .then(() => message.success('会话历史已清除'))
+        .then(() => message.success(t('chat.msgs.historyCleared')))
         .catch((e) => {
           if (e.isAuthError) return
-          message.error('清除失败: ' + (e.message || '未知错误'))
+          message.error(t('chat.msgs.clearFailed') + (e.message || t('common.failed')))
         })
     }
   })
@@ -706,11 +708,11 @@ async function addFiles(files) {
   for (const f of files) {
     // 前端先挡一道，减少无效请求（后端仍做权威校验）
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(f.type)) {
-      message.warning(`已跳过非图片文件：${f.name}`)
+      message.warning(t('chat.msgs.skipNonImage', { name: f.name }))
       continue
     }
     if (f.size > 10 * 1024 * 1024) {
-      message.warning(`已跳过超过 10MB 的图片：${f.name}`)
+      message.warning(t('chat.msgs.skipOversize', { name: f.name }))
       continue
     }
     uploading.value = true
@@ -719,7 +721,7 @@ async function addFiles(files) {
       const data = res?.data ?? res
       const url = data?.url || data?.data?.url
       if (!url) {
-        message.error('上传失败：服务端未返回地址')
+        message.error(t('chat.msgs.noUrl'))
         continue
       }
       // 从预签名 URL 中提取 object key（后端存的是 key，发消息时回传 key）
@@ -730,7 +732,7 @@ async function addFiles(files) {
       })
     } catch (err) {
       if (err.isAuthError) return
-      message.error('图片上传失败：' + (err.message || '未知错误'))
+      message.error(t('chat.msgs.uploadFailed') + (err.message || t('common.failed')))
     } finally {
       uploading.value = false
     }
@@ -786,7 +788,7 @@ async function sendMessage() {
     } catch (e) {
       if (e.isAuthError) return
       console.error('[ChatView] 智能模式发送失败:', e)
-      message.error('发送失败: ' + (e.message || '未知错误'))
+      message.error(t('chat.msgs.sendFailed') + (e.message || t('common.failed')))
     }
     return
   }
@@ -883,13 +885,13 @@ async function sendSmartMessage(text) {
           finish()
         },
         onError: (e) => {
-          aiMsg.content = `[错误] ${e && e.message ? e.message : '请求失败'}`
+          aiMsg.content = `[${t('common.failed')}] ${e && e.message ? e.message : t('chat.msgs.reqFailed')}`
           finish()
         }
       }
     )
   } catch (e) {
-    aiMsg.content = `[错误] ${e.message || '流式连接断开'}`
+    aiMsg.content = `[${t('common.failed')}] ${e.message || t('chat.msgs.streamBroken')}`
     finish()
     throw e
   }
@@ -903,9 +905,9 @@ async function approveTool(msg) {
   msg.approval.done = true
   try {
     const res = await approveToolCall(msg.approval.toolCallId)
-    msg.approval.result = res.code === 200 ? '✅ 已批准，继续执行中…' : `❌ ${res.message || '审批失败'}`
+    msg.approval.result = res.code === 200 ? t('chat.approval.approved') : t('chat.approval.failPrefix', { msg: res.message || t('common.failed') })
   } catch (e) {
-    msg.approval.result = `❌ 异常：${e.message}`
+    msg.approval.result = t('chat.approval.exception', { msg: e.message })
   }
 }
 
@@ -913,8 +915,8 @@ async function rejectTool(msg) {
   if (!msg.approval || msg.approval.done) return
   msg.approval.done = true
   try {
-    const res = await rejectToolCall(msg.approval.toolCallId, '用户拒绝')
-    msg.approval.result = res.code === 200 ? '🚫 已拒绝，继续基于拒绝结果回应' : `❌ ${res.message || '操作失败'}`
+    const res = await rejectToolCall(msg.approval.toolCallId, t('chat.approval.userRejected'))
+    msg.approval.result = res.code === 200 ? t('chat.approval.rejected') : t('chat.approval.failPrefix', { msg: res.message || t('common.failed') })
   } catch (e) {
     msg.approval.result = `❌ 异常：${e.message}`
   }
@@ -939,9 +941,9 @@ const ringLevel = computed(() => {
   return 'lvl-danger'
 })
 const ctxTitle = computed(() => {
-  if (!chatStore.sessionId) return '上下文用量：暂无会话（发送消息后展示）'
-  let tip = `上下文用量：约 ${ctxUsage.used} / ${ctxUsage.threshold} tokens（${ctxUsage.percent}%）`
-  tip += ctxUsage.autoCompact ? '，超阈值自动压缩' : '，自动压缩已关闭'
+  if (!chatStore.sessionId) return t('chat.ctx.noSession')
+  let tip = t('chat.ctx.usage', { used: ctxUsage.used, threshold: ctxUsage.threshold, percent: ctxUsage.percent })
+  tip += ctxUsage.autoCompact ? t('chat.ctx.autoOn') : t('chat.ctx.autoOff')
   return tip
 })
 async function refreshContextUsage() {
