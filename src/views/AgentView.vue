@@ -3,13 +3,13 @@
     <!-- ===== 管理控制台（P8a 方案 D）===== -->
     <div class="console-section">
       <div class="console-header">
-        <h2>🤖 Agent 管理控制台</h2>
+        <h2>{{ $t('agent.console.title') }}</h2>
         <div class="console-actions">
           <div class="health-pill" :class="{ up: healthStatus === 'UP' }">
             <span class="health-dot"></span>
             <span>{{ healthText }}</span>
           </div>
-          <button class="btn-primary" @click="openCreateModal">+ 新建 Agent</button>
+          <button class="btn-primary" @click="openCreateModal">{{ $t('agent.console.newAgent') }}</button>
         </div>
       </div>
 
@@ -18,25 +18,25 @@
         <table class="agents-table">
           <thead>
             <tr>
-              <th>名称</th>
-              <th>描述</th>
-              <th>绑定工具</th>
-              <th>迭代上限</th>
-              <th>温度</th>
-              <th>审批策略</th>
-              <th>状态</th>
-              <th>操作</th>
+              <th>{{ $t('agent.table.name') }}</th>
+              <th>{{ $t('agent.table.desc') }}</th>
+              <th>{{ $t('agent.table.tools') }}</th>
+              <th>{{ $t('agent.table.maxIter') }}</th>
+              <th>{{ $t('agent.table.temp') }}</th>
+              <th>{{ $t('agent.table.approval') }}</th>
+              <th>{{ $t('agent.table.status') }}</th>
+              <th>{{ $t('agent.table.actions') }}</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="agent in definitions" :key="agent.id">
               <td class="td-name">{{ agent.name }}
-                <span v-if="agent.config?.role === 'master'" class="role-badge master" title="主 Agent：可派发子 Agent">master</span>
+                <span v-if="agent.config?.role === 'master'" class="role-badge master" :title="$t('agent.table.masterTitle')">master</span>
               </td>
               <td class="td-desc">{{ agent.description || '—' }}</td>
               <td>
                 <span v-for="t in (agent.toolIds || [])" :key="t" class="tool-chip">{{ t }}</span>
-                <span v-if="!(agent.toolIds && agent.toolIds.length)" class="text-muted">无</span>
+                <span v-if="!(agent.toolIds && agent.toolIds.length)" class="text-muted">{{ $t('agent.table.none') }}</span>
               </td>
               <td>{{ agent.config?.maxIterations ?? '—' }}</td>
               <td>{{ agent.config?.temperature ?? '—' }}</td>
@@ -48,17 +48,17 @@
               </td>
               <td>
                 <span class="status-pill" :class="agent.enabled ? 'on' : 'off'">
-                  {{ agent.enabled ? '启用' : '禁用' }}
+                  {{ agent.enabled ? $t('agent.table.enabled') : $t('agent.table.disabled') }}
                 </span>
               </td>
               <td class="td-actions">
-                <button class="btn-sm" @click="toggleEnabled(agent)">{{ agent.enabled ? '禁用' : '启用' }}</button>
-                <button class="btn-sm" @click="openEditModal(agent)">编辑</button>
-                <button class="btn-sm danger" @click="handleDelete(agent)">删除</button>
+                <button class="btn-sm" @click="toggleEnabled(agent)">{{ agent.enabled ? $t('agent.table.disable') : $t('agent.table.enable') }}</button>
+                <button class="btn-sm" @click="openEditModal(agent)">{{ $t('agent.table.edit') }}</button>
+                <button class="btn-sm danger" @click="handleDelete(agent)">{{ $t('agent.table.delete') }}</button>
               </td>
             </tr>
             <tr v-if="definitions.length === 0">
-              <td colspan="8" class="empty-row">暂无 Agent 定义，点击右上角「新建 Agent」创建</td>
+              <td colspan="8" class="empty-row">{{ $t('agent.table.empty') }}</td>
             </tr>
           </tbody>
         </table>
@@ -67,13 +67,13 @@
       <!-- 工具清单 + 待审批 -->
       <div class="console-grid">
         <div class="console-card">
-          <h3>🛠 工具清单（{{ tools.length }}）</h3>
+          <h3>{{ $t('agent.tools.title', { n: tools.length }) }}</h3>
           <div class="tools-grid">
             <div v-for="t in tools" :key="t.name" class="tool-card">
               <div class="tool-name">
                 {{ t.name }}
                 <span class="approval-tag" :class="{ required: t.requiresApproval }">
-                  {{ t.requiresApproval ? '需审批' : '自动放行' }}
+                  {{ t.requiresApproval ? $t('agent.tools.needApproval') : $t('agent.tools.auto') }}
                 </span>
               </div>
               <div class="tool-desc">{{ t.description }}</div>
@@ -82,14 +82,14 @@
         </div>
 
         <div class="console-card">
-          <h3>⏳ 待审批（{{ pendingCount }}）</h3>
-          <div v-if="pendingCount === 0" class="empty-tip">当前无待审批的工具调用</div>
+          <h3>{{ $t('agent.pending.title', { n: pendingCount }) }}</h3>
+          <div v-if="pendingCount === 0" class="empty-tip">{{ $t('agent.pending.empty') }}</div>
           <div v-for="(req, id) in pendingRequests" :key="id" class="pending-item">
             <div class="pending-tool">{{ req.toolName }}</div>
             <div class="pending-args"><code>{{ JSON.stringify(req.params) }}</code></div>
             <div class="pending-actions">
-              <button class="btn-sm ok" @click="approvePending(id)">批准</button>
-              <button class="btn-sm danger" @click="rejectPending(id)">拒绝</button>
+              <button class="btn-sm ok" @click="approvePending(id)">{{ $t('agent.pending.approve') }}</button>
+              <button class="btn-sm danger" @click="rejectPending(id)">{{ $t('agent.pending.reject') }}</button>
             </div>
           </div>
         </div>
@@ -100,18 +100,18 @@
     <div class="debug-section">
       <button class="debug-toggle" @click="debugOpen = !debugOpen">
         <span class="toggle-arrow" :class="{ open: debugOpen }">▸</span>
-        调试台 — 快速验证 Agent 执行（不落库）{{ currentDebugAgent ? '：' + currentDebugAgent : '：默认（全部工具）' }}
+        {{ $t('agent.debug.banner') }}{{ currentDebugAgent ? $t('agent.debug.bannerWith', { name: currentDebugAgent }) : $t('agent.debug.bannerDefault') }}
       </button>
 
       <div v-show="debugOpen" class="debug-console">
         <!-- 左侧：Agent 快速选择 + 执行历史 -->
         <aside class="agent-sidebar">
           <div class="panel-header">
-            <div class="panel-title">调试会话</div>
+            <div class="panel-title">{{ $t('agent.debug.session') }}</div>
           </div>
 
           <div class="panel-section">
-            <div class="section-title">选择 Agent（不选=默认全工具）</div>
+            <div class="section-title">{{ $t('agent.debug.select') }}</div>
             <div class="agents-list">
               <div
                 v-for="agent in enabledAgents"
@@ -127,7 +127,7 @@
           </div>
 
           <div v-if="history.length > 0" class="panel-section history-section">
-            <div class="section-title">最近执行</div>
+            <div class="section-title">{{ $t('agent.debug.recent') }}</div>
             <div
               v-for="(item, idx) in history"
               :key="idx"
@@ -136,7 +136,7 @@
               @click="activeHistoryIndex = idx"
             >
               <div class="history-question">{{ item.question }}</div>
-              <div class="history-meta">{{ item.iterationCount }} 次迭代 · {{ item.toolsUsed.join(', ') || '无工具' }}</div>
+              <div class="history-meta">{{ $t('agent.debug.meta', { n: item.iterationCount, tools: item.toolsUsed.join(', ') || $t('agent.debug.noTools') }) }}</div>
             </div>
           </div>
         </aside>
@@ -146,12 +146,12 @@
           <div class="messages-container" ref="messagesContainer">
             <div v-if="messages.length === 0" class="welcome">
               <div class="welcome-icon">🧠</div>
-              <h2>Agent 调试台</h2>
-              <p>验证 Agent 规划与工具调用。试试：</p>
+              <h2>{{ $t('agent.debug.title') }}</h2>
+              <p>{{ $t('agent.debug.sub') }}</p>
               <div class="quick-actions">
-                <button @click="quickAsk('计算 (128 + 56) * 3 等于多少')">🔢 数学计算</button>
-                <button @click="quickAsk('现在几点了？请用工具查询')">🕐 查时间</button>
-                <button @click="quickAsk('帮我搜索一下今天的科技新闻')">🔍 搜索（需审批）</button>
+                <button @click="quickAsk($t('agent.debug.q1'))">{{ $t('agent.debug.q1Label') }}</button>
+                <button @click="quickAsk($t('agent.debug.q2'))">{{ $t('agent.debug.q2Label') }}</button>
+                <button @click="quickAsk($t('agent.debug.q3'))">{{ $t('agent.debug.q3Label') }}</button>
               </div>
             </div>
 
@@ -160,13 +160,13 @@
               <div class="message-bubble">
                 <!-- 审批提示 -->
                 <div v-if="msg.approval" class="approval-box">
-                  <div class="approval-title">⚠️ 工具调用需要审批</div>
+                  <div class="approval-title">{{ $t('approval.title') }}</div>
                   <div class="approval-detail">
-                    工具 <b>{{ msg.approval.toolName }}</b>，参数：<code>{{ msg.approval.toolInput }}</code>
+                    {{ $t('approval.body') }} <b>{{ msg.approval.toolName }}</b>{{ $t('approval.paramsPrefix') }}<code>{{ msg.approval.toolInput }}</code>
                   </div>
                   <div class="approval-actions">
-                    <button class="btn-approve" :disabled="msg.approval.done" @click="approve(msg, idx)">✅ 批准执行</button>
-                    <button class="btn-reject" :disabled="msg.approval.done" @click="reject(msg, idx)">❌ 拒绝</button>
+                    <button class="btn-approve" :disabled="msg.approval.done" @click="approve(msg, idx)">{{ $t('approval.approve') }}</button>
+                    <button class="btn-reject" :disabled="msg.approval.done" @click="reject(msg, idx)">{{ $t('approval.reject') }}</button>
                   </div>
                   <div v-if="msg.approval.result" class="approval-result">{{ msg.approval.result }}</div>
                 </div>
@@ -175,7 +175,7 @@
                 <div v-if="msg.iterations && msg.iterations.length" class="reasoning-block">
                   <button class="reasoning-toggle" @click="msg.showReasoning = !msg.showReasoning">
                     <span class="toggle-arrow" :class="{ open: msg.showReasoning }">▸</span>
-                    推理过程（{{ msg.iterations.length }} 次工具调用）
+                    {{ $t('reasoning.title', { n: msg.iterations.length }) }}
                   </button>
                   <div v-show="msg.showReasoning" class="reasoning-timeline">
                     <div v-for="(iter, i) in msg.iterations" :key="i" class="timeline-step">
@@ -205,15 +205,15 @@
               <textarea
                 ref="textareaRef"
                 v-model="inputMessage"
-                :placeholder="selectedAgentId ? '向选中的 Agent 提问…' : '向 Agent 提问，Enter 发送，Shift+Enter 换行'"
+                :placeholder="selectedAgentId ? $t('agent.debug.placeholderWith') : $t('agent.debug.placeholder')"
                 rows="1"
                 @keydown.enter.exact.prevent="sendMessage"
               ></textarea>
             </div>
             <div class="input-actions">
-              <span class="input-hint">{{ selectedAgentId ? '已选 Agent: ' + selectedAgentName : '默认 Agent（全部工具）' }}</span>
+              <span class="input-hint">{{ selectedAgentId ? $t('agent.debug.selected', { name: selectedAgentName }) : $t('agent.debug.selectedDefault') }}</span>
               <button class="send-btn" :disabled="loading || !inputMessage.trim()" @click="sendMessage">
-                {{ loading ? '执行中…' : '发送' }}
+                {{ loading ? $t('agent.debug.executing') : $t('agent.debug.send') }}
               </button>
             </div>
           </div>
@@ -224,7 +224,7 @@
     <!-- Agent 编辑弹窗 -->
     <div v-if="modalVisible" class="modal-mask" @click.self="modalVisible = false">
       <div class="modal-card">
-        <h3>{{ editingId ? '编辑 Agent' : (wizardStep === 1 ? '新建 Agent · 选择模板' : '新建 Agent · 配置') }}</h3>
+        <h3>{{ editingId ? $t('agent.modal.edit') : (wizardStep === 1 ? $t('agent.modal.newPick') : $t('agent.modal.newConfig')) }}</h3>
         <!-- T5 向导第一步：选择模板 -->
         <div v-if="!editingId && wizardStep === 1" class="tpl-grid">
           <button v-for="tpl in agentTemplates" :key="tpl.id" class="tpl-card" @click="applyTemplate(tpl)">
@@ -232,71 +232,71 @@
             <p class="tpl-desc">{{ tpl.description }}</p>
           </button>
           <button class="tpl-card blank" @click="wizardStep = 2">
-            <div class="tpl-name">空白开始</div>
-            <p class="tpl-desc">不使用模板，从零配置</p>
+            <div class="tpl-name">{{ $t('agent.modal.blank') }}</div>
+            <p class="tpl-desc">{{ $t('agent.modal.blankDesc') }}</p>
           </button>
         </div>
 
         <!-- 第二步：配置表单（编辑模式或向导第二步） -->
         <div v-if="editingId || wizardStep === 2">
           <div class="form-grid">
-          <label>名称 *</label>
-          <input v-model="form.name" placeholder="例如：数据分析助手" />
-          <label>描述</label>
-          <input v-model="form.description" placeholder="Agent 职责一句话" />
-          <label>系统提示词</label>
-          <textarea v-model="form.systemPrompt" rows="4" placeholder="Agent 的角色设定与行为约束"></textarea>
-          <label>绑定工具</label>
+          <label>{{ $t('agent.modal.name') }}</label>
+          <input v-model="form.name" :placeholder="$t('agent.modal.namePh')" />
+          <label>{{ $t('agent.modal.desc') }}</label>
+          <input v-model="form.description" :placeholder="$t('agent.modal.descPh')" />
+          <label>{{ $t('agent.modal.sys') }}</label>
+          <textarea v-model="form.systemPrompt" rows="4" :placeholder="$t('agent.modal.sysPh')"></textarea>
+          <label>{{ $t('agent.modal.tools') }}</label>
           <div class="checkbox-row">
             <label v-for="t in tools" :key="t.name" class="checkbox-item">
               <input type="checkbox" :value="t.name" v-model="form.toolIds" /> {{ t.name }}
             </label>
           </div>
-          <label>绑定知识库（对话时自动检索注入，空=不绑定）</label>
+          <label>{{ $t('agent.modal.kb') }}</label>
           <div class="checkbox-row kb-row">
             <label v-for="d in knowledgeDocs" :key="d.id" class="checkbox-item kb-item" :title="d.fileName">
               <input type="checkbox" :value="d.id" v-model="form.knowledgeDocumentIds" /> {{ d.fileName }}
             </label>
-            <span v-if="knowledgeDocs.length === 0" class="kb-empty">知识库暂无已完成索引的文档</span>
+            <span v-if="knowledgeDocs.length === 0" class="kb-empty">{{ $t('agent.modal.kbEmpty') }}</span>
           </div>
-          <label>公共 Skill（提示词包，勾选后注入指令段）</label>
+          <label>{{ $t('agent.modal.skill') }}</label>
           <div class="checkbox-row kb-row">
             <label v-for="s in skillOptions" :key="s.id" class="checkbox-item kb-item" :title="s.description">
               <input type="checkbox" :value="s.id" v-model="form.skillIds" /> {{ s.name }}
             </label>
-            <span v-if="skillOptions.length === 0" class="kb-empty">Skill 目录为空或未扫描到 SKILL.md</span>
-          </div>          <label>检索条数 topK（1-10）</label>
+            <span v-if="skillOptions.length === 0" class="kb-empty">{{ $t('agent.modal.skillEmpty') }}</span>
+          </div>          <label>{{ $t('agent.modal.topK') }}</label>
           <input v-model.number="form.ragTopK" type="number" min="1" max="10" class="kb-topk" />
-          <label>迭代上限</label>
+          <label>{{ $t('agent.modal.maxIter') }}</label>
           <input v-model.number="form.maxIterations" type="number" min="1" max="10" />
-          <label>温度</label>
+          <label>{{ $t('agent.modal.temp') }}</label>
           <input v-model.number="form.temperature" type="number" min="0" max="2" step="0.1" />
-          <label>角色</label>
+          <label>{{ $t('agent.modal.role') }}</label>
           <select v-model="form.role" class="approval-select">
-            <option :value="null">普通 Agent（不可派发）</option>
-            <option value="master">master（可派发子 Agent）</option>
+            <option :value="null">{{ $t('agent.modal.roleWorker') }}</option>
+            <option value="master">{{ $t('agent.modal.roleMaster') }}</option>
           </select>
-          <label v-if="form.role === 'master'">允许派发的子 Agent（多选，仅列非 master）</label>
+          <label v-if="form.role === 'master'">{{ $t('agent.modal.workers') }}</label>
           <div v-if="form.role === 'master'" class="checkbox-row kb-row">
             <label v-for="w in workerCandidates" :key="w.id" class="checkbox-item kb-item" :title="w.description">
               <input type="checkbox" :value="w.id" v-model="form.allowedWorkers" /> {{ w.name }}
             </label>
-            <span v-if="workerCandidates.length === 0" class="kb-empty">暂无可选子 Agent（先创建普通 Agent）</span>
+            <span v-if="workerCandidates.length === 0" class="kb-empty">{{ $t('agent.modal.workersEmpty') }}</span>
           </div>
-          <label>审批策略</label>
+          <label>{{ $t('agent.modal.approval') }}</label>
           <select v-model="form.requireApproval" class="approval-select">
-            <option :value="null">继承默认（search 等外部工具需审批）</option>
-            <option :value="true">全部工具需审批（最严格）</option>
-            <option :value="false">免审批（可信 Agent，工具直接执行）</option>
+            <option :value="null">{{ $t('agent.modal.approvalInherit') }}</option>
+            <option :value="true">{{ $t('agent.modal.approvalAll') }}</option>
+            <option :value="false">{{ $t('agent.modal.approvalNone') }}</option>
           </select>
-          <label>启用</label>
+          <label>{{ $t('agent.modal.enabled') }}</label>
           <input v-model="form.enabled" type="checkbox" class="single-check" />
           </div>
         </div>
         <div class="modal-actions">
-          <button class="btn-sm" @click="modalVisible = false">取消</button>
-          <button v-if="!editingId" class="btn-sm" @click="wizardStep = 1">← 重选模板</button>
-          <button class="btn-sm ok" :disabled="!form.name" @click="submitModal">保存</button>
+          <button class="btn-sm" @click="modalVisible = false">{{ $t('agent.modal.cancel') }}</button>
+          <button v-if="!editingId" class="btn-sm" @click="wizardStep = 1">{{ $t('agent.modal.repick') }}</button>
+          <button class="btn-sm ok" :disabled="!form.name" @click="submitModal">{{ $t('agent.modal.save') }}</button>
         </div>
       </div>
     </div>
@@ -305,6 +305,7 @@
 
 <script setup>
 import { ref, reactive, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message as antdMessage } from 'ant-design-vue'
 import { marked } from 'marked'
 import {
@@ -336,6 +337,7 @@ const form = reactive({
 // T5 创建向导：模板与知识库数据
 const agentTemplates = computed(() => definitions.filter(d => (d.id || '').startsWith('template-')))
 const knowledgeDocs = ref([])
+const { t } = useI18n()
 const wizardStep = ref(1) // 1=选模板 2=配置（创建模式专用）
 
 async function loadKnowledgeDocs() {
@@ -366,7 +368,7 @@ function applyTemplate(tpl) {
 }
 
 // P8b 审批策略展示文案
-const approvalLabel = (v) => v === true ? '全部审批' : v === false ? '免审批' : '继承默认'
+const approvalLabel = (v) => v === true ? t('agent.labels.allApproval') : v === false ? t('agent.labels.noApproval') : t('agent.labels.inherit')
 // R1: master 可派发的子 Agent 候选（排除模板/自身/其他 master）
 const workerCandidates = computed(() => definitions.filter(d =>
   !(d.id || '').startsWith('template-') && d.id !== editingId.value && d.config?.role !== 'master'
@@ -385,7 +387,7 @@ let healthTimer = null
 let pendingTimer = null
 
 const healthText = computed(() =>
-  healthStatus.value === 'UP' ? '引擎运行中' : healthStatus.value === 'DOWN' ? '引擎异常' : '检查中…'
+  healthStatus.value === 'UP' ? t('agent.health.up') : healthStatus.value === 'DOWN' ? t('agent.health.down') : t('agent.health.checking')
 )
 const enabledAgents = computed(() => definitions.filter(a => a.enabled))
 
@@ -465,24 +467,24 @@ async function approvePending(id) {
   try {
     const res = await approveToolCall(id)
     if (res.code === 200) {
-      antdMessage.success('已批准执行')
+      antdMessage.success(t('agent.msgs.approved'))
       loadPending()
     } else {
-      antdMessage.error(res.message || '审批失败')
+      antdMessage.error(res.message || t('agent.msgs.approveFailed'))
     }
-  } catch (e) { antdMessage.error('异常：' + e.message) }
+  } catch (e) { antdMessage.error(t('agent.msgs.exception') + e.message) }
 }
 
 async function rejectPending(id) {
   try {
-    const res = await rejectToolCall(id, '管理台拒绝')
+    const res = await rejectToolCall(id, t('agent.msgs.rejectedBy'))
     if (res.code === 200) {
-      antdMessage.info('已拒绝')
+      antdMessage.info(t('agent.msgs.rejectedInfo'))
       loadPending()
     } else {
-      antdMessage.error(res.message || '操作失败')
+      antdMessage.error(res.message || t('agent.msgs.opFailed'))
     }
-  } catch (e) { antdMessage.error('异常：' + e.message) }
+  } catch (e) { antdMessage.error(t('common.exception') + e.message) }
 }
 
 function openCreateModal() {
@@ -539,14 +541,14 @@ async function submitModal() {
       res = await createDefinition(payload)
     }
     if (res.code === 200) {
-      antdMessage.success(editingId.value ? '更新成功' : '创建成功')
+      antdMessage.success(editingId.value ? t('agent.msgs.updated') : t('agent.msgs.created'))
       modalVisible.value = false
       await reloadDefinitions().catch(() => {})
       loadDefinitions()
     } else {
-      antdMessage.error(res.message || '保存失败')
+      antdMessage.error(res.message || t('agent.msgs.saveFailed'))
     }
-  } catch (e) { antdMessage.error('异常：' + e.message) }
+  } catch (e) { antdMessage.error(t('common.exception') + e.message) }
 }
 
 async function toggleEnabled(agent) {
@@ -555,24 +557,24 @@ async function toggleEnabled(agent) {
     if (res.code === 200) {
       agent.enabled = !agent.enabled
       await reloadDefinitions().catch(() => {})
-      antdMessage.success(agent.enabled ? '已启用' : '已禁用')
+      antdMessage.success(agent.enabled ? t('agent.msgs.enabledMsg') : t('agent.msgs.disabledMsg'))
     } else {
-      antdMessage.error(res.message || '操作失败')
+      antdMessage.error(res.message || t('agent.msgs.opFailed'))
     }
-  } catch (e) { antdMessage.error('异常：' + e.message) }
+  } catch (e) { antdMessage.error(t('common.exception') + e.message) }
 }
 
 async function handleDelete(agent) {
-  if (!window.confirm(`确定删除 Agent「${agent.name}」？此操作不可恢复。`)) return
+  if (!window.confirm(t('agent.msgs.deleteConfirm', { name: agent.name }))) return
   try {
     const res = await deleteDefinition(agent.id)
     if (res.code === 200) {
-      antdMessage.success('已删除')
+      antdMessage.success(t('agent.msgs.deleted'))
       loadDefinitions()
     } else {
-      antdMessage.error(res.message || '删除失败')
+      antdMessage.error(res.message || t('agent.msgs.deleteFailed'))
     }
-  } catch (e) { antdMessage.error('异常：' + e.message) }
+  } catch (e) { antdMessage.error(t('common.exception') + e.message) }
 }
 
 // ========== 调试台逻辑（原 AgentView 对话） ==========
@@ -669,7 +671,7 @@ async function sendMessage() {
           scrollToBottom()
         },
         onError: (e) => {
-          agentMsg.finalAnswer = e && e.message ? `❌ ${e.message}` : '❌ 请求失败'
+          agentMsg.finalAnswer = e && e.message ? t('agent.msgs.failPrefix', { msg: e.message }) : t('agent.msgs.reqFailed')
           agentMsg.streamingText = ''
           agentMsg.streaming = false
           loading.value = false
@@ -689,10 +691,10 @@ async function approve(msg, idx) {
   try {
     const res = await approveToolCall(msg.approval.toolCallId)
     msg.approval.result = res.code === 200
-      ? '✅ 已批准，Agent 继续执行中…'
-      : `❌ ${res.message || '审批失败'}`
+      ? t('agent.msgs.approvedRunning')
+      : t('agent.msgs.failPrefix', { msg: res.message || t('agent.msgs.approveFailed') })
   } catch (e) {
-    msg.approval.result = `❌ 异常：${e.message}`
+    msg.approval.result = t('agent.msgs.failPrefix', { msg: e.message })
   }
 }
 
@@ -700,12 +702,12 @@ async function reject(msg, idx) {
   if (!msg.approval || msg.approval.done) return
   msg.approval.done = true
   try {
-    const res = await rejectToolCall(msg.approval.toolCallId, '用户拒绝')
+    const res = await rejectToolCall(msg.approval.toolCallId, t('agent.msgs.userRejected'))
     msg.approval.result = res.code === 200
-      ? '🚫 已拒绝，Agent 将基于拒绝结果继续'
-      : `❌ ${res.message || '操作失败'}`
+      ? t('agent.msgs.rejectedContinuing')
+      : t('agent.msgs.failPrefix', { msg: res.message || t('agent.msgs.opFailed') })
   } catch (e) {
-    msg.approval.result = `❌ 异常：${e.message}`
+    msg.approval.result = t('agent.msgs.failPrefix', { msg: e.message })
   }
 }
 

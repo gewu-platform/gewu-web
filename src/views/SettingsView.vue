@@ -11,8 +11,8 @@
             </svg>
           </div>
           <div class="nav-title-group">
-            <span class="nav-title">设置</span>
-            <span class="nav-subtitle">偏好与配置</span>
+            <span class="nav-title">{{ $t('settings.nav.title') }}</span>
+            <span class="nav-subtitle">{{ $t('settings.nav.sub') }}</span>
           </div>
         </div>
 
@@ -78,19 +78,19 @@
                   </svg>
                 </div>
                 <div>
-                  <h2 class="section-title">账户设置</h2>
-                  <p class="section-desc">管理您的账户信息</p>
+                  <h2 class="section-title">{{ $t('settings.account.title') }}</h2>
+                  <p class="section-desc">{{ $t('settings.account.desc') }}</p>
                 </div>
               </div>
 
               <div class="settings-panel">
                 <div class="panel-field">
                   <div class="field-label-row">
-                    <label class="field-label">用户名</label>
+                    <label class="field-label">{{ $t('settings.account.username') }}</label>
                   </div>
                   <a-input
                     :value="accountInfo.username"
-                    placeholder="未登录"
+                    :placeholder="$t('settings.account.notLoggedIn')"
                     size="large"
                     class="field-input"
                     disabled
@@ -101,12 +101,12 @@
 
                 <div class="panel-field">
                   <div class="field-label-row">
-                    <label class="field-label">昵称</label>
-                    <span class="field-badge optional">可修改</span>
+                    <label class="field-label">{{ $t('settings.account.nickname') }}</label>
+                    <span class="field-badge optional">{{ $t('settings.account.editable') }}</span>
                   </div>
                   <a-input
                     v-model:value="profileForm.nickname"
-                    placeholder="设置昵称"
+                    :placeholder="$t('settings.account.nicknamePh')"
                     size="large"
                     class="field-input"
                     :disabled="!isLoggedIn"
@@ -116,10 +116,10 @@
                 <div class="field-divider" />
 
                 <div class="panel-field">
-                  <label class="field-label">邮箱</label>
+                  <label class="field-label">{{ $t('settings.account.email') }}</label>
                   <a-input
                     :value="accountInfo.email"
-                    placeholder="未设置"
+                    :placeholder="$t('settings.account.notSet')"
                     size="large"
                     class="field-input"
                     disabled
@@ -129,12 +129,12 @@
                 <div class="field-divider" />
 
                 <div class="panel-field">
-                  <label class="field-label">密码</label>
+                  <label class="field-label">{{ $t('settings.account.password') }}</label>
                   <a-space>
                     <a-button type="primary" ghost @click="saveProfile" :disabled="!profileChanged || savingProfile">
-                      保存昵称
+                      {{ $t('settings.account.saveNickname') }}
                     </a-button>
-                    <a-button @click="showPasswordModal">修改密码</a-button>
+                    <a-button @click="showPasswordModal">{{ $t('settings.account.changePassword') }}</a-button>
                   </a-space>
                 </div>
               </div>
@@ -158,8 +158,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h2 class="section-title">模型设置</h2>
-                  <p class="section-desc">查看可用模型并切换当前使用的 AI 模型</p>
+                  <h2 class="section-title">{{ $t('settings.modelSection.title') }}</h2>
+                  <p class="section-desc">{{ $t('settings.modelSection.desc') }}</p>
                 </div>
               </div>
 
@@ -173,7 +173,7 @@
                 >
                   <div class="model-card-head">
                     <span class="model-card-id">{{ m.id }}</span>
-                    <span v-if="m.id === activeModel" class="model-card-badge">当前</span>
+                    <span v-if="m.id === activeModel" class="model-card-badge">{{ $t('settings.modelSection.current') }}</span>
                   </div>
                   <div class="model-card-meta">
                     <span class="provider-chip">{{ m.provider }}</span>
@@ -195,36 +195,36 @@
                   </svg>
                 </div>
                 <div>
-                  <h2 class="section-title">模型服务</h2>
-                  <p class="section-desc">配置对话/向量模型服务，保存即生效，无需重启</p>
+                  <h2 class="section-title">{{ $t('settings.provider.title') }}</h2>
+                  <p class="section-desc">{{ $t('settings.provider.desc') }}</p>
                 </div>
               </div>
 
               <div class="provider-toolbar">
-                <button class="provider-btn primary" @click="openProviderForm()">+ 新增配置</button>
+                <button class="provider-btn primary" @click="openProviderForm()">{{ $t('settings.provider.newBtn') }}</button>
               </div>
 
               <a-spin :spinning="providersLoading">
-                <div v-if="providers.length === 0" class="provider-empty">暂无配置，点击上方“新增配置”创建</div>
+                <div v-if="providers.length === 0" class="provider-empty">{{ $t('settings.provider.empty') }}</div>
                 <div v-else class="provider-list">
                   <div v-for="p in providers" :key="p.id" class="provider-card">
                     <div class="provider-card-head">
                       <span class="provider-card-name">{{ p.name }}</span>
-                      <span class="provider-chip" :class="p.providerType">{{ p.providerType === 'chat' ? '对话' : '向量' }}</span>
-                      <span v-if="p.isActive" class="model-card-badge">当前</span>
+                      <span class="provider-chip" :class="p.providerType">{{ p.providerType === 'chat' ? $t('settings.provider.chat') : $t('settings.provider.embedding') }}</span>
+                      <span v-if="p.isActive" class="model-card-badge">{{ $t('settings.provider.current') }}</span>
                     </div>
                     <div class="provider-card-meta">
                       <span class="provider-chip">{{ p.vendor }}</span>
                       <span class="model-card-name">{{ p.modelName }}</span>
                       <span v-if="p.providerType === 'embedding' && p.dimension" class="dim-chip">{{ p.dimension }}d</span>
-                      <span class="key-chip">{{ p.hasApiKey ? p.apiKeyMasked : '未配置' }}</span>
+                      <span class="key-chip">{{ p.hasApiKey ? p.apiKeyMasked : $t('settings.provider.notConfigured') }}</span>
                     </div>
                     <p v-if="p.description" class="model-card-desc">{{ p.description }}</p>
                     <div class="provider-card-actions">
-                      <button class="provider-btn small" :disabled="testingId === p.id" @click="testProviderConn(p)">{{ testingId === p.id ? '测试中…' : '测试连通' }}</button>
-                      <button v-if="!p.isActive" class="provider-btn small" :disabled="actingId === p.id" @click="activateProviderRow(p)">激活</button>
-                      <button class="provider-btn small" @click="openProviderForm(p)">编辑</button>
-                      <button class="provider-btn small danger" @click="removeProvider(p)">删除</button>
+                      <button class="provider-btn small" :disabled="testingId === p.id" @click="testProviderConn(p)">{{ testingId === p.id ? $t('settings.provider.testing') : $t('settings.provider.testConn') }}</button>
+                      <button v-if="!p.isActive" class="provider-btn small" :disabled="actingId === p.id" @click="activateProviderRow(p)">{{ $t('settings.provider.activate') }}</button>
+                      <button class="provider-btn small" @click="openProviderForm(p)">{{ $t('settings.provider.edit') }}</button>
+                      <button class="provider-btn small danger" @click="removeProvider(p)">{{ $t('settings.provider.delete') }}</button>
                     </div>
                   </div>
                 </div>
@@ -232,41 +232,41 @@
 
               <a-modal
                 v-model:visible="providerFormOpen"
-                :title="providerForm.id ? '编辑模型服务' : '新增模型服务'"
+                :title="providerForm.id ? $t('settings.provider.formEdit') : $t('settings.provider.formNew')"
                 :confirm-loading="providerSaving"
                 @ok="saveProviderForm"
               >
                 <a-form layout="vertical" style="margin-top: 12px">
-                  <a-form-item :label="'配置名称'" required>
+                  <a-form-item :label="$t('settings.provider.name')" required>
                     <a-input v-model:value="providerForm.name" :disabled="!!providerForm.id" placeholder="my-chat-model" />
                   </a-form-item>
-                  <a-form-item :label="'类型'" required>
+                  <a-form-item :label="$t('settings.provider.type')" required>
                     <a-radio-group v-model:value="providerForm.providerType" :disabled="!!providerForm.id">
-                      <a-radio value="chat">对话</a-radio>
-                      <a-radio value="embedding">向量</a-radio>
+                      <a-radio value="chat">{{ $t('settings.provider.chat') }}</a-radio>
+                      <a-radio value="embedding">{{ $t('settings.provider.embedding') }}</a-radio>
                     </a-radio-group>
                   </a-form-item>
                   <a-form-item :label="'API Base URL'" required>
                     <a-input v-model:value="providerForm.baseUrl" placeholder="https://ark.cn-beijing.volces.com/api/v3" />
                   </a-form-item>
-                  <a-form-item :label="'服务商'" >
+                  <a-form-item :label="$t('settings.provider.provider')" >
                     <a-select v-model:value="providerForm.vendor">
                       <a-select-option value="volcengine">volcengine</a-select-option>
                       <a-select-option value="aliyun">aliyun</a-select-option>
                       <a-select-option value="openai">openai</a-select-option>
                     </a-select>
                   </a-form-item>
-                  <a-form-item :label="'API Key'" :extra="providerForm.id ? '留空保持原值' : '保存后加密存储，不再回显'">
+                  <a-form-item :label="$t('settings.provider.apiKey')" :extra="providerForm.id ? $t('settings.provider.extraKeep') : $t('settings.provider.extraNew')">
                     <a-input-password v-model:value="providerForm.apiSpecialKey" autocomplete="new-password" />
                   </a-form-item>
-                  <a-form-item :label="'模型名称/端点 ID'" required>
+                  <a-form-item :label="$t('settings.provider.modelName')" required>
                     <a-input v-model:value="providerForm.modelName" placeholder="ep-xxxx / doubao-xxx" />
                   </a-form-item>
                   <template v-if="providerForm.providerType === 'embedding'">
-                    <a-form-item :label="'向量维度'" >
+                    <a-form-item :label="$t('settings.provider.dim')" >
                       <a-input-number v-model:value="providerForm.dimension" :min="64" :max="8192" style="width: 100%" />
                     </a-form-item>
-                    <a-form-item :label="'embedding 模式'" >
+                    <a-form-item :label="$t('settings.provider.embeddingMode')" >
                       <a-radio-group v-model:value="providerForm.mode">
                         <a-radio value="multimodal">multimodal</a-radio>
                         <a-radio value="text">text</a-radio>
@@ -274,17 +274,17 @@
                     </a-form-item>
                   </template>
                   <template v-else>
-                    <a-form-item :label="'随机性 (0-2)'" >
+                    <a-form-item :label="$t('settings.provider.temp')" >
                       <a-slider v-model:value="providerForm.temperatureNum" :min="0" :max="2" :step="0.1" />
                     </a-form-item>
-                    <a-form-item :label="'最大 token'" >
+                    <a-form-item :label="$t('settings.provider.maxTokens')" >
                       <a-input-number v-model:value="providerForm.maxTokens" :min="16" :max="32768" style="width: 100%" />
                     </a-form-item>
                   </template>
-                  <a-form-item :label="'描述'" >
+                  <a-form-item :label="$t('settings.provider.desc')" >
                     <a-input v-model:value="providerForm.description" />
                   </a-form-item>
-                  <a-checkbox v-model:checked="providerForm.isActive">保存后激活为当前服务</a-checkbox>
+                  <a-checkbox v-model:checked="providerForm.isActive">{{ $t('settings.provider.saveActivate') }}</a-checkbox>
                 </a-form>
               </a-modal>
             </section>
@@ -300,8 +300,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h2 class="section-title">对话设置</h2>
-                  <p class="section-desc">上下文自动压缩：长对话超过阈值时自动把旧消息合并为摘要，控制 token 占用</p>
+                  <h2 class="section-title">{{ $t('settings.chatSettings.title') }}</h2>
+                  <p class="section-desc">{{ $t('settings.chatSettings.desc') }}</p>
                 </div>
               </div>
 
@@ -309,29 +309,29 @@
                 <label class="compact-opt-row">
                   <input type="checkbox" v-model="compactConf.autoCompact" @change="saveCompactConf" />
                   <div class="compact-opt-text">
-                    <span class="compact-opt-label">自动压缩</span>
-                    <span class="compact-opt-desc">发送消息前估算 token，未压缩内容超过阈值时自动压缩历史</span>
+                    <span class="compact-opt-label">{{ $t('settings.chatSettings.autoCompact') }}</span>
+                    <span class="compact-opt-desc">{{ $t('settings.chatSettings.autoCompactDesc') }}</span>
                   </div>
                 </label>
                 <div class="compact-opt-row">
                   <div class="compact-opt-text">
-                    <span class="compact-opt-label">压缩阈值（tokens）</span>
-                    <span class="compact-opt-desc">超过该值触发自动压缩（1000 - 200000）</span>
+                    <span class="compact-opt-label">{{ $t('settings.chatSettings.threshold') }}</span>
+                    <span class="compact-opt-desc">{{ $t('settings.chatSettings.thresholdDesc') }}</span>
                   </div>
                   <input class="compact-opt-input" type="number" v-model.number="compactConf.compactThreshold" min="1000" max="200000" @change="saveCompactConf" />
                 </div>
                 <div class="compact-opt-row">
                   <div class="compact-opt-text">
-                    <span class="compact-opt-label">保留最近消息（条）</span>
-                    <span class="compact-opt-desc">压缩时保留最近 N 条原文不进摘要（2 - 200）</span>
+                    <span class="compact-opt-label">{{ $t('settings.chatSettings.keepRecent') }}</span>
+                    <span class="compact-opt-desc">{{ $t('settings.chatSettings.keepRecentDesc') }}</span>
                   </div>
                   <input class="compact-opt-input" type="number" v-model.number="compactConf.compactKeepRecent" min="2" max="200" @change="saveCompactConf" />
                 </div>
                 <div class="compact-manual">
                   <button class="compact-manual-btn" :disabled="compacting || !chatStore.sessionId" @click="manualCompact">
-                    {{ compacting ? '压缩中…' : '立即压缩当前会话' }}
+                    {{ compacting ? $t('settings.chatSettings.compacting') : $t('settings.chatSettings.compactNow') }}
                   </button>
-                  <span class="compact-manual-hint">{{ chatStore.sessionId ? '当前会话：' + chatStore.sessionId.slice(0, 8) + '…' : '暂无活跃会话（去对话页发起/选择会话后可压缩）' }}</span>
+                  <span class="compact-manual-hint">{{ chatStore.sessionId ? $t('settings.chatSettings.currentSession', { id: chatStore.sessionId.slice(0, 8) }) : $t('settings.chatSettings.noActiveSession') }}</span>
                   <div v-if="compactResult" class="compact-manual-result">{{ compactResult }}</div>
                 </div>
               </div>
@@ -347,8 +347,8 @@
                   </svg>
                 </div>
                 <div>
-                  <h2 class="section-title">数据管理</h2>
-                  <p class="section-desc">清除会话历史等本地数据</p>
+                  <h2 class="section-title">{{ $t('settings.data.title') }}</h2>
+                  <p class="section-desc">{{ $t('settings.data.desc') }}</p>
                 </div>
               </div>
 
@@ -362,8 +362,8 @@
                       </svg>
                     </div>
                     <div class="data-card-text">
-                      <span class="data-card-label">清空当前会话</span>
-                      <span class="data-card-desc">删除当前对话的消息记录</span>
+                      <span class="data-card-label">{{ $t('settings.data.clearCurrent') }}</span>
+                      <span class="data-card-desc">{{ $t('settings.data.clearCurrentDesc') }}</span>
                     </div>
                   </button>
                   <button class="data-card danger-card" @click="clearAllSessions">
@@ -373,8 +373,8 @@
                       </svg>
                     </div>
                     <div class="data-card-text">
-                      <span class="data-card-label">删除全部会话</span>
-                      <span class="data-card-desc">删除所有对话记录（不可恢复）</span>
+                      <span class="data-card-label">{{ $t('settings.data.deleteAll') }}</span>
+                      <span class="data-card-desc">{{ $t('settings.data.deleteAllDesc') }}</span>
                     </div>
                   </button>
                 </div>
@@ -394,34 +394,34 @@
                 </svg>
               </div>
               <div>
-                <h2 class="section-title">插件仓库</h2>
-                <p class="section-desc">常用插件清单（首版形态＝外部 MCP server），一键安装即桥接工具</p>
+                <h2 class="section-title">{{ $t('settings.plugin.title') }}</h2>
+                <p class="section-desc">{{ $t('settings.plugin.desc') }}</p>
               </div>
             </div>
 
             <div class="plugin-panel">
               <div class="plugin-toolbar">
-                <button class="btn btn-secondary" @click="loadPlugins">刷新清单</button>
-                <span class="plugin-hint">内置样例端点为占位地址，需先自建 MCP server 并修改端点；工具白名单留空=不限</span>
+                <button class="btn btn-secondary" @click="loadPlugins">{{ $t('settings.plugin.refresh') }}</button>
+                <span class="plugin-hint">{{ $t('settings.plugin.hint') }}</span>
                 <div class="plugin-add-row">
-                  <a-input v-model:value="newPlugin.code" placeholder="编码（如 my-plugin）" style="width: 150px" />
-                  <a-input v-model:value="newPlugin.name" placeholder="名称" style="width: 130px" />
-                  <a-input v-model:value="newPlugin.endpoint" placeholder="端点 SSE URL" style="flex: 1" />
-                  <a-input v-model:value="newPlugin.toolAllow" placeholder="工具白名单：a,b 或留空不限" style="width: 220px" />
-                  <button class="btn-sm ok" @click="addPluginRow">新增</button>
+                  <a-input v-model:value="newPlugin.code" :placeholder="$t('settings.plugin.codePh')" style="width: 150px" />
+                  <a-input v-model:value="newPlugin.name" :placeholder="$t('settings.plugin.namePh')" style="width: 130px" />
+                  <a-input v-model:value="newPlugin.endpoint" :placeholder="$t('settings.plugin.endpointPh')" style="flex: 1" />
+                  <a-input v-model:value="newPlugin.toolAllow" :placeholder="$t('settings.plugin.allowPh')" style="width: 220px" />
+                  <button class="btn-sm ok" @click="addPluginRow">{{ $t('settings.plugin.add') }}</button>
                 </div>
               </div>
 
               <table v-if="plugins.length" class="plugin-table">
                 <thead>
                   <tr>
-                    <th>编码</th>
-                    <th>名称</th>
-                    <th>描述</th>
-                    <th>端点</th>
-                    <th>工具白名单</th>
-                    <th>状态</th>
-                    <th>操作</th>
+                    <th>{{ $t('settings.plugin.colCode') }}</th>
+                    <th>{{ $t('settings.plugin.colName') }}</th>
+                    <th>{{ $t('settings.plugin.colDesc') }}</th>
+                    <th>{{ $t('settings.plugin.colEndpoint') }}</th>
+                    <th>{{ $t('settings.plugin.colAllow') }}</th>
+                    <th>{{ $t('settings.plugin.colStatus') }}</th>
+                    <th>{{ $t('settings.plugin.colAction') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -430,21 +430,21 @@
                     <td>{{ p.name }}</td>
                     <td class="td-desc">{{ p.description || '—' }}</td>
                     <td class="td-endpoint">{{ p.endpoint }}</td>
-                    <td class="td-allow">{{ p.toolAllow || '不限（全部桥接）' }}</td>
+                    <td class="td-allow">{{ p.toolAllow || $t('settings.plugin.allowAll') }}</td>
                     <td>
                       <span class="plugin-status" :class="p.installed ? 'on' : 'off'">
-                        {{ p.installed ? '已安装' : '未安装' }}
+                        {{ p.installed ? $t('settings.plugin.installed') : $t('settings.plugin.notInstalled') }}
                       </span>
                     </td>
                     <td class="td-actions">
-                      <button v-if="!p.installed" class="btn-sm ok" @click="installPluginRow(p)">安装</button>
-                      <button v-else class="btn-sm" @click="uninstallPluginRow(p)">卸载</button>
-                      <button v-if="!p.builtin" class="btn-sm danger" @click="deletePluginRow(p)">删除</button>
+                      <button v-if="!p.installed" class="btn-sm ok" @click="installPluginRow(p)">{{ $t('settings.plugin.install') }}</button>
+                      <button v-else class="btn-sm" @click="uninstallPluginRow(p)">{{ $t('settings.plugin.uninstall') }}</button>
+                      <button v-if="!p.builtin" class="btn-sm danger" @click="deletePluginRow(p)">{{ $t('settings.plugin.delete') }}</button>
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <p v-else class="plugin-empty">暂无插件条目</p>
+              <p v-else class="plugin-empty">{{ $t('settings.plugin.empty') }}</p>
             </div>
           </section>
 
@@ -458,26 +458,26 @@
                 </svg>
               </div>
               <div>
-                <h2 class="section-title">公共 Skill</h2>
-                <p class="section-desc">扫描目录中的 SKILL.md，作为提示词包供 Agent 勾选启用</p>
+                <h2 class="section-title">{{ $t('settings.skill.title') }}</h2>
+                <p class="section-desc">{{ $t('settings.skill.desc') }}</p>
               </div>
             </div>
 
             <div class="skill-panel">
               <div class="skill-dir-row">
-                <label class="skill-dir-label">扫描目录</label>
-                <a-input v-model:value="skillDirInput" placeholder="例如 C:\Users\25333\.agents\skills" style="flex: 1" />
-                <button class="btn btn-secondary" @click="applySkillDir">应用并重扫</button>
-                <button class="btn btn-secondary" @click="loadSkillDir">刷新</button>
+                <label class="skill-dir-label">{{ $t('settings.skill.dir') }}</label>
+                <a-input v-model:value="skillDirInput" :placeholder="$t('settings.skill.dirPh')" style="flex: 1" />
+                <button class="btn btn-secondary" @click="applySkillDir">{{ $t('settings.skill.apply') }}</button>
+                <button class="btn btn-secondary" @click="loadSkillDir">{{ $t('settings.skill.refresh') }}</button>
               </div>
               <div class="skill-meta">
-                <span>当前生效：{{ skillDirInfo.dir || "—" }}</span>
+                <span>{{ $t('settings.skill.current', { dir: skillDirInfo.dir || '—' }) }}</span>
                 <span class="skill-readable" :class="skillDirInfo.readable ? 'on' : 'off'">
-                  {{ skillDirInfo.readable ? "目录可读" : "目录不存在或不可读" }}
+                  {{ skillDirInfo.readable ? $t('settings.skill.readable') : $t('settings.skill.notReadable') }}
                 </span>
-                <span>Skill 数：{{ skillDirInfo.count !== undefined ? skillDirInfo.count : "—" }}</span>
+                <span>{{ $t('settings.skill.count', { n: skillDirInfo.count !== undefined ? skillDirInfo.count : '—' }) }}</span>
               </div>
-              <p class="skill-hint">说明：此处修改为运行时生效（仅内存），重启后回退到配置文件 / 环境变量 GEWU_SKILLS_DIR 的值。</p>
+              <p class="skill-hint">{{ $t('settings.skill.hint') }}</p>
             </div>
           </section>
 
@@ -488,7 +488,7 @@
               <polyline points="1 4 1 10 7 10"/>
               <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
             </svg>
-            恢复默认
+            {{ $t('settings.restore.btn') }}
           </button>
         </div>
       </div>
@@ -497,22 +497,22 @@
     <!-- 修改密码弹窗 -->
     <a-modal
       v-model:visible="pwdModalOpen"
-      title="修改密码"
+      :title="$t('settings.pwd.modalTitle')"
       :confirm-loading="changingPwd"
-      ok-text="确认修改"
-      cancel-text="取消"
+      :ok-text="$t('settings.pwd.okConfirm')"
+      :cancel-text="$t('common.cancel')"
       @ok="submitPassword"
     >
       <div class="pwd-form">
         <a-form layout="vertical">
-          <a-form-item label="原密码" required>
-            <a-input-password v-model:value="pwdForm.oldPassword" placeholder="请输入原密码" />
+          <a-form-item :label="$t('settings.pwd.oldPwd')" required>
+            <a-input-password v-model:value="pwdForm.oldPassword" :placeholder="$t('settings.pwd.oldPwdPh')" />
           </a-form-item>
-          <a-form-item label="新密码" required>
-            <a-input-password v-model:value="pwdForm.newPassword" placeholder="至少 6 位" />
+          <a-form-item :label="$t('settings.pwd.newPwd')" required>
+            <a-input-password v-model:value="pwdForm.newPassword" :placeholder="$t('settings.pwd.newPwdPh')" />
           </a-form-item>
-          <a-form-item label="确认新密码" required>
-            <a-input-password v-model:value="pwdForm.confirmPassword" placeholder="再次输入新密码" />
+          <a-form-item :label="$t('settings.pwd.confirmPwd')" required>
+            <a-input-password v-model:value="pwdForm.confirmPassword" :placeholder="$t('settings.pwd.confirmPwdPh')" />
           </a-form-item>
         </a-form>
       </div>
@@ -522,6 +522,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useAuthStore } from '@/stores/auth'
@@ -531,6 +532,7 @@ import { listProviders, createProvider, updateProvider, deleteProvider, activate
 import { getProfile, updateProfile, changePassword } from '@/api/user'
 import { listPlugins, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
 import { listSkills, rescanSkills, getSkillsDir, setSkillsDir } from '@/api/settings'
+const { t } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -542,14 +544,14 @@ void router
 const contentRef = ref(null)
 const activeCategory = ref('section-account')
 
-const categories = [
-  { id: 'section-account', label: '账户设置', color: '#6366F1' },
-  { id: 'section-model', label: '模型设置', color: '#0ea5e9' },
-  { id: 'section-chat', label: '对话设置', color: '#f59e0b' },
-  { id: 'section-data', label: '数据管理', color: '#ef4444' },
-  { id: 'section-plugin', label: '插件仓库', color: '#8b5cf6' },
-  { id: 'section-skill', label: '公共 Skill', color: '#0ea5e9' },
-]
+const categories = computed(() => [
+  { id: 'section-account', label: t('settings.tabs.account'), color: '#6366F1' },
+  { id: 'section-model', label: t('settings.tabs.model'), color: '#0ea5e9' },
+  { id: 'section-chat', label: t('settings.tabs.chat'), color: '#f59e0b' },
+  { id: 'section-data', label: t('settings.tabs.data'), color: '#ef4444' },
+  { id: 'section-plugin', label: t('settings.tabs.plugin'), color: '#8b5cf6' },
+  { id: 'section-skill', label: t('settings.tabs.skill'), color: '#0ea5e9' }
+])
 
 
 // ==================== 对话设置（T3 上下文压缩，自对话侧栏迁入） ====================
@@ -579,15 +581,15 @@ async function saveCompactConf() {
       compactThreshold: Number(compactConf.compactThreshold),
       compactKeepRecent: Number(compactConf.compactKeepRecent)
     })
-    message.success('压缩设置已保存，全局生效')
+    message.success(t('settings.chatSettings.saved'))
   } catch (e) {
-    message.error(e.response?.data?.message || e.message || '保存失败')
+    message.error(e.response?.data?.message || e.message || t('settings.chatSettings.saveFailed'))
   }
 }
 
 async function manualCompact() {
   if (!chatStore.sessionId) {
-    message.warning('没有活跃会话——先到对话页发起或选择一个会话')
+    message.warning(t('settings.chatSettings.noSession'))
     return
   }
   compacting.value = true
@@ -597,11 +599,11 @@ async function manualCompact() {
     let d = r && (r.data !== undefined ? r.data : r)
     if (d && d.data !== undefined) d = d.data
     const len = d && d.summary ? d.summary.length : 0
-    compactResult.value = `已生成 ${len} 字摘要（保留最近 ${d?.keepRecent ?? '-'} 条原文）`
-    message.success('压缩完成')
+    compactResult.value = t('settings.chatSettings.summaryDone', { n: len, keep: d?.keepRecent ?? '-' })
+    message.success(t('settings.chatSettings.compactDone'))
   } catch (e) {
-    message.error(e.response?.data?.message || e.message || '压缩失败')
-    compactResult.value = '压缩失败，请重试'
+    message.error(e.response?.data?.message || e.message || t('settings.chatSettings.compactFailed'))
+    compactResult.value = t('settings.chatSettings.compactFailedRetry')
   } finally {
     compacting.value = false
   }
@@ -613,7 +615,7 @@ onMounted(() => { loadCompactConf() })
 const plugins = ref([])
 const newPlugin = reactive({ code: '', name: '', endpoint: '', toolAllow: '' })
 async function addPluginRow() {
-  if (!newPlugin.code || !newPlugin.endpoint) { message.warning('编码与端点必填'); return }
+  if (!newPlugin.code || !newPlugin.endpoint) { message.warning(t('settings.plugin.codeRequired')); return }
   try {
     const res = await createPlugin({
       code: newPlugin.code,
@@ -622,9 +624,9 @@ async function addPluginRow() {
       endpoint: newPlugin.endpoint,
       toolAllow: newPlugin.toolAllow || null
     })
-    if (res.code === 200) { message.success('已新增：' + newPlugin.code); newPlugin.code = ''; newPlugin.name = ''; newPlugin.endpoint = ''; newPlugin.toolAllow = ''; await loadPlugins() }
-    else message.error(res.message || '新增失败')
-  } catch (e) { message.error('异常：' + e.message) }
+    if (res.code === 200) { message.success(t('settings.plugin.added', { code: newPlugin.code })); newPlugin.code = ''; newPlugin.name = ''; newPlugin.endpoint = ''; newPlugin.toolAllow = ''; await loadPlugins() }
+    else message.error(res.message || t('settings.plugin.addFailed'))
+  } catch (e) { message.error(t('settings.plugin.exception') + e.message) }
 }
 async function loadPlugins() {
   try {
@@ -636,24 +638,24 @@ async function loadPlugins() {
 async function installPluginRow(p) {
   try {
     const res = await installPlugin(p.id)
-    if (res.code === 200) { message.success('安装成功：' + p.code); await loadPlugins() }
-    else message.error(res.message || '安装失败')
-  } catch (e) { message.error('异常：' + e.message) }
+    if (res.code === 200) { message.success(t('settings.plugin.installedMsg', { code: p.code })); await loadPlugins() }
+    else message.error(res.message || t('settings.plugin.installFailed'))
+  } catch (e) { message.error(t('common.exception') + e.message) }
 }
 async function uninstallPluginRow(p) {
   try {
     const res = await uninstallPlugin(p.id)
-    if (res.code === 200) { message.success('卸载成功：' + p.code); await loadPlugins() }
-    else message.error(res.message || '卸载失败')
-  } catch (e) { message.error('异常：' + e.message) }
+    if (res.code === 200) { message.success(t('settings.plugin.uninstalledMsg', { code: p.code })); await loadPlugins() }
+    else message.error(res.message || t('settings.plugin.uninstallFailed'))
+  } catch (e) { message.error(t('common.exception') + e.message) }
 }
 async function deletePluginRow(p) {
-  if (!window.confirm('确定删除插件条目「' + p.code + '」？')) return
+  if (!window.confirm(t('settings.plugin.deleteConfirm', { code: p.code }))) return
   try {
     const res = await deletePlugin(p.id)
-    if (res.code === 200) { message.success('已删除'); await loadPlugins() }
-    else message.error(res.message || '删除失败')
-  } catch (e) { message.error('异常：' + e.message) }
+    if (res.code === 200) { message.success(t('settings.provider.deleted')); await loadPlugins() }
+    else message.error(res.message || t('settings.plugin.deleteFailed'))
+  } catch (e) { message.error(t('common.exception') + e.message) }
 }
 loadPlugins()
 
@@ -673,13 +675,13 @@ async function loadSkillDir() {
   } catch (e) { console.error('[Gewu] Skill 目录加载失败:', e) }
 }
 async function applySkillDir() {
-  if (!skillDirInput.value) { message.warning('请输入目录'); return }
+  if (!skillDirInput.value) { message.warning(t('settings.skill.dirRequired')); return }
   try {
     const res = await setSkillsDir(skillDirInput.value)
     const d = res?.data !== undefined ? res.data : res
-    if (d.changed) { message.success('目录已切换并重扫：' + d.dir); await loadSkillDir() }
-    else message.error(d.message || '切换失败（目录不存在或不可读）')
-  } catch (e) { message.error('异常：' + e.message) }
+    if (d.changed) { message.success(t('settings.skill.switched', { dir: d.dir })); await loadSkillDir() }
+    else message.error(d.message || t('settings.skill.switchFailed'))
+  } catch (e) { message.error(t('common.exception') + e.message) }
 }
 loadSkillDir()
 
@@ -697,8 +699,8 @@ async function loadAccountInfo() {
     const res = await getProfile()
     const data = res?.data !== undefined ? res.data : res
     if (data) {
-      accountInfo.username = data.username || '未设置'
-      accountInfo.email = data.email || '未设置'
+      accountInfo.username = data.username || t('settings.account.notSet')
+      accountInfo.email = data.email || t('settings.account.notSet')
       accountInfo.nickname = data.nickname || ''
       profileForm.nickname = data.nickname || ''
     }
@@ -706,8 +708,8 @@ async function loadAccountInfo() {
     // /profile 401 时回退 store
     const u = authStore.currentUser
     if (u) {
-      accountInfo.username = u.username || '未设置'
-      accountInfo.email = u.email || '未设置'
+      accountInfo.username = u.username || t('settings.account.notSet')
+      accountInfo.email = u.email || t('settings.account.notSet')
       accountInfo.nickname = u.nickname || ''
       profileForm.nickname = u.nickname || ''
     }
@@ -718,10 +720,10 @@ async function saveProfile() {
   savingProfile.value = true
   try {
     await updateProfile({ nickname: profileForm.nickname })
-    message.success('昵称已更新')
+    message.success(t('settings.account.nicknameUpdated'))
     await loadAccountInfo()
   } catch (e) {
-    message.error('更新失败：' + (e.message || '未知错误'))
+    message.error(t('settings.account.updateFailed') + (e.message || t('common.failed')))
   } finally {
     savingProfile.value = false
   }
@@ -745,28 +747,28 @@ function showPasswordModal() {
 
 async function submitPassword() {
   if (!pwdForm.oldPassword || !pwdForm.newPassword) {
-    message.warning('请填写完整')
+    message.warning(t('settings.pwd.fillAll'))
     return
   }
   if (pwdForm.newPassword.length < 6) {
-    message.warning('新密码至少 6 位')
+    message.warning(t('settings.pwd.tooShort'))
     return
   }
   if (pwdForm.newPassword !== pwdForm.confirmPassword) {
-    message.warning('两次输入的新密码不一致')
+    message.warning(t('settings.pwd.mismatch'))
     return
   }
   changingPwd.value = true
   try {
     await changePassword({ oldPassword: pwdForm.oldPassword, newPassword: pwdForm.newPassword })
-    message.success('密码修改成功，请重新登录')
+    message.success(t('settings.pwd.changed'))
     pwdModalOpen.value = false
     setTimeout(() => {
       authStore.logout()
       router.push('/')
     }, 1200)
   } catch (e) {
-    message.error('修改失败：' + (e.message || '未知错误'))
+    message.error(t('settings.pwd.failed') + (e.message || t('common.failed')))
   } finally {
     changingPwd.value = false
   }
@@ -820,11 +822,11 @@ function openProviderForm(row) {
 
 async function saveProviderForm() {
   if (!providerForm.name || !providerForm.baseUrl || !providerForm.modelName) {
-    message.warning('请填写名称、Base URL 与模型名称')
+    message.warning(t('settings.provider.nameRequired'))
     return
   }
   if (!providerForm.id && !providerForm.apiSpecialKey) {
-    message.warning('新增配置需要填写 API Key')
+    message.warning(t('settings.provider.apiKeyRequired'))
     return
   }
   providerSaving.value = true
@@ -844,12 +846,12 @@ async function saveProviderForm() {
     }
     if (providerForm.id) { await updateProvider(providerForm.id, payload) }
     else { await createProvider(payload) }
-    message.success('已保存，配置即时生效')
+    message.success(t('settings.provider.saved'))
     providerFormOpen.value = false
     await loadProviders()
     await loadModels()
   } catch (e) {
-    message.error(e.message || '保存失败')
+    message.error(e.message || t('settings.provider.saveFailed'))
   } finally {
     providerSaving.value = false
   }
@@ -857,17 +859,17 @@ async function saveProviderForm() {
 
 async function removeProvider(row) {
   Modal.confirm({
-    title: '删除模型服务配置',
-    content: '确定删除 「' + row.name + '」？删除后相关服务回退 yml 配置。',
+    title: t('settings.provider.deleteTitle'),
+    content: t('settings.provider.deleteContent', { name: row.name }),
     okType: 'danger',
     async onOk() {
       try {
         await deleteProvider(row.id)
-        message.success('已删除')
+        message.success(t('settings.plugin.deletedMsg'))
         await loadProviders()
         await loadModels()
       } catch (e) {
-        message.error(e.message || '删除失败')
+        message.error(e.message || t('settings.provider.deleteFailed'))
       }
     }
   })
@@ -877,11 +879,11 @@ async function activateProviderRow(row) {
   actingId.value = row.id
   try {
     await activateProvider(row.id)
-    message.success('已激活：' + row.name)
+    message.success(t('settings.provider.activated', { name: row.name }))
     await loadProviders()
     await loadModels()
   } catch (e) {
-    message.error(e.message || '激活失败')
+    message.error(e.message || t('settings.provider.activateFailed'))
   } finally {
     actingId.value = null
   }
@@ -893,12 +895,12 @@ async function testProviderConn(row) {
     const res = await apiTestProvider(row.id)
     const d = res?.data !== undefined ? res.data : res
     if (d && d.success) {
-      message.success(d.message || '连通正常', 4)
+      message.success(d.message || t('settings.provider.testOk'), 4)
     } else {
-      message.error((d && d.message) || '连通失败', 6)
+      message.error((d && d.message) || t('settings.provider.testFailed'), 6)
     }
   } catch (e) {
-    message.error(e.message || '测试失败', 6)
+    message.error(e.message || t('settings.provider.testError'), 6)
   } finally {
     testingId.value = null
   }
@@ -915,7 +917,7 @@ async function loadModels() {
     models.value = data.models || []
     activeModel.value = data.activeModel || ''
   } catch (e) {
-    console.error('加载模型列表失败:', e)
+    console.error(t('settings.model.loadFailed'), e)
   }
 }
 
@@ -930,9 +932,9 @@ async function switchTo(modelId) {
     if (chatStore.currentModel !== undefined) {
       chatStore.currentModel = data.currentModel || modelId
     }
-    message.success('模型已切换：' + modelId)
+    message.success(t('settings.model.switched', { id: modelId }))
   } catch (e) {
-    message.error('切换失败：' + (e.message || '未知错误'))
+    message.error(t('settings.model.switchFailed') + (e.message || t('common.failed')))
   } finally {
     switching.value = false
   }
@@ -941,15 +943,15 @@ async function switchTo(modelId) {
 // ==================== 数据管理 ====================
 function clearCurrentSession() {
   Modal.confirm({
-    title: '清空当前会话的消息？',
-    okText: '清空',
-    cancelText: '取消',
+    title: t('settings.data.clearTitle'),
+    okText: t('settings.data.okClear'),
+    cancelText: t('common.cancel'),
     async onOk() {
       try {
         await chatStore.clearHistory()
-        message.success('当前会话已清空')
+        message.success(t('settings.data.cleared'))
       } catch (e) {
-        message.error(e.message || '清空失败')
+        message.error(e.message || t('settings.data.clearFailed'))
       }
     }
   })
@@ -957,10 +959,10 @@ function clearCurrentSession() {
 
 function clearAllSessions() {
   Modal.confirm({
-    title: '确定删除所有会话吗？此操作不可恢复！',
-    okText: '全部删除',
+    title: t('settings.data.deleteAllTitle'),
+    okText: t('settings.data.okDeleteAll'),
     okType: 'danger',
-    cancelText: '取消',
+    cancelText: t('common.cancel'),
     async onOk() {
       try {
         const sessions = chatStore.sessions || []
@@ -968,9 +970,9 @@ function clearAllSessions() {
           await chatStore.removeSession(s.sessionId || s.id)
         }
         localStorage.removeItem('lc4j_session_id')
-        message.success('所有会话已删除')
+        message.success(t('settings.data.allDeleted'))
       } catch (e) {
-        message.error('删除失败：' + (e.message || '未知错误'))
+        message.error(t('settings.data.deleteFailed') + (e.message || t('common.failed')))
       }
     }
   })
@@ -979,10 +981,10 @@ function clearAllSessions() {
 // ==================== 恢复默认 ====================
 function resetSettings() {
   Modal.confirm({
-    title: '确定要恢复默认设置吗？',
-    content: '将清除本地登录状态与会话记录',
-    okText: '确定',
-    cancelText: '取消',
+    title: t('settings.restore.title'),
+    content: t('settings.restore.content'),
+    okText: t('chat.msgs.ok'),
+    cancelText: t('common.cancel'),
     async onOk() {
       localStorage.removeItem('auth-token')
       localStorage.removeItem('auth-refresh-token')
