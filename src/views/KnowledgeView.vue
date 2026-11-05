@@ -11,8 +11,8 @@
             </svg>
           </div>
           <div class="nav-title-group">
-            <span class="nav-title">知识库</span>
-            <span class="nav-subtitle">文档管理与检索</span>
+            <span class="nav-title">{{ $t('knowledge.nav.title') }}</span>
+            <span class="nav-subtitle">{{ $t('knowledge.nav.sub') }}</span>
           </div>
         </div>
 
@@ -54,23 +54,23 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">文档列表</h2>
-              <p class="section-desc">已上传的知识文档共 {{ documents.length }} 篇</p>
+              <h2 class="section-title">{{ $t('knowledge.docs.title') }}</h2>
+              <p class="section-desc">{{ $t('knowledge.docs.desc', { n: documents.length }) }}</p>
             </div>
           </div>
 
           <div class="section-body">
-            <a-spin :spinning="loading" tip="加载中...">
+            <a-spin :spinning="loading" :tip="$t('common.loading')">
               <!-- 文档表格 -->
               <div class="doc-table">
                 <div class="doc-table-header">
-                  <span class="col col-name">文件名</span>
-                  <span class="col col-type">类型</span>
-                  <span class="col col-size">大小</span>
-                  <span class="col col-chunks">分块数</span>
-                  <span class="col col-status">状态</span>
-                  <span class="col col-time">上传时间</span>
-                  <span class="col col-action">操作</span>
+                  <span class="col col-name">{{ $t('knowledge.docs.colName') }}</span>
+                  <span class="col col-type">{{ $t('knowledge.docs.colType') }}</span>
+                  <span class="col col-size">{{ $t('knowledge.docs.colSize') }}</span>
+                  <span class="col col-chunks">{{ $t('knowledge.docs.colChunks') }}</span>
+                  <span class="col col-status">{{ $t('knowledge.docs.colStatus') }}</span>
+                  <span class="col col-time">{{ $t('knowledge.docs.colTime') }}</span>
+                  <span class="col col-action">{{ $t('knowledge.docs.colAction') }}</span>
                 </div>
 
                 <div
@@ -97,12 +97,12 @@
                   </span>
                   <span class="col col-time">{{ formatTime(doc.createTime) }}</span>
                   <span class="col col-action">
-                    <button class="action-btn view-btn" @click="viewDocument(doc)" title="查看详情">
+                    <button class="action-btn view-btn" @click="viewDocument(doc)" :title="$t('knowledge.docs.viewDetail')">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                       </svg>
                     </button>
-                    <button class="action-btn delete-btn" @click="confirmDelete(doc)" title="删除">
+                    <button class="action-btn delete-btn" @click="confirmDelete(doc)" :title="$t('knowledge.docs.delete')">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -118,13 +118,13 @@
                     <polyline points="14 2 14 8 20 8"/>
                     <line x1="9" y1="15" x2="15" y2="15"/>
                   </svg>
-                  <p class="empty-title">暂无文档</p>
-                  <p class="empty-desc">切换到「上传文档」标签上传第一个文档</p>
+                  <p class="empty-title">{{ $t('knowledge.docs.empty') }}</p>
+                  <p class="empty-desc">{{ $t('knowledge.docs.emptyDesc') }}</p>
                   <button class="empty-action-btn" @click="activeTab = 'tab-upload'">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
                       <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                     </svg>
-                    上传文档
+                    {{ $t('knowledge.docs.uploadBtn') }}
                   </button>
                 </div>
               </div>
@@ -141,8 +141,8 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">上传文档</h2>
-              <p class="section-desc">支持 PDF、DOCX、TXT、MD 格式</p>
+              <h2 class="section-title">{{ $t('knowledge.upload.title') }}</h2>
+              <p class="section-desc">{{ $t('knowledge.upload.desc') }}</p>
             </div>
           </div>
 
@@ -160,8 +160,8 @@
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <p class="upload-title">拖拽文件到此处，或点击选择文件</p>
-              <p class="upload-desc">支持 PDF、DOCX、TXT、MD 格式，自动解析并生成向量索引</p>
+              <p class="upload-title">{{ $t('knowledge.upload.drop') }}</p>
+              <p class="upload-desc">{{ $t('knowledge.upload.dropDesc') }}</p>
               <input
                 ref="fileInput"
                 type="file"
@@ -175,12 +175,12 @@
             <!-- 上传中状态 -->
             <div v-if="uploading" class="upload-progress">
               <a-spin size="large" />
-              <p class="upload-progress-text">正在上传文档，解析与向量化在后台进行...</p>
+              <p class="upload-progress-text">{{ $t('knowledge.upload.progress') }}</p>
             </div>
 
             <!-- 最近上传 -->
             <div v-if="recentUploads.length > 0" class="recent-uploads">
-              <h3 class="recent-title">最近上传</h3>
+              <h3 class="recent-title">{{ $t('knowledge.recent.title') }}</h3>
               <div class="recent-list">
                 <div v-for="doc in recentUploads" :key="doc.id" class="recent-item" :class="{'recent-success': doc.status === 2, 'recent-failed': doc.status === 3}">
                   <div class="recent-icon" :class="'status-' + doc.status">
@@ -213,8 +213,8 @@
               </svg>
             </div>
             <div>
-              <h2 class="section-title">知识检索</h2>
-              <p class="section-desc">通过语义向量搜索相关知识片段</p>
+              <h2 class="section-title">{{ $t('knowledge.search.title') }}</h2>
+              <p class="section-desc">{{ $t('knowledge.search.desc') }}</p>
             </div>
           </div>
 
@@ -226,7 +226,7 @@
                 </svg>
                 <a-input
                   v-model:value="searchQuery"
-                  placeholder="输入问题或关键词，按 Enter 搜索..."
+                  :placeholder="$t('knowledge.search.placeholder')"
                   size="large"
                   class="search-input"
                   :bordered="false"
@@ -240,12 +240,12 @@
                   :disabled="!searchQuery.trim()"
                   class="search-btn"
                 >
-                  搜索
+                  {{ $t('knowledge.search.btn') }}
                 </a-button>
               </div>
 
               <div class="search-options">
-                <span class="search-option-label">返回结果数：</span>
+                <span class="search-option-label">{{ $t('knowledge.search.topK') }}</span>
                 <a-select v-model:value="topK" style="width: 80px" size="small">
                   <a-select-option :value="3">3</a-select-option>
                   <a-select-option :value="5">5</a-select-option>
@@ -255,9 +255,9 @@
             </div>
 
             <!-- 搜索结果 -->
-            <a-spin :spinning="searching" tip="语义检索中...">
+            <a-spin :spinning="searching" :tip="$t('knowledge.search.spinning')">
               <div v-if="searchResults.length > 0" class="search-results">
-                <p class="results-summary">找到 <strong>{{ searchResults.length }}</strong> 条相关知识片段</p>
+                <p class="results-summary">{{ $t('knowledge.search.found', { n: searchResults.length }) }}</p>
                 <div
                   v-for="(result, index) in searchResults"
                   :key="result.chunkId || index"
@@ -273,7 +273,7 @@
                       {{ result.documentName }}
                     </span>
                     <span class="result-similarity">
-                      相似度 {{ (result.similarity * 100).toFixed(1) }}%
+                      {{ $t('knowledge.search.similarity', { p: (result.similarity * 100).toFixed(1) }) }}
                     </span>
                   </div>
                   <div class="result-content">
@@ -288,8 +288,8 @@
                   <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   <line x1="8" y1="11" x2="14" y2="11"/>
                 </svg>
-                <p class="search-empty-title">未找到相关知识</p>
-                <p class="search-empty-desc">尝试换一些关键词，或先上传更多文档</p>
+                <p class="search-empty-title">{{ $t('knowledge.search.emptyTitle') }}</p>
+                <p class="search-empty-desc">{{ $t('knowledge.search.emptyDesc') }}</p>
               </div>
             </a-spin>
           </div>
@@ -301,32 +301,32 @@
     <!-- 文档详情弹窗 -->
     <a-modal
       v-model:visible="docDetailVisible"
-      title="文档详情"
+      :title="$t('knowledge.detail.title')"
       width="520px"
       :footer="null"
     >
       <div v-if="docDetail" class="doc-detail">
         <div class="detail-grid">
           <div class="detail-row">
-            <span class="detail-label">文件名</span>
+            <span class="detail-label">{{ $t('knowledge.detail.name') }}</span>
             <span class="detail-value" :title="docDetail.fileName">{{ docDetail.fileName }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">类型</span>
+            <span class="detail-label">{{ $t('knowledge.detail.type') }}</span>
             <span class="detail-value">
               <span class="type-badge" :class="'type-' + docDetail.fileType">{{ docDetail.fileType }}</span>
             </span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">大小</span>
+            <span class="detail-label">{{ $t('knowledge.detail.size') }}</span>
             <span class="detail-value">{{ formatSize(docDetail.fileSize) }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">分块数</span>
+            <span class="detail-label">{{ $t('knowledge.detail.chunks') }}</span>
             <span class="detail-value">{{ docDetail.chunkCount ?? '-' }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">状态</span>
+            <span class="detail-label">{{ $t('knowledge.detail.status') }}</span>
             <span class="detail-value">
               <span class="status-badge" :class="'status-' + docDetail.status">
                 {{ statusText(docDetail.status) }}
@@ -334,11 +334,11 @@
             </span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">上传人</span>
+            <span class="detail-label">{{ $t('knowledge.detail.uploader') }}</span>
             <span class="detail-value">{{ docDetail.createdBy }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">上传时间</span>
+            <span class="detail-label">{{ $t('knowledge.detail.time') }}</span>
             <span class="detail-value">{{ formatTime(docDetail.createTime) }}</span>
           </div>
         </div>
@@ -356,7 +356,10 @@
 </template>
 
 <script setup>
+
+const { t } = useI18n()
 import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Modal, message } from 'ant-design-vue'
 import { uploadDocument, getDocuments, getDocument, deleteDocument, searchKnowledge } from '@/api/knowledge'
 
@@ -368,11 +371,11 @@ function unwrap(res) {
   return res
 }
 
-const tabs = [
-  { id: 'tab-docs', label: '文档列表', color: '#0ea5e9' },
-  { id: 'tab-search', label: '知识检索', color: '#f59e0b' },
-  { id: 'tab-upload', label: '上传文档', color: '#10b981' }
-]
+const tabs = computed(() => [
+    { id: 'tab-docs', label: t('knowledge.tabs.docs'), color: '#0ea5e9' },
+    { id: 'tab-search', label: t('knowledge.tabs.search'), color: '#f59e0b' },
+    { id: 'tab-upload', label: t('knowledge.tabs.upload'), color: '#10b981' }
+  ])
 
 const activeTab = ref('tab-docs')
 const documents = ref([])
@@ -433,8 +436,8 @@ async function loadDocuments() {
       documents.value = []
       return
     }
-    console.error('[知识库] 加载文档列表失败:', err)
-    message.error('加载文档列表失败: ' + (err.message || '未知错误'))
+    console.error('[Knowledge] load documents failed:', err)
+    message.error(t('knowledge.msgs.loadFailed') + (err.message || t('common.failed')))
     documents.value = []
   } finally {
     loading.value = false
@@ -452,11 +455,11 @@ function formatSize(bytes) {
 // 状态文本
 function statusText(status) {
   switch (status) {
-    case 0: return '待处理'
-    case 1: return '处理中'
-    case 2: return '已完成'
-    case 3: return '失败'
-    default: return '未知'
+    case 0: return t('knowledge.status.pending')
+    case 1: return t('knowledge.status.processing')
+    case 2: return t('knowledge.status.done')
+    case 3: return t('knowledge.status.failed')
+    default: return t('knowledge.status.unknown')
   }
 }
 
@@ -482,26 +485,26 @@ async function viewDocument(doc) {
     docDetailVisible.value = true
   } catch (err) {
     if (err.isAuthError) return
-    message.error('获取文档详情失败: ' + (err.message || '未知错误'))
+    message.error(t('knowledge.msgs.detailFailed') + (err.message || t('common.failed')))
   }
 }
 
 // ===== 删除文档 =====
 function confirmDelete(doc) {
   Modal.confirm({
-    title: '删除文档',
-    content: `确定删除「${doc.fileName}」吗？其向量索引将同步清除。`,
-    okText: '删除',
+    title: t('knowledge.msgs.deleteTitle'),
+    content: t('knowledge.msgs.deleteContent', { name: doc.fileName }),
+    okText: t('knowledge.msgs.okDelete'),
     okType: 'danger',
-    cancelText: '取消',
+    cancelText: t('knowledge.msgs.cancel'),
     async onOk() {
       try {
         await deleteDocument(doc.id)
-        message.success('文档已删除')
+        message.success(t('knowledge.msgs.deleted'))
         await loadDocuments()
       } catch (err) {
         if (err.isAuthError) return
-        message.error('删除失败: ' + (err.message || '未知错误'))
+        message.error(t('knowledge.msgs.deleteFailed') + (err.message || t('common.failed')))
       }
     }
   })
@@ -530,7 +533,7 @@ async function uploadFile(file) {
   const allowed = ['pdf', 'docx', 'txt', 'md']
   const ext = file.name.split('.').pop().toLowerCase()
   if (!allowed.includes(ext)) {
-    message.error(`不支持的文件类型：.${ext}，仅支持 ${allowed.join(', ')}`)
+    message.error(t('knowledge.msgs.badType', { ext, allowed: allowed.join(', ') }))
     return
   }
 
@@ -538,7 +541,7 @@ async function uploadFile(file) {
   try {
     const res = await uploadDocument(file)
     const data = unwrap(res)
-    message.success(`文档「${file.name}」上传成功，解析进行中`)
+    message.success(t('knowledge.msgs.uploaded', { name: file.name }))
 
     // 添加到最近上传列表（处理中状态，靠轮询刷新）
     recentUploads.value.unshift({
@@ -556,7 +559,7 @@ async function uploadFile(file) {
     activeTab.value = 'tab-docs'
   } catch (err) {
     if (err.isAuthError) return
-    message.error('上传失败: ' + (err.message || '未知错误'))
+    message.error(t('knowledge.msgs.uploadFailed') + (err.message || t('common.failed')))
     recentUploads.value.unshift({
       id: Date.now(),
       fileName: file.name,
@@ -574,7 +577,7 @@ async function uploadFile(file) {
 async function doSearch() {
   const query = searchQuery.value.trim()
   if (!query) {
-    message.warning('请输入搜索关键词')
+    message.warning(t('knowledge.msgs.emptyKeyword'))
     return
   }
 
@@ -585,14 +588,14 @@ async function doSearch() {
     const data = unwrap(res)
     searchResults.value = Array.isArray(data) ? data : (data?.results || [])
     if (searchResults.value.length > 0) {
-      message.success(`找到 ${searchResults.value.length} 条相关知识`)
+      message.success(t('knowledge.msgs.found', { n: searchResults.value.length }))
     } else {
-      message.info('未找到相关知识')
+      message.info(t('knowledge.msgs.notFound'))
     }
   } catch (err) {
-    console.error('[知识库] 搜索失败:', err)
+    console.error('[Knowledge] search failed:', err)
     if (!err.isAuthError) {
-      message.error('搜索失败: ' + (err.message || '未知错误'))
+      message.error(t('knowledge.msgs.searchFailed') + (err.message || t('common.failed')))
     }
     searchResults.value = []
   } finally {

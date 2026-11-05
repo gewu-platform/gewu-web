@@ -13,10 +13,10 @@
             </svg>
           </div>
           <div class="nav-title-group">
-            <h3 class="sidebar-title">Prompt 模板</h3>
-            <span class="sidebar-sub">版本制模板管理</span>
+            <h3 class="sidebar-title">{{ $t('promptView.sidebar.title') }}</h3>
+            <span class="sidebar-sub">{{ $t('promptView.sidebar.sub') }}</span>
           </div>
-          <button class="add-btn" @click="showCreateModal = true" title="新建模板">
+          <button class="add-btn" @click="showCreateModal = true" :title="$t('promptView.sidebar.new')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
@@ -36,15 +36,15 @@
               <span class="template-name">{{ tpl.name }}</span>
               <span class="template-version">v{{ tpl.version }}</span>
             </div>
-            <p class="template-desc">{{ tpl.description || '暂无描述' }}</p>
+            <p class="template-desc">{{ tpl.description || $t('promptView.list.noDesc') }}</p>
             <div class="template-footer">
-              <span class="template-model">{{ tpl.model || '默认模型' }}</span>
+              <span class="template-model">{{ tpl.model || $t('promptView.list.defaultModel') }}</span>
               <span class="template-status" :class="tpl.isActive ? 'active' : 'inactive'">
-                {{ tpl.isActive ? '启用' : '停用' }}
+                {{ tpl.isActive ? $t('promptView.list.active') : $t('promptView.list.inactive') }}
               </span>
             </div>
           </div>
-          <div v-if="templates.length === 0" class="empty-hint">暂无模板</div>
+          <div v-if="templates.length === 0" class="empty-hint">{{ $t('promptView.list.empty') }}</div>
         </div>
       </aside>
 
@@ -70,14 +70,14 @@
               <div>
                 <h2 class="detail-name">{{ selectedTemplate.name }}</h2>
                 <p class="detail-meta">
-                  v{{ selectedTemplate.version }} · {{ selectedTemplate.model || '默认' }} · T={{ selectedTemplate.temperature }}
+                  v{{ selectedTemplate.version }} · {{ selectedTemplate.model || $t('promptView.list.default') }} · T={{ selectedTemplate.temperature }}
                 </p>
               </div>
             </div>
 
             <div class="detail-panel">
               <div class="detail-field">
-                <label class="field-label">描述</label>
+                <label class="field-label">{{ $t('promptView.detail.desc') }}</label>
                 <p class="field-text">{{ selectedTemplate.description || '-' }}</p>
               </div>
 
@@ -91,14 +91,14 @@
               <div class="field-divider" />
 
               <div class="detail-field">
-                <label class="field-label">User Prompt 模板</label>
+                <label class="field-label">{{ $t('promptView.detail.userPrompt') }}</label>
                 <div class="prompt-block">{{ selectedTemplate.userPromptTemplate || '-' }}</div>
               </div>
 
               <div class="field-divider" />
 
               <div class="detail-actions">
-                <a-button size="small" @click="executeCurrent">执行模板</a-button>
+                <a-button size="small" @click="executeCurrent">{{ $t('promptView.detail.executeBtn') }}</a-button>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@
           <!-- 执行 -->
           <div v-if="activeTab === 'execute'" class="tab-content">
             <div class="execute-section">
-              <h3 class="execute-title">填充变量</h3>
+              <h3 class="execute-title">{{ $t('promptView.execute.fillVars') }}</h3>
               <div class="variable-inputs">
                 <div
                   v-for="v in extractedVars"
@@ -116,19 +116,19 @@
                   <label class="var-label">{{ v }}</label>
                   <a-textarea
                     v-model:value="execVars[v]"
-                    :placeholder="'输入 ' + v + ' 的值'"
+                    :placeholder="$t('promptView.execute.varPlaceholder', { v })"
                     :auto-size="{ minRows: 2, maxRows: 8 }"
                     class="var-input"
                   />
                 </div>
-                <div v-if="extractedVars.length === 0" class="empty-hint">该模板没有变量占位符</div>
+                <div v-if="extractedVars.length === 0" class="empty-hint">{{ $t('promptView.execute.noVars') }}</div>
               </div>
 
               <button class="execute-btn" @click="doExecute" :disabled="executing">
                 <svg v-if="!executing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polygon points="5 3 19 12 5 21 5 3"/>
                 </svg>
-                {{ executing ? '执行中...' : '执行' }}
+                {{ executing ? $t('promptView.execute.running') : $t('promptView.execute.run') }}
               </button>
             </div>
 
@@ -139,7 +139,7 @@
                   <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                   </svg>
-                  <h3 class="result-title">执行结果</h3>
+                  <h3 class="result-title">{{ $t('promptView.execute.result') }}</h3>
                 </div>
                 <div class="result-meta">
                   <span class="meta-chip model-chip">{{ execResult.model }}</span>
@@ -161,7 +161,7 @@
             <line x1="16" y1="13" x2="8" y2="13"/>
             <line x1="16" y1="17" x2="8" y2="17"/>
           </svg>
-          <p>从左侧选择一个模板查看详情或执行</p>
+          <p>{{ $t('promptView.empty.pick') }}</p>
         </div>
       </div>
     </div>
@@ -169,28 +169,28 @@
     <!-- 创建模板弹窗 -->
     <a-modal
       v-model:visible="showCreateModal"
-      title="新建 Prompt 模板"
+      :title="$t('promptView.modal.new')"
       :confirm-loading="creating"
       @ok="doCreate"
       width="600px"
     >
       <a-form :model="createForm" layout="vertical">
-        <a-form-item label="模板名称" required>
-          <a-input v-model:value="createForm.name" placeholder="如 code-review" />
+        <a-form-item :label="$t('promptView.modal.name')" required>
+          <a-input v-model:value="createForm.name" :placeholder="$t('promptView.modal.namePh')" />
         </a-form-item>
-        <a-form-item label="描述">
-          <a-input v-model:value="createForm.description" placeholder="模板用途说明" />
+        <a-form-item :label="$t('promptView.modal.desc')">
+          <a-input v-model:value="createForm.description" :placeholder="$t('promptView.modal.descPh')" />
         </a-form-item>
         <a-form-item label="System Prompt">
-          <a-textarea v-model:value="createForm.systemPrompt" :rows="4" placeholder="系统角色设定" />
+          <a-textarea v-model:value="createForm.systemPrompt" :rows="4" :placeholder="$t('promptView.modal.sysPh')" />
         </a-form-item>
-        <a-form-item label="User Prompt 模板" required>
-          <a-textarea v-model:value="createForm.userPromptTemplate" :rows="4" placeholder="使用 {variable} 占位符" />
+        <a-form-item :label="$t('promptView.modal.userPrompt')" required>
+          <a-textarea v-model:value="createForm.userPromptTemplate" :rows="4" :placeholder="$t('promptView.modal.userPromptPh')" />
         </a-form-item>
         <a-row :gutter="12">
           <a-col :span="12">
-            <a-form-item label="模型">
-              <a-select v-model:value="createForm.model" placeholder="选择推荐模型" allow-clear>
+            <a-form-item :label="$t('promptView.modal.model')">
+              <a-select v-model:value="createForm.model" :placeholder="$t('promptView.modal.modelPh')" allow-clear>
                 <a-select-option v-for="m in allModels" :key="m.modelId" :value="m.modelId">
                   {{ m.description || m.modelName }}
                 </a-select-option>
@@ -198,7 +198,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="6">
-            <a-form-item label="温度">
+            <a-form-item :label="$t('promptView.modal.temp')">
               <a-input-number v-model:value="createForm.temperature" :min="0" :max="2" :step="0.1" style="width:100%" />
             </a-form-item>
           </a-col>
@@ -219,7 +219,9 @@ import { message } from 'ant-design-vue'
 import { listTemplates, getTemplate, executeTemplate, createTemplate } from '@/api/prompt'
 import { getModelList } from '@/api/chat'
 import { marked } from 'marked'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const templates = ref([])
 const selectedTemplate = ref(null)
 const activeTab = ref('detail')
@@ -230,10 +232,10 @@ const showCreateModal = ref(false)
 const creating = ref(false)
 const allModels = ref([])
 
-const tabs = [
-  { id: 'detail', label: '模板详情' },
-  { id: 'execute', label: '执行' }
-]
+const tabs = computed(() => [
+  { id: 'detail', label: t('promptView.tabs.detail') },
+  { id: 'execute', label: t('promptView.tabs.execute') }
+])
 
 const createForm = reactive({
   name: '',
@@ -263,7 +265,7 @@ async function loadTemplates() {
     }
   } catch (err) {
     if (err.isAuthError) return
-    message.error('加载模板列表失败: ' + err.message)
+    message.error(t('promptView.msgs.loadFailed') + err.message)
   }
 }
 
@@ -280,7 +282,7 @@ async function loadModels() {
       allModels.value = modelsData
     }
   } catch (err) {
-    console.warn('加载模型列表失败:', err.message)
+    console.warn(t('promptView.msgs.modelsFailed'), err.message)
   }
 }
 
@@ -307,11 +309,11 @@ async function doExecute() {
     })
     if (res.code === 200 && res.data) {
       execResult.value = res.data
-      message.success('模板执行成功')
+      message.success(t('promptView.msgs.execOk'))
     }
   } catch (err) {
     if (err.isAuthError) return
-    message.error('执行失败: ' + err.message)
+    message.error(t('promptView.msgs.execFailed') + err.message)
   } finally {
     executing.value = false
   }
@@ -319,14 +321,14 @@ async function doExecute() {
 
 async function doCreate() {
   if (!createForm.name || !createForm.userPromptTemplate) {
-    message.error('模板名称和 User Prompt 模板不能为空')
+    message.error(t('promptView.modal.nameRequired'))
     return
   }
   creating.value = true
   try {
     const res = await createTemplate({ ...createForm })
     if (res.code === 200) {
-      message.success('模板创建成功')
+      message.success(t('promptView.modal.created'))
       showCreateModal.value = false
       Object.assign(createForm, {
         name: '', description: '', systemPrompt: '', userPromptTemplate: '',
@@ -336,7 +338,7 @@ async function doCreate() {
     }
   } catch (err) {
     if (err.isAuthError) return
-    message.error('创建失败: ' + err.message)
+    message.error(t('promptView.modal.createFailed') + err.message)
   } finally {
     creating.value = false
   }
