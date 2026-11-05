@@ -1,5 +1,7 @@
 # Gewu Web — 企业级 AI Agent 平台前端（Vue 3）
 
+[English](README.en.md)
+
 <p align="center"><img src="docs/banner.png" alt="Gewu" width="680" /></p>
 
 
