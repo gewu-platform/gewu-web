@@ -381,9 +381,6 @@
               </div>
             </section>
 
-          </div>
-        </div>
-
           <!-- 插件仓库（V2.0.0 R3） -->
           <section class="settings-section" id="section-plugin">
             <div class="section-heading">
@@ -403,11 +400,26 @@
               <div class="plugin-toolbar">
                 <button class="btn btn-secondary" @click="loadPlugins">{{ $t('settings.plugin.refresh') }}</button>
                 <span class="plugin-hint">{{ $t('settings.plugin.hint') }}</span>
-                <div class="plugin-add-row">
-                  <a-input v-model:value="newPlugin.code" :placeholder="$t('settings.plugin.codePh')" style="width: 150px" />
-                  <a-input v-model:value="newPlugin.name" :placeholder="$t('settings.plugin.namePh')" style="width: 130px" />
-                  <a-input v-model:value="newPlugin.endpoint" :placeholder="$t('settings.plugin.endpointPh')" style="flex: 1" />
-                  <a-input v-model:value="newPlugin.toolAllow" :placeholder="$t('settings.plugin.allowPh')" style="width: 220px" />
+              </div>
+
+              <div class="plugin-add-card">
+                <div class="plugin-field f-code">
+                  <label>{{ $t('settings.plugin.colCode') }}</label>
+                  <a-input v-model:value="newPlugin.code" :placeholder="$t('settings.plugin.codePh')" />
+                </div>
+                <div class="plugin-field f-name">
+                  <label>{{ $t('settings.plugin.colName') }}</label>
+                  <a-input v-model:value="newPlugin.name" :placeholder="$t('settings.plugin.namePh')" />
+                </div>
+                <div class="plugin-field f-endpoint">
+                  <label>{{ $t('settings.plugin.colEndpoint') }}</label>
+                  <a-input v-model:value="newPlugin.endpoint" :placeholder="$t('settings.plugin.endpointPh')" />
+                </div>
+                <div class="plugin-field f-allow">
+                  <label>{{ $t('settings.plugin.colAllow') }}</label>
+                  <a-input v-model:value="newPlugin.toolAllow" :placeholder="$t('settings.plugin.allowPh')" />
+                </div>
+                <div class="plugin-field action">
                   <button class="btn-sm ok" @click="addPluginRow">{{ $t('settings.plugin.add') }}</button>
                 </div>
               </div>
@@ -482,6 +494,8 @@
           </section>
 
         <!-- 固定底部操作栏 -->
+          </div>
+        </div>
         <div class="action-bar-fixed">
           <button class="btn btn-secondary" @click="resetSettings">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1720,7 +1734,20 @@ onMounted(async () => {
 }
 .plugin-panel { display: flex; flex-direction: column; gap: 12px; }
 .plugin-toolbar { display: flex; align-items: center; gap: 12px; }
-.plugin-hint { font-size: 12px; color: #94a3b8; }
+.plugin-hint { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+/* 新增插件表单：字段卡片化，label 上置，与列表列名对齐 */
+.plugin-add-card {
+  display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
+  padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;
+}
+.plugin-field { display: flex; flex-direction: column; gap: 4px; }
+.plugin-field label { font-size: 12px; color: #64748b; font-weight: 500; }
+.plugin-field.f-code { width: 150px; }
+.plugin-field.f-name { width: 140px; }
+.plugin-field.f-endpoint { flex: 1; min-width: 240px; }
+.plugin-field.f-allow { width: 200px; }
+.plugin-field.action { padding-bottom: 1px; }
+.plugin-field.action .btn-sm { height: 32px; }
 .plugin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .plugin-table th, .plugin-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
 .plugin-table th { font-weight: 600; color: #64748b; }
@@ -1740,7 +1767,6 @@ onMounted(async () => {
 .skill-readable.off { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 .skill-hint { font-size: 12px; color: #94a3b8; }
 
-.plugin-add-row { display: flex; gap: 8px; align-items: center; }
 .td-allow { font-size: 12px; color: #64748b; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 </style>
