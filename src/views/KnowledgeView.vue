@@ -358,7 +358,7 @@
 <script setup>
 
 const { t } = useI18n()
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Modal, message } from 'ant-design-vue'
 import { uploadDocument, getDocuments, getDocument, deleteDocument, searchKnowledge } from '@/api/knowledge'
