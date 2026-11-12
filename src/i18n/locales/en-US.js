@@ -660,6 +660,7 @@ export default {
       "added": "Added: {code}",
       "addFailed": "Add failed",
       "installedMsg": "Installed: {code}",
+      "installedNoConnect": "Installed: {code} (endpoint unreachable; enable it once reachable)",
       "installFailed": "Install failed",
       "uninstalledMsg": "Uninstalled: {code}",
       "uninstallFailed": "Uninstall failed",

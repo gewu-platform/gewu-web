@@ -71,7 +71,7 @@
             <!-- 账户设置 -->
             <section class="settings-section" id="section-account">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #6366F1, #8B5CF6)">
+                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
@@ -143,7 +143,7 @@
             <!-- 模型设置 -->
             <section class="settings-section" id="section-model">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #0369a1)">
+                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="4" y="4" width="16" height="16" rx="2"/>
                     <rect x="9" y="9" width="6" height="6"/>
@@ -187,7 +187,7 @@
             <!-- 数据管理 -->            <!-- 模型服务 (T3) -->
             <section class="settings-section" id="section-providers">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #4F46E5, #6366F1)">
+                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
@@ -250,11 +250,13 @@
                     <a-input v-model:value="providerForm.baseUrl" placeholder="https://ark.cn-beijing.volces.com/api/v3" />
                   </a-form-item>
                   <a-form-item :label="$t('settings.provider.provider')" >
-                    <a-select v-model:value="providerForm.vendor">
-                      <a-select-option value="volcengine">volcengine</a-select-option>
-                      <a-select-option value="aliyun">aliyun</a-select-option>
-                      <a-select-option value="openai">openai</a-select-option>
-                    </a-select>
+                    <a-select
+                      v-model:value="providerForm.vendor"
+                      :options="vendorOptions"
+                      show-search
+                      option-filter-prop="label"
+                      @change="onVendorChange"
+                    />
                   </a-form-item>
                   <a-form-item :label="$t('settings.provider.apiKey')" :extra="providerForm.id ? $t('settings.provider.extraKeep') : $t('settings.provider.extraNew')">
                     <a-input-password v-model:value="providerForm.apiSpecialKey" autocomplete="new-password" />
@@ -292,7 +294,7 @@
             <!-- 对话设置 (T3 上下文压缩，v1.0.1 自对话侧栏迁入) -->
             <section class="settings-section" id="section-chat">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #f97316)">
+                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                     <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
@@ -339,7 +341,7 @@
 
             <section class="settings-section" id="section-data">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626)">
+                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <ellipse cx="12" cy="5" rx="9" ry="3"/>
                     <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
@@ -384,7 +386,7 @@
           <!-- 插件仓库（V2.0.0 R3） -->
           <section class="settings-section" id="section-plugin">
             <div class="section-heading">
-              <div class="section-icon" style="background: linear-gradient(135deg, #8B5CF6, #A855F7)">
+              <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2"/>
                   <path d="M9 3v18M15 3v18"/>
@@ -463,7 +465,7 @@
           <!-- 公共 Skill（V2.0.0 R2 / v2.0.1 T2.3 目录可配置） -->
           <section class="settings-section" id="section-skill">
             <div class="section-heading">
-              <div class="section-icon" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8)">
+              <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -489,6 +491,14 @@
                 </span>
                 <span>{{ $t('settings.skill.count', { n: skillDirInfo.count !== undefined ? skillDirInfo.count : '—' }) }}</span>
               </div>
+              <div v-if="skillsList.length" class="skill-list">
+                <div v-for="s in skillsList" :key="s.id" class="skill-item">
+                  <span class="skill-item-id">{{ s.id }}</span>
+                  <span class="skill-item-name">{{ s.name || s.id }}</span>
+                  <span class="skill-item-desc" :title="s.description">{{ s.description || '—' }}</span>
+                </div>
+              </div>
+              <p v-else-if="skillDirInfo.readable" class="skill-empty">该目录下未扫描到 SKILL.md</p>
               <p class="skill-hint">{{ $t('settings.skill.hint') }}</p>
             </div>
           </section>
@@ -544,7 +554,7 @@ import { useChatStore } from '@/stores/chat'
 import { getModelList, switchModel as apiSwitchModel, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
 import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
-import { listPlugins, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
+import { listPlugins, createPlugin, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
 import { listSkills, rescanSkills, getSkillsDir, setSkillsDir } from '@/api/settings'
 const { t } = useI18n()
 
@@ -652,7 +662,12 @@ async function loadPlugins() {
 async function installPluginRow(p) {
   try {
     const res = await installPlugin(p.id)
-    if (res.code === 200) { message.success(t('settings.plugin.installedMsg', { code: p.code })); await loadPlugins() }
+    if (res.code === 200) {
+      const d = res.data || {}
+      if (d.connected === false) message.warning(t('settings.plugin.installedNoConnect', { code: p.code }), 5)
+      else message.success(t('settings.plugin.installedMsg', { code: p.code }))
+      await loadPlugins()
+    }
     else message.error(res.message || t('settings.plugin.installFailed'))
   } catch (e) { message.error(t('common.exception') + e.message) }
 }
@@ -676,6 +691,7 @@ loadPlugins()
 // ==================== 公共 Skill 目录（v2.0.1 T2.3） ====================
 const skillDirInput = ref('')
 const skillDirInfo = reactive({ dir: '', readable: false, count: undefined })
+const skillsList = ref([])
 async function loadSkillDir() {
   try {
     const res = await getSkillsDir()
@@ -686,6 +702,7 @@ async function loadSkillDir() {
     const sl = await listSkills()
     const arr = sl?.data !== undefined ? sl.data : sl
     skillDirInfo.count = Array.isArray(arr) ? arr.length : 0
+    skillsList.value = Array.isArray(arr) ? arr : []
   } catch (e) { console.error('[Gewu] Skill 目录加载失败:', e) }
 }
 async function applySkillDir() {
@@ -801,6 +818,55 @@ const providerForm = reactive({
   apiSpecialKey: '', modelName: '', dimension: 2048, mode: 'multimodal',
   temperatureNum: 0.7, maxTokens: 1024, description: '', isActive: false
 })
+
+// ==================== 服务商预设（参考 magpie provider presets；均为 OpenAI 兼容端点） ====================
+const VENDOR_PRESETS = [
+  // 国内
+  { value: 'volcengine', label: '火山方舟（豆包）', baseUrl: 'https://ark.cn-beijing.volces.com/api/v3', group: '国内服务商' },
+  { value: 'aliyun', label: '阿里云百炼（通义千问）', baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', group: '国内服务商' },
+  { value: 'deepseek', label: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', group: '国内服务商' },
+  { value: 'moonshot', label: 'Kimi（月之暗面）', baseUrl: 'https://api.moonshot.cn/v1', group: '国内服务商' },
+  { value: 'zhipu', label: '智谱 GLM', baseUrl: 'https://open.bigmodel.cn/api/paas/v4', group: '国内服务商' },
+  { value: 'zai', label: 'Z.ai（智谱国际）', baseUrl: 'https://api.z.ai/api/paas/v4', group: '国内服务商' },
+  { value: 'minimax', label: 'MiniMax', baseUrl: 'https://api.minimaxi.com/v1', group: '国内服务商' },
+  { value: 'stepfun', label: '阶跃星辰', baseUrl: 'https://api.stepfun.com/v1', group: '国内服务商' },
+  { value: 'baidu-qianfan', label: '百度千帆', baseUrl: 'https://qianfan.baidubce.com/v2', group: '国内服务商' },
+  { value: 'tencent-cloud', label: '腾讯混元', baseUrl: 'https://api.hunyuan.cloud.tencent.com/v1', group: '国内服务商' },
+  { value: 'siliconflow', label: '硅基流动', baseUrl: 'https://api.siliconflow.cn/v1', group: '国内服务商' },
+  { value: 'modelscope', label: '魔搭 ModelScope', baseUrl: 'https://api-inference.modelscope.cn/v1', group: '国内服务商' },
+  { value: 'longcat', label: 'LongCat（美团）', baseUrl: 'https://api.longcat.chat/openai/v1', group: '国内服务商' },
+  // 海外
+  { value: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', group: '海外服务商' },
+  { value: 'xai', label: 'xAI（Grok）', baseUrl: 'https://api.x.ai/v1', group: '海外服务商' },
+  { value: 'mistral', label: 'Mistral AI', baseUrl: 'https://api.mistral.ai/v1', group: '海外服务商' },
+  { value: 'groq', label: 'Groq', baseUrl: 'https://api.groq.com/openai/v1', group: '海外服务商' },
+  { value: 'openrouter', label: 'OpenRouter', baseUrl: 'https://openrouter.ai/api/v1', group: '海外服务商' },
+  { value: 'together', label: 'Together AI', baseUrl: 'https://api.together.xyz/v1', group: '海外服务商' },
+  { value: 'fireworks', label: 'Fireworks AI', baseUrl: 'https://api.fireworks.ai/inference/v1', group: '海外服务商' },
+  { value: 'nvidia', label: 'NVIDIA NIM', baseUrl: 'https://integrate.api.nvidia.com/v1', group: '海外服务商' },
+  // 本地
+  { value: 'ollama', label: 'Ollama（本地）', baseUrl: 'http://localhost:11434/v1', group: '本地与私有化' }
+]
+
+const vendorOptions = computed(() => {
+  const groups = []
+  for (const g of ['国内服务商', '海外服务商', '本地与私有化']) {
+    groups.push({ label: g, options: VENDOR_PRESETS.filter(p => p.group === g).map(p => ({ value: p.value, label: p.label })) })
+  }
+  return groups
+})
+
+// 选择服务商时自动填充 Base URL：仅当 baseUrl 为空或仍是另一预设默认值时，不覆盖用户手输值
+let prevVendorPreset = null
+function onVendorChange(v) {
+  const preset = VENDOR_PRESETS.find(p => p.value === v)
+  if (!preset || !preset.baseUrl) return
+  const cur = providerForm.baseUrl
+  if (!cur || (prevVendorPreset && cur === prevVendorPreset.baseUrl)) {
+    providerForm.baseUrl = preset.baseUrl
+  }
+  prevVendorPreset = preset
+}
 
 async function loadProviders() {
   providersLoading.value = true
@@ -1064,7 +1130,7 @@ onMounted(async () => {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #0ea5e9, #0369a1);
+  background: linear-gradient(135deg, #3370FF, #2B5FD9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1125,7 +1191,7 @@ onMounted(async () => {
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(3,105,161,0.06));
+  background: linear-gradient(135deg, rgba(51,112,255,0.08), rgba(43,95,217,0.06));
   color: #0ea5e9;
   font-weight: 600;
 }
@@ -1433,7 +1499,7 @@ onMounted(async () => {
 
 .model-card.active {
   border-color: #0ea5e9;
-  background: linear-gradient(135deg, rgba(14,165,233,0.05), rgba(3,105,161,0.04));
+  background: linear-gradient(135deg, rgba(51,112,255,0.05), rgba(43,95,217,0.04));
   box-shadow: 0 4px 16px rgba(14,165,233,0.12);
 }
 
@@ -1756,7 +1822,59 @@ onMounted(async () => {
 .plugin-status { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
 .plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+/* 表格内小按钮（安装/卸载/删除）：此前无定义导致原生按钮畸形 */
+.td-actions { display: flex; gap: 6px; justify-content: flex-start; }
+.btn-sm {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-sm:hover { border-color: #3370FF; color: #3370FF; }
+.btn-sm.ok {
+  background: #3370FF;
+  border-color: #3370FF;
+  color: #fff;
+}
+.btn-sm.ok:hover { background: #2B5FD9; border-color: #2B5FD9; color: #fff; }
+.btn-sm.danger {
+  background: #fff;
+  border-color: #fecdd3;
+  color: #E11D48;
+}
+.btn-sm.danger:hover { background: #fff1f2; border-color: #E11D48; }
 .plugin-empty { font-size: 13px; color: #94a3b8; }
+/* Skill 清单：目录扫描产物只读展示（FastGPT 风格浅底列表） */
+.skill-list {
+  display: flex; flex-direction: column;
+  border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
+  max-height: 360px; overflow-y: auto;
+}
+.skill-item {
+  display: flex; align-items: baseline; gap: 12px; font-size: 13px;
+  padding: 9px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.12s ease;
+}
+.skill-item:last-child { border-bottom: none; }
+.skill-item:hover { background: #f8fafc; }
+.skill-item-id {
+  font-family: monospace; color: #3370FF; flex-shrink: 0;
+  font-size: 12px; font-weight: 600;
+}
+.skill-item-name { font-weight: 500; color: #1e293b; flex-shrink: 0; }
+.skill-item-desc {
+  color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+  font-size: 12px;
+}
+.skill-empty { font-size: 13px; color: #94a3b8; }
 
 .skill-panel { display: flex; flex-direction: column; gap: 10px; }
 .skill-dir-row { display: flex; align-items: center; gap: 10px; }
