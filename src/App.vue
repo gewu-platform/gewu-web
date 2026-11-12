@@ -281,9 +281,9 @@ onUnmounted(() => {
   /* 格物 Gewu 设计令牌 v1（PRD §8.1 方案 B：藏青+靛蓝） */
   --nav: #1E3A5F;
   --nav-hover: #16304F;
-  --accent: #4F46E5;
-  --accent-hover: #4338CA;
-  --accent-soft: #EEF2FF;
+  --accent: #3370FF;
+  --accent-hover: #2B5FD9;
+  --accent-soft: #EBF1FF;
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
@@ -463,7 +463,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #0ea5e9 0%, #f472b6 50%, #fcd34d 100%);
+  background: linear-gradient(90deg, #3370FF 0%, #5B8DFF 100%);
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left;
@@ -728,7 +728,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 16px;
-  background: linear-gradient(135deg, #f0f9ff, #fce7f3);
+  background: var(--accent-soft);
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -736,7 +736,7 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9, #ec4899);
+  background: linear-gradient(135deg, #3370FF, #2B5FD9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -804,7 +804,7 @@ onUnmounted(() => {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9, #ec4899);
+  background: linear-gradient(135deg, #3370FF, #2B5FD9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -818,7 +818,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, #0ea5e9, #ec4899);
+  background: linear-gradient(135deg, #3370FF, #2B5FD9);
   color: white;
   border: none;
   border-radius: 8px;
@@ -829,7 +829,7 @@ onUnmounted(() => {
 }
 
 .login-btn:hover {
-  background: linear-gradient(135deg, #0284c7, #db2777);
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 

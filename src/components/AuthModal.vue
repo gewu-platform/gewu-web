@@ -518,7 +518,7 @@ const handleForgotPassword = () => {
   height: 46px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #0ea5e9, #ec4899);
+  background: var(--accent);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
