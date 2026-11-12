@@ -60,7 +60,7 @@ defineEmits(['toggle'])
 .reasoning-timeline {
   margin-top: 8px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
 }
@@ -83,7 +83,7 @@ defineEmits(['toggle'])
     font-weight: 600;
     padding: 1px 7px;
     border-radius: 999px;
-    background: rgba(14, 165, 233, 0.12);
+    background: rgba(51, 112, 255, 0.12);
     color: var(--accent);
   }
   .step-tool {
@@ -112,7 +112,7 @@ defineEmits(['toggle'])
   code {
     background: var(--bg-secondary);
     padding: 1px 5px;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     font-size: 11px;
     color: var(--text-primary);
   }

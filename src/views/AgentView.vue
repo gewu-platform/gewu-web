@@ -781,7 +781,7 @@ onUnmounted(() => {
   padding: 7px 16px;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  background: linear-gradient(135deg, var(--accent-600), #6366f1);
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -792,7 +792,7 @@ onUnmounted(() => {
 
 .agents-table-wrap {
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   margin-bottom: 16px;
 }
@@ -862,7 +862,7 @@ onUnmounted(() => {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
   color: var(--text-primary);
   font-size: 13px;
@@ -888,7 +888,7 @@ onUnmounted(() => {
 
 .console-card {
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
 
   h3 { font-size: 14px; margin-bottom: 12px; color: var(--text-primary); }
@@ -902,7 +902,7 @@ onUnmounted(() => {
 
 .tool-card {
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
 
@@ -937,7 +937,7 @@ onUnmounted(() => {
 
 .pending-item {
   padding: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(245, 158, 11, 0.06);
   border: 1px solid rgba(245, 158, 11, 0.25);
   margin-bottom: 8px;
@@ -947,14 +947,14 @@ onUnmounted(() => {
     font-size: 11px;
     color: var(--text-secondary);
     margin: 5px 0;
-    code { background: var(--bg-tertiary); padding: 1px 5px; border-radius: 4px; }
+    code { background: var(--bg-tertiary); padding: 1px 5px; border-radius: var(--radius-xs); }
   }
   .pending-actions { display: flex; gap: 6px; }
 }
 
 .btn-sm {
   padding: 4px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-primary);
@@ -971,7 +971,7 @@ onUnmounted(() => {
 .debug-section {
   margin: 0 24px 24px;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   overflow: hidden;
   flex-shrink: 0;
@@ -1054,16 +1054,16 @@ onUnmounted(() => {
 
 .debug-console .agent-item {
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
   cursor: pointer;
   transition: all 0.15s;
 
-  &:hover { background: var(--border-color); }
+  &:hover { background: var(--bg-tertiary); }
   &.selected {
     border-color: var(--accent);
-    background: rgba(14, 165, 233, 0.08);
+    background: rgba(51, 112, 255, 0.08);
   }
 
   .agent-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
@@ -1082,11 +1082,11 @@ onUnmounted(() => {
 
 .debug-console .history-item {
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   margin-bottom: 6px;
 
-  &:hover, &.active { background: rgba(14, 165, 233, 0.08); }
+  &:hover, &.active { background: rgba(51, 112, 255, 0.08); }
 
   .history-question {
     font-size: 12px;
@@ -1172,13 +1172,13 @@ onUnmounted(() => {
 .debug-console .message-bubble {
   max-width: 720px;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
 
   .user & {
-    background: rgba(14, 165, 233, 0.08);
-    border-color: rgba(14, 165, 233, 0.25);
+    background: rgba(51, 112, 255, 0.08);
+    border-color: rgba(51, 112, 255, 0.25);
   }
 }
 
@@ -1192,13 +1192,13 @@ onUnmounted(() => {
   &.markdown-body :deep(code) {
     background: var(--bg-tertiary);
     padding: 1px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     font-size: 13px;
   }
   &.markdown-body :deep(pre) {
     background: var(--bg-tertiary);
     padding: 10px 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     code { background: none; padding: 0; }
   }
@@ -1230,7 +1230,7 @@ onUnmounted(() => {
 .debug-console .approval-box {
   margin-bottom: 10px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: rgba(245, 158, 11, 0.08);
   border: 1px solid rgba(245, 158, 11, 0.35);
 
@@ -1242,7 +1242,7 @@ onUnmounted(() => {
     code {
       background: var(--bg-tertiary);
       padding: 1px 6px;
-      border-radius: 4px;
+      border-radius: var(--radius-xs);
       font-size: 11px;
     }
   }
@@ -1253,7 +1253,7 @@ onUnmounted(() => {
 
     button {
       padding: 5px 12px;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       border: none;
       font-size: 12px;
       cursor: pointer;
@@ -1287,7 +1287,7 @@ onUnmounted(() => {
 .debug-console .reasoning-timeline {
   margin-top: 8px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
 }
@@ -1310,7 +1310,7 @@ onUnmounted(() => {
     font-weight: 600;
     padding: 1px 7px;
     border-radius: 999px;
-    background: rgba(14, 165, 233, 0.12);
+    background: rgba(51, 112, 255, 0.12);
     color: var(--accent);
   }
   .step-tool {
@@ -1339,7 +1339,7 @@ onUnmounted(() => {
   code {
     background: var(--bg-secondary);
     padding: 1px 5px;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     font-size: 11px;
     color: var(--text-primary);
   }
@@ -1358,7 +1358,7 @@ onUnmounted(() => {
   textarea {
     width: 100%;
     padding: 10px 14px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
     background: var(--bg-secondary);
     color: var(--text-primary);
@@ -1389,7 +1389,7 @@ onUnmounted(() => {
     padding: 8px 22px;
     border-radius: 999px;
     border: none;
-    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    background: linear-gradient(135deg, var(--accent-600), #6366f1);
     color: white;
     font-size: 13px;
     font-weight: 600;
@@ -1412,16 +1412,16 @@ onUnmounted(() => {
 
 .tpl-card {
   text-align: left;
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: 1px solid var(--border-color, var(--border-base));
   background: var(--bg-secondary, #ffffff);
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   padding: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .tpl-card:hover {
-  border-color: var(--accent, #4F46E5);
+  border-color: var(--accent, #3370FF);
   transform: translateY(-1px);
 }
 
@@ -1469,7 +1469,7 @@ onUnmounted(() => {
 .modal-mask {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(19, 51, 107, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1481,9 +1481,9 @@ onUnmounted(() => {
   max-height: 84vh;
   overflow-y: auto;
   background: var(--bg-primary, #fff);
-  border-radius: 14px;
+  border-radius: var(--radius-mdlg);
   padding: 22px 24px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.25);
+  box-shadow: var(--shadow-6);
 
   h3 { font-size: 16px; margin-bottom: 16px; color: var(--text-primary); }
 }
@@ -1503,7 +1503,7 @@ onUnmounted(() => {
   input, textarea {
     width: 100%;
     padding: 7px 11px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
     background: var(--bg-secondary);
     color: var(--text-primary);
@@ -1543,7 +1543,7 @@ onUnmounted(() => {
   display: inline-block;
   margin-left: 6px;
   padding: 1px 8px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   font-size: 11px;
   font-weight: 600;
   vertical-align: middle;

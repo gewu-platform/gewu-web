@@ -21,7 +21,7 @@
         <!-- 24 小时调用分布 -->
         <section class="monitor-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #38bdf8, #0ea5e9)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-400), var(--accent-600))">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
@@ -95,7 +95,7 @@
         <!-- T6 用量报表 -->
       <div class="monitor-card">
         <div class="section-heading">
-          <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #6366f1);">📈</div>
+          <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), #6366f1);">📈</div>
           <div>
             <h2 class="section-title">{{ $t('monitor.usage.title') }}</h2>
             <p class="section-desc">{{ $t('monitor.usage.desc', { n: usageDays }) }}</p>
@@ -238,7 +238,7 @@ const query = reactive({
 })
 
 const statsCards = computed(() => [
-  { label: t('monitor.stats.todayCalls'), icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#0ea5e9', key: 'todayCalls' },
+  { label: t('monitor.stats.todayCalls'), icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#3370FF', key: 'todayCalls' },
   { label: t('monitor.stats.todayTokens'), icon: '<path d="M12 2v4m0 12v4m-4-8H4m16 0h-4m-2.636-5.364-2.828-2.828m0 11.314 2.828 2.828M9.172 6.344 6.344 9.172m11.314 5.656 2.828 2.828"/>', color: '#10b981', key: 'todayTokens' },
   { label: t('monitor.stats.todayCost'), icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', color: '#f59e0b', key: 'todayCost' },
   { label: t('monitor.stats.avgLatency'), icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', color: '#ef4444', key: 'avgLatency' }
@@ -354,12 +354,12 @@ onMounted(async () => {
 .usage-controls { margin-left: auto; display: flex; gap: 8px; }
 .usage-select {
   background: var(--bg-secondary, #fff);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 8px; padding: 4px 8px; font-size: 12px; color: var(--text-primary, #1e293b);
+  border: 1px solid var(--border-color, var(--border-base));
+  border-radius: var(--radius-md); padding: 4px 8px; font-size: 12px; color: var(--text-primary, #1e293b);
 }
 .usage-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.usage-table th { text-align: left; padding: 8px 10px; color: var(--text-secondary, #64748b); font-weight: 600; border-bottom: 1px solid var(--border-color, #e2e8f0); }
-.usage-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color, #f1f5f9); color: var(--text-primary, #1e293b); }
+.usage-table th { text-align: left; padding: 8px 10px; color: var(--text-secondary, #64748b); font-weight: 600; border-bottom: 1px solid var(--border-color, var(--border-base)); }
+.usage-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color, var(--border-low)); color: var(--text-primary, #1e293b); }
 .usage-strong { font-weight: 600; }
 .usage-empty { text-align: center; color: var(--text-secondary, #64748b); padding: 18px 0; }
 
@@ -367,7 +367,7 @@ onMounted(async () => {
 .monitor-view {
   height: 100%;
   width: 100%;
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   overflow: hidden;
 }
 
@@ -398,20 +398,20 @@ onMounted(async () => {
   gap: 14px;
   padding: 20px;
   background: #fff;
-  border-radius: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-mdlg);
+  border: 1px solid rgba(19, 51, 107, 0.05);
   transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-3);
   transform: translateY(-2px);
 }
 
 .stat-icon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,8 +442,8 @@ onMounted(async () => {
 /* ===== 区块 ===== */
 .monitor-section {
   background: #fff;
-  border: 1px solid rgba(15, 23, 42, 0.05);
-  border-radius: 16px;
+  border: 1px solid rgba(19, 51, 107, 0.05);
+  border-radius: var(--radius-xl);
   padding: 20px 24px;
   margin-bottom: 20px;
 }
@@ -458,7 +458,7 @@ onMounted(async () => {
 .section-icon {
   width: 38px;
   height: 38px;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -513,15 +513,15 @@ onMounted(async () => {
   display: flex;
   align-items: flex-end;
   background: #f8fafc;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .bar-fill {
   width: 100%;
   min-height: 2px;
-  background: linear-gradient(180deg, #38bdf8, #0ea5e9);
-  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--accent-400), var(--accent-600));
+  border-radius: var(--radius-sm) 6px 0 0;
   transition: height 0.4s ease;
 }
 
@@ -532,8 +532,8 @@ onMounted(async () => {
 
 /* ===== 模型排行 ===== */
 .ranking-table {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -554,7 +554,7 @@ onMounted(async () => {
 
 .ranking-row {
   height: 46px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-low);
   font-size: 13px;
   color: #334155;
   transition: background 0.15s ease;
@@ -575,7 +575,7 @@ onMounted(async () => {
   border-radius: 7px;
   font-size: 12px;
   font-weight: 700;
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   color: #64748b;
 }
 
@@ -595,20 +595,20 @@ onMounted(async () => {
 .filter-date {
   height: 34px;
   padding: 0 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-semilg);
   background: #fff;
   font-size: 13px;
   color: #334155;
   outline: none;
   transition: border-color 0.2s ease;
 
-  &:focus { border-color: rgba(14, 165, 233, 0.5); }
+  &:focus { border-color: rgba(51, 112, 255, 0.5); }
 }
 
 .log-table {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -629,7 +629,7 @@ onMounted(async () => {
 
 .log-row {
   height: 44px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-low);
   font-size: 13px;
   color: #334155;
   transition: background 0.15s ease;
@@ -674,7 +674,7 @@ onMounted(async () => {
 .page-btn {
   height: 30px;
   padding: 0 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-base);
   border-radius: 9px;
   background: #fff;
   font-size: 12px;
@@ -682,7 +682,7 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.15s ease;
 
-  &:hover:not(:disabled) { border-color: rgba(14, 165, 233, 0.5); color: #0ea5e9; }
+  &:hover:not(:disabled) { border-color: rgba(51, 112, 255, 0.5); color: var(--accent-600); }
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 

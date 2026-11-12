@@ -38,7 +38,7 @@ const isAdmin = computed(() => authStore.isAdmin)
 .approval-box {
   margin-bottom: 10px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: rgba(245, 158, 11, 0.08);
   border: 1px solid rgba(245, 158, 11, 0.35);
 
@@ -50,7 +50,7 @@ const isAdmin = computed(() => authStore.isAdmin)
     code {
       background: var(--bg-tertiary);
       padding: 1px 6px;
-      border-radius: 4px;
+      border-radius: var(--radius-xs);
       font-size: 11px;
     }
   }
@@ -61,7 +61,7 @@ const isAdmin = computed(() => authStore.isAdmin)
 
     button {
       padding: 5px 12px;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       border: none;
       font-size: 12px;
       cursor: pointer;

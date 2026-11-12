@@ -47,7 +47,7 @@
         <!-- ===== 文档列表 ===== -->
         <section v-if="activeTab === 'tab-docs'" class="knowledge-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #0ea5e9, #38bdf8)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-400))">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
@@ -372,7 +372,7 @@ function unwrap(res) {
 }
 
 const tabs = computed(() => [
-    { id: 'tab-docs', label: t('knowledge.tabs.docs'), color: '#0ea5e9' },
+    { id: 'tab-docs', label: t('knowledge.tabs.docs'), color: '#3370FF' },
     { id: 'tab-search', label: t('knowledge.tabs.search'), color: '#f59e0b' },
     { id: 'tab-upload', label: t('knowledge.tabs.upload'), color: '#10b981' }
   ])
@@ -647,19 +647,19 @@ watch(activeTab, async (newTab) => {
   align-items: center;
   gap: 12px;
   padding: 0 12px 20px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-base);
   margin-bottom: 16px;
 }
 
 .nav-icon-wrap {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(56, 189, 248, 0.1));
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(51, 112, 255, 0.15), rgba(56, 189, 248, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 .nav-icon-wrap svg { width: 20px; height: 20px; }
@@ -692,21 +692,21 @@ watch(activeTab, async (newTab) => {
   gap: 12px;
   padding: 10px 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: transparent;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s;
 }
 
-.nav-item:hover { background: #f1f5f9; }
+.nav-item:hover { background: var(--bg-tertiary); }
 
 .nav-item.active {
-  background: rgba(14, 165, 233, 0.08);
+  background: rgba(51, 112, 255, 0.08);
 }
 
 .nav-item.active .nav-item-label {
-  color: #0ea5e9;
+  color: var(--accent-600);
   font-weight: 600;
 }
 
@@ -747,7 +747,7 @@ watch(activeTab, async (newTab) => {
 .section-icon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -772,8 +772,8 @@ watch(activeTab, async (newTab) => {
 
 .section-body {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-mdlg);
   padding: 20px;
 }
 
@@ -793,11 +793,11 @@ watch(activeTab, async (newTab) => {
   font-size: 12px;
   font-weight: 600;
   color: #64748b;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-base);
 }
 
 .doc-table-row {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-low);
   transition: background 0.12s;
 }
 
@@ -809,7 +809,7 @@ watch(activeTab, async (newTab) => {
 
 .doc-file-icon {
   width: 16px; height: 16px;
-  color: #0ea5e9;
+  color: var(--accent-600);
   flex-shrink: 0;
 }
 
@@ -832,13 +832,13 @@ watch(activeTab, async (newTab) => {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   color: #475569;
 }
 
 .type-pdf { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .type-docx { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-.type-md { background: rgba(14, 165, 233, 0.1); color: #0ea5e9; }
+.type-md { background: rgba(51, 112, 255, 0.1); color: var(--accent-600); }
 .type-txt { background: rgba(100, 116, 139, 0.12); color: #64748b; }
 
 .status-badge {
@@ -848,7 +848,7 @@ watch(activeTab, async (newTab) => {
   font-weight: 500;
 }
 
-.status-0 { background: #f1f5f9; color: #64748b; }
+.status-0 { background: var(--bg-tertiary); color: #64748b; }
 .status-1 { background: rgba(245, 158, 11, 0.12); color: #d97706; }
 .status-2 { background: rgba(16, 185, 129, 0.12); color: #059669; }
 .status-3 { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
@@ -862,8 +862,8 @@ watch(activeTab, async (newTab) => {
 .action-btn {
   width: 30px;
   height: 30px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-base);
   background: #fff;
   cursor: pointer;
   display: flex;
@@ -873,7 +873,7 @@ watch(activeTab, async (newTab) => {
   transition: all 0.12s;
 }
 
-.action-btn:hover { border-color: #0ea5e9; color: #0ea5e9; }
+.action-btn:hover { border-color: var(--accent-600); color: var(--accent-600); }
 .action-btn.delete-btn:hover { border-color: #ef4444; color: #ef4444; }
 
 /* ===== 空状态 ===== */
@@ -898,19 +898,19 @@ watch(activeTab, async (newTab) => {
   padding: 8px 18px;
   border-radius: 999px;
   border: none;
-  background: #0ea5e9;
+  background: var(--accent-600);
   color: #fff;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.empty-action-btn:hover { background: #0284c7; }
+.empty-action-btn:hover { background: var(--accent-700); }
 
 /* ===== 上传区 ===== */
 .upload-dropzone {
   border: 2px dashed #cbd5e1;
-  border-radius: 14px;
+  border-radius: var(--radius-mdlg);
   padding: 48px 20px;
   display: flex;
   flex-direction: column;
@@ -922,8 +922,8 @@ watch(activeTab, async (newTab) => {
 
 .upload-dropzone:hover,
 .upload-dropzone.dragging {
-  border-color: #0ea5e9;
-  background: rgba(14, 165, 233, 0.04);
+  border-color: var(--accent-600);
+  background: rgba(51, 112, 255, 0.04);
 }
 
 .upload-big-icon {
@@ -931,7 +931,7 @@ watch(activeTab, async (newTab) => {
   color: #94a3b8;
 }
 
-.upload-dropzone.dragging .upload-big-icon { color: #0ea5e9; }
+.upload-dropzone.dragging .upload-big-icon { color: var(--accent-600); }
 
 .upload-title { font-size: 15px; font-weight: 600; color: #334155; margin: 0; }
 .upload-desc { font-size: 13px; color: #94a3b8; margin: 0; }
@@ -969,8 +969,8 @@ watch(activeTab, async (newTab) => {
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-semilg);
 }
 
 .recent-success { border-left: 3px solid #10b981; }
@@ -1004,14 +1004,14 @@ watch(activeTab, async (newTab) => {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
   padding: 4px 8px 4px 14px;
   background: #f8fafc;
   transition: border-color 0.15s;
 }
 
-.search-input-wrap:focus-within { border-color: #0ea5e9; }
+.search-input-wrap:focus-within { border-color: var(--accent-600); }
 
 .search-input-icon {
   width: 18px; height: 18px;
@@ -1025,11 +1025,11 @@ watch(activeTab, async (newTab) => {
 }
 
 .search-btn {
-  background: #0ea5e9;
-  border-color: #0ea5e9;
+  background: var(--accent-600);
+  border-color: var(--accent-600);
 }
 
-.search-btn:hover { background: #0284c7; border-color: #0284c7; }
+.search-btn:hover { background: var(--accent-700); border-color: var(--accent-700); }
 
 .search-options {
   display: flex;
@@ -1050,13 +1050,13 @@ watch(activeTab, async (newTab) => {
 .search-results { display: flex; flex-direction: column; gap: 12px; }
 
 .result-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border: 1px solid var(--border-base);
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   transition: border-color 0.15s;
 }
 
-.result-card:hover { border-color: #0ea5e9; }
+.result-card:hover { border-color: var(--accent-600); }
 
 .result-header {
   display: flex;
@@ -1084,7 +1084,7 @@ watch(activeTab, async (newTab) => {
   margin-left: auto;
   font-size: 12px;
   font-weight: 600;
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 .result-content {
@@ -1116,7 +1116,7 @@ watch(activeTab, async (newTab) => {
 .detail-row {
   display: flex;
   padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-low);
 }
 
 .detail-row:last-child { border-bottom: none; }
@@ -1143,7 +1143,7 @@ watch(activeTab, async (newTab) => {
   gap: 8px;
   margin-top: 12px;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(239, 68, 68, 0.06);
   color: #ef4444;
   font-size: 13px;

@@ -278,21 +278,112 @@ onUnmounted(() => {
 /* ===== 全局 CSS 变量（Gewu 浅色液态有机风）=====
    ChatView 等视图引用 var(--)，此前未定义导致按钮透明/边框丢失 */
 :root {
-  /* 格物 Gewu 设计令牌 v1（PRD §8.1 方案 B：藏青+靛蓝） */
+  /* ============================================================
+     格物 Gewu 设计令牌 v2（V2.7.0 设计系统化）
+     结构参考 FastGPT 设计体系：完整色阶 / 品牌色相阴影 / 刻度化尺寸
+     品牌性格保留：藏青导航 + 几何「格」标识
+     ============================================================ */
+
+  /* ---------- 品牌色阶（primary #3370FF） ---------- */
+  --accent-50:  #F0F4FF;
+  --accent-100: #E1EAFF;
+  --accent-200: #C5D7FF;
+  --accent-300: #94B5FF;
+  --accent-400: #5E8FFF;
+  --accent-500: #487FFF;
+  --accent-600: #3370FF;
+  --accent-700: #2B5FD9;
+  --accent-800: #2450B5;
+  --accent-900: #1D4091;
+
+  /* 品牌色透明档：hover 底 / 边框 / 聚焦环 */
+  --accent-a1: rgba(51, 112, 255, 0.1);
+  --accent-a3: rgba(51, 112, 255, 0.3);
+  --accent-a5: rgba(51, 112, 255, 0.5);
+  --accent-a7: rgba(51, 112, 255, 0.7);
+
+  /* ---------- 语义主色（兼容既有引用） ---------- */
+  --accent: var(--accent-600);
+  --accent-hover: var(--accent-700);
+  --accent-soft: var(--accent-50);
+
+  /* ---------- 导航（品牌性格保留） ---------- */
   --nav: #1E3A5F;
   --nav-hover: #16304F;
-  --accent: #3370FF;
-  --accent-hover: #2B5FD9;
-  --accent-soft: #EBF1FF;
-  --bg-primary: #f8fafc;
+
+  /* ---------- 背景与表面 ---------- */
+  --bg-primary: #F6F8F9;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --border-color: #e2e8f0;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --success: #059669;
-  --danger: #E11D48;
-  --warning: #D97706;
+  --bg-tertiary: #F4F6F8;
+
+  /* ---------- 中性灰阶 ---------- */
+  --text-900: #111824;
+  --text-800: #1D2532;
+  --text-700: #383F50;
+  --text-600: #485264;
+  --text-500: #667085;
+  --text-400: #8A95A7;
+  --text-300: #C4CBD7;
+  --text-200: #E8EBF0;
+
+  --text-primary: var(--text-800);
+  --text-secondary: var(--text-500);
+  --text-tertiary: var(--text-400);
+
+  /* ---------- 边框三级 ---------- */
+  --border-low: var(--border-low);
+  --border-base: var(--border-base);
+  --border-high: #C4CBD7;
+  --border-color: var(--border-base);
+
+  /* ---------- 状态色 ---------- */
+  --success: #12B76A;
+  --success-soft: #EDFBF3;
+  --danger: #D92D20;
+  --danger-soft: #FEF3F2;
+  --warning: #F79009;
+  --warning-soft: #FFFAEB;
+
+  /* ---------- 圆角刻度 ---------- */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-semilg: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-mdlg: 0.875rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  /* ---------- 间距刻度（4px 基数） ---------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* ---------- 阴影刻度（品牌色相） ---------- */
+  --shadow-1: 0 1px 2px 0 rgba(19, 51, 107, 0.05), 0 0 1px 0 rgba(19, 51, 107, 0.08);
+  --shadow-2: 0 4px 4px 0 rgba(19, 51, 107, 0.05), 0 0 1px 0 rgba(19, 51, 107, 0.08);
+  --shadow-3: 0 4px 10px 0 rgba(19, 51, 107, 0.08), 0 0 1px 0 rgba(19, 51, 107, 0.08);
+  --shadow-4: 0 12px 16px -4px rgba(19, 51, 107, 0.2), 0 0 1px 0 rgba(19, 51, 107, 0.2);
+  --shadow-5: 0 20px 24px -8px rgba(19, 51, 107, 0.15), 0 0 1px 0 rgba(19, 51, 107, 0.15);
+  --shadow-6: 0 24px 48px -12px rgba(19, 51, 107, 0.2), 0 0 1px 0 rgba(19, 51, 107, 0.2);
+  --shadow-7: 0 32px 64px -12px rgba(19, 51, 107, 0.2), 0 0 1px 0 rgba(19, 51, 107, 0.2);
+  --shadow-focus: 0 0 0 3px rgba(51, 112, 255, 0.15);
+
+  /* ---------- 按钮尺寸刻度 ---------- */
+  --btn-h-xs: 24px;
+  --btn-h-sm: 32px;
+  --btn-h-md: 36px;
+  --btn-h-lg: 40px;
+
+  /* ---------- 字体栈（含中文，移除未加载的 Web 字体） ---------- */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑',
+    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 </style>
 
@@ -301,8 +392,8 @@ onUnmounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f1f5f9;
-  font-family: 'Outfit', 'Red Hat Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-tertiary);
+  font-family: var(--font-sans);
   width: 100vw;
   overflow: hidden;
 }
@@ -450,7 +541,7 @@ onUnmounted(() => {
   font-weight: 700;
   letter-spacing: 0.5px;
   color: #1e293b;
-  font-family: 'Outfit', 'Red Hat Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   position: relative;
   display: inline-block;
 }
@@ -473,6 +564,10 @@ onUnmounted(() => {
 .logo-link:hover .brand-primary::after {
   transform: scaleX(1);
 }
+
+
+
+
 
 /* 有机形态变形动画 */
 @keyframes organic-morph {
@@ -561,7 +656,7 @@ onUnmounted(() => {
   gap: 2px;
   background: rgba(148, 163, 184, 0.08);
   padding: 3px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
 }
 
 .nav-tab {
@@ -569,7 +664,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: #64748b;
   font-size: 13px;
   font-weight: 500;
@@ -584,7 +679,7 @@ onUnmounted(() => {
 
 .nav-tab.active {
   background: #fff;
-  color: #0ea5e9;
+  color: var(--accent-600);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
@@ -607,21 +702,21 @@ onUnmounted(() => {
   margin-right: 10px;
   padding: 2px 6px;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: transparent;
 }
 .locale-btn {
   border: none;
   background: transparent;
   padding: 2px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   color: var(--text-secondary, #64748b);
   cursor: pointer;
   transition: all 0.2s ease;
-  &:hover { color: var(--primary-color, #0ea5e9); }
+  &:hover { color: var(--primary-color, var(--accent-600)); }
   &.active {
-    background: var(--primary-color, #0ea5e9);
+    background: var(--primary-color, var(--accent-600));
     color: #fff;
   }
 }
@@ -635,7 +730,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   background: rgba(239, 68, 68, 0.08);
   transition: all 0.3s ease;
   font-size: 12px;
@@ -670,7 +765,7 @@ onUnmounted(() => {
   flex: 1;
   overflow: hidden;
   display: flex;
-  background: #f1f5f9;
+  background: var(--bg-tertiary);
   width: 100%;
 }
 
@@ -704,7 +799,7 @@ onUnmounted(() => {
   top: calc(100% + 8px);
   right: 0;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   min-width: 260px;
   z-index: 1000;
@@ -729,7 +824,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 16px;
   background: var(--accent-soft);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-base);
 }
 
 .user-avatar-large {
@@ -764,7 +859,7 @@ onUnmounted(() => {
 
 .dropdown-divider {
   height: 1px;
-  background: #e2e8f0;
+  background: var(--bg-tertiary);
   margin: 8px 0;
 }
 
@@ -781,7 +876,7 @@ onUnmounted(() => {
 }
 
 .dropdown-item:hover {
-  background-color: #f1f5f9;
+  background: var(--bg-tertiary);
   color: #1e293b;
 }
 
@@ -821,7 +916,7 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #3370FF, #2B5FD9);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;

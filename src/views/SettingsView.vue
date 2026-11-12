@@ -357,7 +357,7 @@
               <div class="settings-panel">
                 <div class="data-grid">
                   <button class="data-card" @click="clearCurrentSession">
-                    <div class="data-card-icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9">
+                    <div class="data-card-icon" style="background: rgba(51, 112, 255, 0.1); color: var(--accent-600)">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -570,11 +570,11 @@ const activeCategory = ref('section-account')
 
 const categories = computed(() => [
   { id: 'section-account', label: t('settings.tabs.account'), color: '#6366F1' },
-  { id: 'section-model', label: t('settings.tabs.model'), color: '#0ea5e9' },
+  { id: 'section-model', label: t('settings.tabs.model'), color: '#3370FF' },
   { id: 'section-chat', label: t('settings.tabs.chat'), color: '#f59e0b' },
   { id: 'section-data', label: t('settings.tabs.data'), color: '#ef4444' },
   { id: 'section-plugin', label: t('settings.tabs.plugin'), color: '#8b5cf6' },
-  { id: 'section-skill', label: t('settings.tabs.skill'), color: '#0ea5e9' }
+  { id: 'section-skill', label: t('settings.tabs.skill'), color: '#3370FF' }
 ])
 
 
@@ -1129,7 +1129,7 @@ onMounted(async () => {
 .nav-avatar {
   width: 42px;
   height: 42px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(135deg, #3370FF, #2B5FD9);
   display: flex;
   align-items: center;
@@ -1173,7 +1173,7 @@ onMounted(async () => {
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   border: none;
   background: transparent;
   cursor: pointer;
@@ -1192,14 +1192,14 @@ onMounted(async () => {
 
 .nav-item.active {
   background: linear-gradient(135deg, rgba(51,112,255,0.08), rgba(43,95,217,0.06));
-  color: #0ea5e9;
+  color: var(--accent-600);
   font-weight: 600;
 }
 
 .nav-item-icon {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1259,10 +1259,10 @@ onMounted(async () => {
 }
 
 .provider-btn {
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: 1px solid var(--border-color, var(--border-base));
   background: var(--bg-secondary, #ffffff);
   color: var(--text-primary, #1e293b);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 6px 14px;
   font-size: 13px;
   cursor: pointer;
@@ -1270,13 +1270,13 @@ onMounted(async () => {
 }
 
 .provider-btn:hover:not(:disabled) {
-  border-color: var(--accent, #4F46E5);
-  color: var(--accent, #4F46E5);
+  border-color: var(--accent, #3370FF);
+  color: var(--accent, #3370FF);
 }
 
 .provider-btn.primary {
-  background: var(--accent, #4F46E5);
-  border-color: var(--accent, #4F46E5);
+  background: var(--accent, #3370FF);
+  border-color: var(--accent, #3370FF);
   color: #ffffff;
 }
 
@@ -1313,15 +1313,15 @@ onMounted(async () => {
 }
 
 .provider-card {
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 12px;
+  border: 1px solid var(--border-color, var(--border-base));
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   background: var(--bg-secondary, #ffffff);
   transition: border-color 0.2s ease;
 }
 
 .provider-card:hover {
-  border-color: var(--accent, #4F46E5);
+  border-color: var(--accent, #3370FF);
 }
 
 .provider-card-head {
@@ -1349,8 +1349,8 @@ onMounted(async () => {
 .key-chip {
   font-size: 11px;
   color: var(--text-secondary, #64748b);
-  background: var(--bg-tertiary, #f1f5f9);
-  border-radius: 4px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-xs);
   padding: 2px 6px;
   font-family: monospace;
 }
@@ -1386,7 +1386,7 @@ onMounted(async () => {
 .section-icon {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1418,15 +1418,15 @@ onMounted(async () => {
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   border: 1px solid rgba(0,0,0,0.05);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+  box-shadow: var(--shadow-1);
   padding: 24px;
   transition: box-shadow 0.2s ease;
 }
 
 .settings-panel:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-3);
 }
 
 /* 表单字段 */
@@ -1451,7 +1451,7 @@ onMounted(async () => {
 .field-badge {
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
 }
 
@@ -1481,8 +1481,8 @@ onMounted(async () => {
   text-align: left;
   font-family: inherit;
   background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 14px;
+  border: 1.5px solid var(--border-base);
+  border-radius: var(--radius-mdlg);
   padding: 18px 20px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1494,13 +1494,13 @@ onMounted(async () => {
 .model-card:hover {
   border-color: #7dd3fc;
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(14,165,233,0.1);
+  box-shadow: 0 6px 18px rgba(51, 112, 255, 0.1);
 }
 
 .model-card.active {
-  border-color: #0ea5e9;
+  border-color: var(--accent-600);
   background: linear-gradient(135deg, rgba(51,112,255,0.05), rgba(43,95,217,0.04));
-  box-shadow: 0 4px 16px rgba(14,165,233,0.12);
+  box-shadow: 0 4px 16px rgba(51, 112, 255, 0.12);
 }
 
 .model-card.switching {
@@ -1526,8 +1526,8 @@ onMounted(async () => {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(14, 165, 233, 0.12);
-  color: #0284c7;
+  background: rgba(51, 112, 255, 0.12);
+  color: var(--accent-700);
 }
 
 .model-card-meta {
@@ -1540,7 +1540,7 @@ onMounted(async () => {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(100, 116, 139, 0.1);
   color: #475569;
 }
@@ -1567,8 +1567,8 @@ onMounted(async () => {
 
 .data-card {
   padding: 20px;
-  border-radius: 12px;
-  border: 1.5px solid #e2e8f0;
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border-base);
   background: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1596,7 +1596,7 @@ onMounted(async () => {
 .data-card-icon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1629,8 +1629,8 @@ onMounted(async () => {
 :deep(.ant-input),
 :deep(.ant-input-password input),
 :deep(.ant-select-selector) {
-  border-radius: 10px !important;
-  border-color: #e2e8f0 !important;
+  border-radius: var(--radius-semilg) !important;
+  border-color: var(--border-base) !important;
 }
 
 :deep(.ant-input:hover),
@@ -1642,8 +1642,8 @@ onMounted(async () => {
 :deep(.ant-input:focus),
 :deep(.ant-input-password input:focus),
 :deep(.ant-select-focused .ant-select-selector) {
-  border-color: #0ea5e9 !important;
-  box-shadow: 0 0 0 3px rgba(14,165,233,0.08) !important;
+  border-color: var(--accent-600) !important;
+  box-shadow: 0 0 0 3px rgba(51, 112, 255, 0.08) !important;
 }
 
 /* 固定底部操作栏 */
@@ -1659,7 +1659,7 @@ onMounted(async () => {
 
 .btn {
   padding: 12px 28px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -1679,12 +1679,12 @@ onMounted(async () => {
 .btn-secondary {
   background: #fff;
   color: #475569;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--border-base);
 }
 
 .btn-secondary:hover {
   border-color: #7dd3fc;
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 /* 密码表单 */
@@ -1751,7 +1751,7 @@ onMounted(async () => {
   width: 110px;
   padding: 6px 10px;
   border: 1px solid rgba(128, 128, 128, 0.35);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 13px;
   background: transparent;
 }
@@ -1771,7 +1771,7 @@ onMounted(async () => {
 
 .compact-manual-btn {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid #6366f1;
   background: transparent;
   color: #6366f1;
@@ -1804,7 +1804,7 @@ onMounted(async () => {
 /* 新增插件表单：字段卡片化，label 上置，与列表列名对齐 */
 .plugin-add-card {
   display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
-  padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc;
+  padding: 12px 14px; border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: #f8fafc;
 }
 .plugin-field { display: flex; flex-direction: column; gap: 4px; }
 .plugin-field label { font-size: 12px; color: #64748b; font-weight: 500; }
@@ -1815,23 +1815,23 @@ onMounted(async () => {
 .plugin-field.action { padding-bottom: 1px; }
 .plugin-field.action .btn-sm { height: 32px; }
 .plugin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.plugin-table th, .plugin-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+.plugin-table th, .plugin-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-base); }
 .plugin-table th { font-weight: 600; color: #64748b; }
 .td-code { font-family: monospace; }
 .td-endpoint { font-size: 12px; color: #94a3b8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.plugin-status { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.plugin-status { padding: 2px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; }
 .plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 /* 表格内小按钮（安装/卸载/删除）：此前无定义导致原生按钮畸形 */
 .td-actions { display: flex; gap: 6px; justify-content: flex-start; }
 .btn-sm {
   padding: 4px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-base);
   background: #fff;
   color: #475569;
   font-family: inherit;
@@ -1854,13 +1854,13 @@ onMounted(async () => {
 /* Skill 清单：目录扫描产物只读展示（FastGPT 风格浅底列表） */
 .skill-list {
   display: flex; flex-direction: column;
-  border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
+  border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: #fff;
   max-height: 360px; overflow-y: auto;
 }
 .skill-item {
   display: flex; align-items: baseline; gap: 12px; font-size: 13px;
   padding: 9px 14px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-low);
   transition: background 0.12s ease;
 }
 .skill-item:last-child { border-bottom: none; }
@@ -1880,7 +1880,7 @@ onMounted(async () => {
 .skill-dir-row { display: flex; align-items: center; gap: 10px; }
 .skill-dir-label { min-width: 72px; font-size: 13px; color: #64748b; }
 .skill-meta { display: flex; gap: 16px; font-size: 12px; color: #64748b; }
-.skill-readable { padding: 1px 8px; border-radius: 10px; font-weight: 600; }
+.skill-readable { padding: 1px 8px; border-radius: var(--radius-semilg); font-weight: 600; }
 .skill-readable.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .skill-readable.off { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 .skill-hint { font-size: 12px; color: #94a3b8; }

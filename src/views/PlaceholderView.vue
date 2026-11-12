@@ -38,21 +38,21 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
   padding: 48px 64px;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   border: 1px solid rgba(148, 163, 184, 0.15);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-3);
 }
 
 .placeholder-icon {
   width: 64px;
   height: 64px;
   margin: 0 auto 20px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(236, 72, 153, 0.1));
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, rgba(51, 112, 255, 0.1), rgba(236, 72, 153, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 .placeholder-icon svg {
@@ -76,8 +76,8 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
 .back-link {
   display: inline-block;
   padding: 8px 20px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #0ea5e9, #ec4899);
+  border-radius: var(--radius-semilg);
+  background: linear-gradient(135deg, var(--accent-600), #ec4899);
   color: white;
   text-decoration: none;
   font-size: 14px;
@@ -87,6 +87,6 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
 
 .back-link:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 12px rgba(51, 112, 255, 0.3);
 }
 </style>

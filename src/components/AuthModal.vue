@@ -305,10 +305,10 @@ const handleForgotPassword = () => {
 
 <style scoped>
 .auth-modal :deep(.ant-modal-content) {
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-7);
 }
 
 .auth-modal :deep(.ant-modal-body) {
@@ -320,7 +320,7 @@ const handleForgotPassword = () => {
 }
 
 .auth-modal :deep(.ant-modal-close:hover) {
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 .auth-container {
@@ -396,8 +396,8 @@ const handleForgotPassword = () => {
   width: 100%;
   height: 44px;
   padding: 0 14px 0 44px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
+  border: 1.5px solid var(--border-base);
+  border-radius: var(--radius-semilg);
   font-size: 14px;
   color: #1e293b;
   background: #fff;
@@ -411,8 +411,8 @@ const handleForgotPassword = () => {
 }
 
 .auth-input:focus {
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.08);
+  border-color: var(--accent-600);
+  box-shadow: var(--shadow-focus);
 }
 
 .auth-input::placeholder {
@@ -436,7 +436,7 @@ const handleForgotPassword = () => {
 }
 
 .toggle-pw:hover {
-  color: #0ea5e9;
+  color: var(--accent-600);
 }
 
 .toggle-pw svg {
@@ -484,8 +484,8 @@ const handleForgotPassword = () => {
 }
 
 .remember-checkbox .checkbox:checked + .checkmark {
-  background: #0ea5e9;
-  border-color: #0ea5e9;
+  background: var(--accent-600);
+  border-color: var(--accent-600);
 }
 
 .remember-checkbox .checkbox:checked + .checkmark::after {
@@ -502,21 +502,21 @@ const handleForgotPassword = () => {
 
 .forgot-link {
   font-size: 13px;
-  color: #0ea5e9;
+  color: var(--accent-600);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .forgot-link:hover {
-  color: #0284c7;
+  color: var(--accent-700);
 }
 
 /* Submit Button */
 .auth-button {
   width: 100%;
   height: 46px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   border: none;
   background: var(--accent);
   color: #fff;
@@ -524,7 +524,7 @@ const handleForgotPassword = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 4px 12px rgba(51, 112, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -534,7 +534,7 @@ const handleForgotPassword = () => {
 }
 
 .auth-button:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.35);
+  box-shadow: 0 6px 20px rgba(51, 112, 255, 0.35);
   transform: translateY(-1px);
 }
 
@@ -567,7 +567,7 @@ const handleForgotPassword = () => {
 }
 
 .switch-link {
-  color: #0ea5e9;
+  color: var(--accent-600);
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
@@ -575,6 +575,6 @@ const handleForgotPassword = () => {
 }
 
 .switch-link:hover {
-  color: #0284c7;
+  color: var(--accent-700);
 }
 </style>

@@ -1054,7 +1054,7 @@ async function initialize() {
 .btn-icon {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
@@ -1063,7 +1063,7 @@ async function initialize() {
   display: flex;
   align-items: center;
   justify-content: center;
-  &:hover { background: var(--border-color); }
+  &:hover { background: var(--bg-tertiary); }
 }
 
 .session-list {
@@ -1077,7 +1077,7 @@ async function initialize() {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background 0.15s;
   &:hover { background: var(--bg-tertiary); }
@@ -1100,7 +1100,7 @@ async function initialize() {
   display: inline-block;
   margin-right: 5px;
   padding: 0 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: 11px;
   background: rgba(88, 166, 255, 0.15);
   color: var(--accent);
@@ -1110,7 +1110,7 @@ async function initialize() {
 .btn-del {
   width: 22px;
   height: 22px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -1143,7 +1143,7 @@ async function initialize() {
     width: 18px; height: 18px;
     border: none; background: transparent;
     color: var(--text-secondary); cursor: pointer;
-    border-radius: 4px; font-size: 13px;
+    border-radius: var(--radius-xs); font-size: 13px;
     opacity: 0;
     &:hover { color: var(--danger); }
   }
@@ -1159,7 +1159,7 @@ async function initialize() {
 
 .btn-op {
   width: 22px; height: 22px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background: transparent; border: none;
   color: var(--text-secondary); cursor: pointer;
   font-size: 13px;
@@ -1176,9 +1176,9 @@ async function initialize() {
 .mini-modal {
   width: 320px;
   background: var(--bg-secondary, #fff);
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   padding: 16px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow-6);
 }
 
 .mini-modal-title {
@@ -1189,7 +1189,7 @@ async function initialize() {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--border-color, #d9d9d9);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
   &:focus { outline: none; border-color: var(--accent); }
 }
@@ -1200,7 +1200,7 @@ async function initialize() {
 
 .mini-btn {
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color, #d9d9d9);
   background: transparent; cursor: pointer; font-size: 13px;
   &.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
@@ -1213,7 +1213,7 @@ async function initialize() {
 
 .group-choice {
   padding: 5px 12px;
-  border-radius: 14px;
+  border-radius: var(--radius-mdlg);
   border: 1px solid var(--border-color, #d9d9d9);
   background: transparent; cursor: pointer; font-size: 12px;
   &:hover { border-color: var(--accent); color: var(--accent); }
@@ -1270,7 +1270,7 @@ async function initialize() {
 .model-inline {
   max-width: 190px;
   padding: 4px 6px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-secondary);
@@ -1297,10 +1297,10 @@ async function initialize() {
   left: 0;
   width: 320px;
   padding: 14px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: var(--bg-primary, #fff);
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-5);
   z-index: 50;
   cursor: default;
 }
@@ -1396,7 +1396,7 @@ async function initialize() {
   padding: 12px 16px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   cursor: pointer;
   text-align: left;
@@ -1427,7 +1427,7 @@ async function initialize() {
 
 .message-bubble {
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   .user & { background: rgba(88, 166, 255, 0.12); border: 1px solid rgba(88, 166, 255, 0.2); }
   .assistant & { background: var(--bg-secondary); border: 1px solid var(--border-color); }
 }
@@ -1449,7 +1449,7 @@ async function initialize() {
 .model-tag {
   padding: 2px 6px;
   background: var(--bg-tertiary);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: 10px;
   color: var(--text-secondary);
   font-family: monospace;
@@ -1468,7 +1468,7 @@ async function initialize() {
 .message-image-link {
   display: block;
   line-height: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
@@ -1489,14 +1489,14 @@ async function initialize() {
   :deep(code) {
     background: var(--bg-tertiary);
     padding: 2px 6px;
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     font-family: 'JetBrains Mono', 'Courier New', monospace;
     font-size: 13px;
   }
   :deep(pre) {
     background: var(--bg-primary);
     padding: 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     overflow-x: auto;
     margin: 8px 0;
     border: 1px solid var(--border-color);
@@ -1548,13 +1548,13 @@ async function initialize() {
   margin: 0 auto;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 10px 12px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--shadow-1);
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   &:focus-within {
-    border-color: rgba(14, 165, 233, 0.35);
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(14, 165, 233, 0.08);
+    border-color: rgba(51, 112, 255, 0.35);
+    box-shadow: 0 2px 12px rgba(19, 51, 107, 0.05), 0 0 0 3px rgba(51, 112, 255, 0.08);
   }
 }
 
@@ -1570,15 +1570,15 @@ async function initialize() {
   padding: 8px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
 }
 
 .attachment-item {
   position: relative;
   width: 56px;
   height: 56px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border-color);
 }
@@ -1600,11 +1600,11 @@ async function initialize() {
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(19, 51, 107, 0.65);
   color: #fff;
   font-size: 12px;
   cursor: pointer;
-  &:hover { background: rgba(15, 23, 42, 0.85); }
+  &:hover { background: rgba(19, 51, 107, 0.85); }
 }
 
 .attachment-count {
@@ -1621,14 +1621,14 @@ async function initialize() {
   height: 32px;
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-semilg);
   background: transparent;
   color: var(--text-secondary, #64748b);
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
   &:hover:not(:disabled) {
     background: rgba(148, 163, 184, 0.12);
-    color: var(--primary-color, #0ea5e9);
+    color: var(--primary-color, var(--accent-600));
   }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
@@ -1656,8 +1656,8 @@ async function initialize() {
 .send-btn {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--accent-400), var(--accent-600));
   border: none;
   color: white;
   cursor: pointer;
@@ -1665,11 +1665,11 @@ async function initialize() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 2px 10px rgba(51, 112, 255, 0.3);
   transition: all 0.2s ease;
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+    background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
+    box-shadow: 0 4px 14px rgba(51, 112, 255, 0.4);
     transform: translateY(-1px);
   }
   &:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
@@ -1719,7 +1719,7 @@ async function initialize() {
     width: 34px;
     height: 18px;
     border-radius: 999px;
-    background: var(--border-color);
+    background: var(--bg-tertiary);
     position: relative;
     transition: background 0.15s;
   }
@@ -1801,7 +1801,7 @@ async function initialize() {
     width: 34px;
     height: 18px;
     border-radius: 999px;
-    background: var(--border-color);
+    background: var(--bg-tertiary);
     position: relative;
     transition: background 0.15s;
   }

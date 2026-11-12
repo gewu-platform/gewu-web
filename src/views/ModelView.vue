@@ -113,7 +113,7 @@ onMounted(() => {
 .current-model {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 20px;
   margin-bottom: 24px;
   .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
@@ -136,7 +136,7 @@ onMounted(() => {
 .model-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 20px;
   cursor: pointer;
   transition: all 0.15s;
@@ -160,7 +160,7 @@ onMounted(() => {
   padding: 2px 8px;
   background: var(--accent);
   color: white;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: 11px;
   font-weight: 600;
 }
@@ -176,7 +176,7 @@ onMounted(() => {
   padding: 2px 8px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: 11px;
   color: var(--text-secondary);
   text-transform: uppercase;
