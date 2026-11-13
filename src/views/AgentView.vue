@@ -791,11 +791,11 @@ onUnmounted(() => {
   border-radius: 999px;
   font-size: 12px;
   background: rgba(248, 81, 73, 0.12);
-  color: #f85149;
+  color: var(--danger);
 
   &.up {
     background: rgba(52, 211, 153, 0.12);
-    color: #10b981;
+    color: var(--success);
   }
 
   .health-dot {
@@ -810,7 +810,7 @@ onUnmounted(() => {
   padding: 7px 16px;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, var(--accent-600), #6366f1);
+  background: linear-gradient(135deg, var(--accent-600), var(--module-indigo));
   color: white;
   font-size: 13px;
   font-weight: 600;
@@ -870,23 +870,23 @@ onUnmounted(() => {
   border-radius: 999px;
   font-size: 11px;
 
-  &.on { background: rgba(52, 211, 153, 0.12); color: #10b981; }
-  &.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+  &.on { background: rgba(52, 211, 153, 0.12); color: var(--success); }
+  &.off { background: rgba(var(--text-400-rgb), 0.15); color: var(--text-tertiary); }
 }
 
 /* P8b 审批策略徽章 */
-.title-icon { width: 18px; height: 18px; margin-right: 8px; vertical-align: -3px; color: var(--accent-primary, #3b82f6); }
+.title-icon { width: 18px; height: 18px; margin-right: 8px; vertical-align: -3px; color: var(--accent-primary, var(--accent-600)); }
 
 .approval-badge {
   display: inline-block;
   padding: 2px 10px;
   border-radius: 999px;
   font-size: 11px;
-  background: rgba(148, 163, 184, 0.15);
-  color: #94a3b8;
+  background: rgba(var(--text-400-rgb), 0.15);
+  color: var(--text-tertiary);
 
   &.ba-strict { background: rgba(251, 146, 60, 0.14); color: #f97316; }
-  &.ba-trust { background: rgba(52, 211, 153, 0.12); color: #10b981; }
+  &.ba-trust { background: rgba(52, 211, 153, 0.12); color: var(--success); }
 }
 
 .approval-select {
@@ -999,22 +999,22 @@ onUnmounted(() => {
   padding: 1px 7px;
   border-radius: 999px;
   background: rgba(52, 211, 153, 0.12);
-  color: #10b981;
+  color: var(--success);
 
   &.required {
-    background: rgba(245, 158, 11, 0.12);
-    color: #d97706;
+    background: rgba(var(--warning-rgb), 0.12);
+    color: var(--warning);
   }
 }
 
 .pending-item {
   padding: 10px;
   border-radius: var(--radius-md);
-  background: rgba(245, 158, 11, 0.06);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(var(--warning-rgb), 0.06);
+  border: 1px solid rgba(var(--warning-rgb), 0.25);
   margin-bottom: 8px;
 
-  .pending-tool { font-size: 13px; font-weight: 600; color: #d97706; }
+  .pending-tool { font-size: 13px; font-weight: 600; color: var(--warning); }
   .pending-args {
     font-size: 11px;
     color: var(--text-secondary);
@@ -1034,7 +1034,7 @@ onUnmounted(() => {
   cursor: pointer;
 
   &:hover { background: var(--bg-tertiary); }
-  &.ok { background: #10b981; border-color: #10b981; color: white; }
+  &.ok { background: var(--success); border-color: var(--success); color: white; }
   &.danger { background: rgba(248, 81, 73, 0.9); border-color: transparent; color: white; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
@@ -1135,7 +1135,7 @@ onUnmounted(() => {
   &:hover { background: var(--bg-tertiary); }
   &.selected {
     border-color: var(--accent);
-    background: rgba(51, 112, 255, 0.08);
+    background: rgba(var(--accent-rgb), 0.08);
   }
 
   .agent-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
@@ -1158,7 +1158,7 @@ onUnmounted(() => {
   cursor: pointer;
   margin-bottom: 6px;
 
-  &:hover, &.active { background: rgba(51, 112, 255, 0.08); }
+  &:hover, &.active { background: rgba(var(--accent-rgb), 0.08); }
 
   .history-question {
     font-size: 12px;
@@ -1249,8 +1249,8 @@ onUnmounted(() => {
   border: 1px solid var(--border-color);
 
   .user & {
-    background: rgba(51, 112, 255, 0.08);
-    border-color: rgba(51, 112, 255, 0.25);
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: rgba(var(--accent-rgb), 0.25);
   }
 }
 
@@ -1303,10 +1303,10 @@ onUnmounted(() => {
   margin-bottom: 10px;
   padding: 10px 12px;
   border-radius: var(--radius-semilg);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(var(--warning-rgb), 0.08);
+  border: 1px solid rgba(var(--warning-rgb), 0.35);
 
-  .approval-title { font-size: 13px; font-weight: 600; color: #d97706; }
+  .approval-title { font-size: 13px; font-weight: 600; color: var(--warning); }
   .approval-detail {
     font-size: 12px;
     color: var(--text-primary);
@@ -1332,7 +1332,7 @@ onUnmounted(() => {
 
       &:disabled { opacity: 0.5; cursor: not-allowed; }
     }
-    .btn-approve { background: #10b981; color: white; }
+    .btn-approve { background: var(--success); color: white; }
     .btn-reject { background: rgba(248, 81, 73, 0.9); color: white; }
   }
   .approval-result {
@@ -1382,7 +1382,7 @@ onUnmounted(() => {
     font-weight: 600;
     padding: 1px 7px;
     border-radius: 999px;
-    background: rgba(51, 112, 255, 0.12);
+    background: rgba(var(--accent-rgb), 0.12);
     color: var(--accent);
   }
   .step-tool {
@@ -1461,7 +1461,7 @@ onUnmounted(() => {
     padding: 8px 22px;
     border-radius: 999px;
     border: none;
-    background: linear-gradient(135deg, var(--accent-600), #6366f1);
+    background: linear-gradient(135deg, var(--accent-600), var(--module-indigo));
     color: white;
     font-size: 13px;
     font-weight: 600;
@@ -1493,25 +1493,25 @@ onUnmounted(() => {
 }
 
 .tpl-card:hover {
-  border-color: var(--accent, #3370FF);
+  border-color: var(--accent, var(--accent-600));
   transform: translateY(-1px);
 }
 
 .tpl-card.blank {
   border-style: dashed;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
 }
 
 .tpl-name {
   font-weight: 600;
   font-size: 13px;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, var(--text-800));
   margin-bottom: 4px;
 }
 
 .tpl-desc {
   font-size: 12px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1535,7 +1535,7 @@ onUnmounted(() => {
 
 .kb-empty {
   font-size: 12px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
 }
 
 .modal-mask {

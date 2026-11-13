@@ -9,14 +9,14 @@
             <!-- 品牌标：观察熊猫（格物致知 · 竹芽生长） -->
             <span class="brand-mark" aria-hidden="true">
               <svg viewBox="0 0 256 256" fill="none">
-                <circle cx="64" cy="64" r="30" fill="#1E3A5F"/>
-                <circle cx="192" cy="64" r="30" fill="#1E3A5F"/>
-                <path fill="#1E3A5F" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
-                <path fill="#3370FF" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
-                <path fill="#3370FF" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
-                <path fill="#1E3A5F" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
-                <path fill="#1E3A5F" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
-                <ellipse cx="128" cy="177" rx="10" ry="8" fill="#1E3A5F"/>
+                <circle cx="64" cy="64" r="30" fill="var(--nav)"/>
+                <circle cx="192" cy="64" r="30" fill="var(--nav)"/>
+                <path fill="var(--nav)" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
+                <path fill="var(--accent-600)" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
+                <path fill="var(--accent-600)" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
+                <path fill="var(--nav)" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+                <path fill="var(--nav)" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+                <ellipse cx="128" cy="177" rx="10" ry="8" fill="var(--nav)"/>
               </svg>
             </span>
             <!-- 品牌名称 -->
@@ -280,7 +280,7 @@ onUnmounted(() => {
      品牌性格保留：藏青导航 + 几何「格」标识
      ============================================================ */
 
-  /* ---------- 品牌色阶（primary #3370FF） ---------- */
+  /* ---------- 品牌色阶（primary var(--accent-600)） ---------- */
   --accent-50:  #F0F4FF;
   --accent-100: #E1EAFF;
   --accent-200: #C5D7FF;
@@ -293,14 +293,15 @@ onUnmounted(() => {
   --accent-900: #1D4091;
 
   /* 品牌色透明档：hover 底 / 边框 / 聚焦环 */
-  --accent-a1: rgba(51, 112, 255, 0.1);
-  --accent-a3: rgba(51, 112, 255, 0.3);
-  --accent-a5: rgba(51, 112, 255, 0.5);
-  --accent-a7: rgba(51, 112, 255, 0.7);
+  --accent-a1: rgba(var(--accent-rgb), 0.1);
+  --accent-a3: rgba(var(--accent-rgb), 0.3);
+  --accent-a5: rgba(var(--accent-rgb), 0.5);
+  --accent-a7: rgba(var(--accent-rgb), 0.7);
 
   /* ---------- 语义主色（兼容既有引用） ---------- */
   --accent: var(--accent-600);
   --accent-hover: var(--accent-700);
+  --accent-primary: var(--accent-600);
   --accent-soft: var(--accent-50);
 
   /* ---------- 导航（品牌性格保留） ---------- */
@@ -319,7 +320,7 @@ onUnmounted(() => {
   --text-600: #485264;
   --text-500: #667085;
   --text-400: #8A95A7;
-  --text-300: #C4CBD7;
+  --text-300: var(--border-high);
   --text-200: #E8EBF0;
 
   --text-primary: var(--text-800);
@@ -327,8 +328,8 @@ onUnmounted(() => {
   --text-tertiary: var(--text-400);
 
   /* ---------- 边框三级 ---------- */
-  --border-low: var(--border-low);
-  --border-base: var(--border-base);
+  --border-low: #E8EBF0;
+  --border-base: #DFE2EA;
   --border-high: #C4CBD7;
   --border-color: var(--border-base);
 
@@ -339,6 +340,18 @@ onUnmounted(() => {
   --danger-soft: #FEF3F2;
   --warning: #F79009;
   --warning-soft: #FFFAEB;
+
+  /* ---------- RGB 三元组（rgba(<rgb 三元组变量>, α) 形式引用） ---------- */
+  --accent-rgb: 51, 112, 255;
+  --warning-rgb: 247, 144, 9;
+  --success-rgb: 18, 183, 106;
+  --danger-rgb: 217, 45, 32;
+  --text-400-rgb: 138, 149, 167;
+  --module-violet-rgb: 139, 92, 246;
+
+  /* ---------- 模块识别色（与 design/palette.js 对齐） ---------- */
+  --module-indigo: #6366F1;
+  --module-indigo-rgb: 99, 102, 241;
 
   /* ---------- 圆角刻度 ---------- */
   --radius-xs: 0.25rem;
@@ -367,7 +380,7 @@ onUnmounted(() => {
   --shadow-5: 0 20px 24px -8px rgba(19, 51, 107, 0.15), 0 0 1px 0 rgba(19, 51, 107, 0.15);
   --shadow-6: 0 24px 48px -12px rgba(19, 51, 107, 0.2), 0 0 1px 0 rgba(19, 51, 107, 0.2);
   --shadow-7: 0 32px 64px -12px rgba(19, 51, 107, 0.2), 0 0 1px 0 rgba(19, 51, 107, 0.2);
-  --shadow-focus: 0 0 0 3px rgba(51, 112, 255, 0.15);
+  --shadow-focus: 0 0 0 3px rgba(var(--accent-rgb), 0.15);
 
   /* ---------- 按钮尺寸刻度 ---------- */
   --btn-h-xs: 24px;
@@ -400,7 +413,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid rgba(var(--text-400-rgb), 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -462,7 +475,7 @@ onUnmounted(() => {
   font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: #1e293b;
+  color: var(--text-800);
   font-family: var(--font-sans);
   position: relative;
   display: inline-block;
@@ -476,7 +489,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #3370FF 0%, #5B8DFF 100%);
+  background: linear-gradient(90deg, var(--accent-600) 0%, #5B8DFF 100%);
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: left;
@@ -501,7 +514,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 2px;
-  background: rgba(148, 163, 184, 0.08);
+  background: rgba(var(--text-400-rgb), 0.08);
   padding: 3px;
   border-radius: var(--radius-semilg);
 }
@@ -512,7 +525,7 @@ onUnmounted(() => {
   gap: 6px;
   padding: 7px 14px;
   border-radius: var(--radius-md);
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -521,7 +534,7 @@ onUnmounted(() => {
 }
 
 .nav-tab:hover {
-  color: #1e293b;
+  color: var(--text-800);
 }
 
 .nav-tab.active {
@@ -558,12 +571,12 @@ onUnmounted(() => {
   padding: 2px 8px;
   border-radius: var(--radius-md);
   font-size: 12px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
   cursor: pointer;
   transition: all 0.2s ease;
-  &:hover { color: var(--primary-color, var(--accent-600)); }
+  &:hover { color: var(--accent-600); }
   &.active {
-    background: var(--primary-color, var(--accent-600));
+    background: var(--accent-600);
     color: #fff;
   }
 }
@@ -578,28 +591,28 @@ onUnmounted(() => {
   gap: 6px;
   padding: 4px 10px;
   border-radius: var(--radius-2xl);
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(var(--danger-rgb), 0.08);
   transition: all 0.3s ease;
   font-size: 12px;
   font-weight: 500;
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .status-pill.online {
-  background: rgba(16, 185, 129, 0.08);
-  color: #10b981;
+  background: rgba(var(--success-rgb), 0.08);
+  color: var(--success);
 }
 
 .pill-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--danger);
   transition: background 0.3s ease;
 }
 
 .status-pill.online .pill-dot {
-  background: #10b981;
+  background: var(--success);
   animation: pill-pulse 2s ease-in-out infinite;
 }
 
@@ -638,7 +651,7 @@ onUnmounted(() => {
 }
 
 .user-trigger:hover {
-  background-color: rgba(148, 163, 184, 0.15);
+  background-color: rgba(var(--text-400-rgb), 0.15);
 }
 
 .dropdown-menu {
@@ -678,7 +691,7 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3370FF, #2B5FD9);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -694,14 +707,14 @@ onUnmounted(() => {
 
 .user-name {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-800);
   font-size: 15px;
   margin-bottom: 2px;
 }
 
 .user-email {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .dropdown-divider {
@@ -716,7 +729,7 @@ onUnmounted(() => {
   gap: 10px;
   padding: 12px 16px;
   text-decoration: none;
-  color: #334155;
+  color: var(--text-700);
   font-size: 14px;
   font-weight: 500;
   transition: all 0.15s ease;
@@ -724,7 +737,7 @@ onUnmounted(() => {
 
 .dropdown-item:hover {
   background: var(--bg-tertiary);
-  color: #1e293b;
+  color: var(--text-800);
 }
 
 .dropdown-icon {
@@ -734,19 +747,19 @@ onUnmounted(() => {
 }
 
 .logout-item {
-  color: #ef4444 !important;
+  color: var(--danger) !important;
 }
 
 .logout-item:hover {
   background-color: #fee2e2 !important;
-  color: #dc2626 !important;
+  color: var(--danger) !important;
 }
 
 .user-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3370FF, #2B5FD9);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -760,7 +773,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, #3370FF, #2B5FD9);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
   color: white;
   border: none;
   border-radius: var(--radius-md);

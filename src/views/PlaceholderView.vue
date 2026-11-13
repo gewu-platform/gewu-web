@@ -39,7 +39,7 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   border-radius: var(--radius-2xl);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(var(--text-400-rgb), 0.15);
   box-shadow: var(--shadow-3);
 }
 
@@ -48,7 +48,7 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
   height: 64px;
   margin: 0 auto 20px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, rgba(51, 112, 255, 0.1), rgba(236, 72, 153, 0.1));
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1), rgba(236, 72, 153, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,13 +63,13 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
 .placeholder-title {
   font-size: 20px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-800);
   margin: 0 0 8px;
 }
 
 .placeholder-desc {
   font-size: 14px;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0 0 24px;
 }
 
@@ -87,6 +87,6 @@ const placeholder = computed(() => route.meta.placeholder || t('placeholder.deve
 
 .back-link:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(51, 112, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 }
 </style>

@@ -71,7 +71,7 @@
             <!-- 账户设置 -->
             <section class="settings-section" id="section-account">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+                <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
@@ -143,7 +143,7 @@
             <!-- 模型设置 -->
             <section class="settings-section" id="section-model">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+                <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="4" y="4" width="16" height="16" rx="2"/>
                     <rect x="9" y="9" width="6" height="6"/>
@@ -187,7 +187,7 @@
             <!-- 数据管理 -->            <!-- 模型服务 (T3) -->
             <section class="settings-section" id="section-providers">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+                <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                     <path d="M2 17l10 5 10-5"/>
@@ -294,7 +294,7 @@
             <!-- 对话设置 (T3 上下文压缩，v1.0.1 自对话侧栏迁入) -->
             <section class="settings-section" id="section-chat">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+                <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                     <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
@@ -341,7 +341,7 @@
 
             <section class="settings-section" id="section-data">
               <div class="section-heading">
-                <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+                <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <ellipse cx="12" cy="5" rx="9" ry="3"/>
                     <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
@@ -357,7 +357,7 @@
               <div class="settings-panel">
                 <div class="data-grid">
                   <button class="data-card" @click="clearCurrentSession">
-                    <div class="data-card-icon" style="background: rgba(51, 112, 255, 0.1); color: var(--accent-600)">
+                    <div class="data-card-icon" style="background: rgba(var(--accent-rgb), 0.1); color: var(--accent-600)">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -369,7 +369,7 @@
                     </div>
                   </button>
                   <button class="data-card danger-card" @click="clearAllSessions">
-                    <div class="data-card-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444">
+                    <div class="data-card-icon" style="background: rgba(var(--danger-rgb), 0.1); color: var(--danger)">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
                       </svg>
@@ -386,7 +386,7 @@
           <!-- 插件仓库（V2.0.0 R3） -->
           <section class="settings-section" id="section-plugin">
             <div class="section-heading">
-              <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+              <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2"/>
                   <path d="M9 3v18M15 3v18"/>
@@ -469,7 +469,7 @@
           <!-- 公共 Skill（V2.0.0 R2 / v2.0.1 T2.3 目录可配置） -->
           <section class="settings-section" id="section-skill">
             <div class="section-heading">
-              <div class="section-icon" style="background: linear-gradient(135deg, #3370FF, #2B5FD9)">
+              <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700))">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -1100,7 +1100,7 @@ onMounted(async () => {
 .settings-view {
   height: 100%;
   width: 100%;
-  background: #f8fafc;
+  background: var(--bg-primary);
 }
 
 .settings-shell {
@@ -1135,7 +1135,7 @@ onMounted(async () => {
   width: 42px;
   height: 42px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #3370FF, #2B5FD9);
+  background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1157,13 +1157,13 @@ onMounted(async () => {
 .nav-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-800);
   letter-spacing: -0.3px;
 }
 
 .nav-subtitle {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .nav-list {
@@ -1184,19 +1184,19 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: inherit;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
   text-align: left;
 }
 
 .nav-item:hover {
-  background: #f8fafc;
-  color: #1e293b;
+  background: var(--bg-primary);
+  color: var(--text-800);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(51,112,255,0.08), rgba(43,95,217,0.06));
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.08), rgba(43,95,217,0.06));
   color: var(--accent-600);
   font-weight: 600;
 }
@@ -1225,7 +1225,7 @@ onMounted(async () => {
   height: 16px;
   opacity: 0;
   transition: opacity 0.2s ease;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .nav-item:hover .nav-item-arrow,
@@ -1266,7 +1266,7 @@ onMounted(async () => {
 .provider-btn {
   border: 1px solid var(--border-color, var(--border-base));
   background: var(--bg-secondary, #ffffff);
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, var(--text-800));
   border-radius: var(--radius-md);
   padding: 6px 14px;
   font-size: 13px;
@@ -1275,13 +1275,13 @@ onMounted(async () => {
 }
 
 .provider-btn:hover:not(:disabled) {
-  border-color: var(--accent, #3370FF);
-  color: var(--accent, #3370FF);
+  border-color: var(--accent, var(--accent-600));
+  color: var(--accent, var(--accent-600));
 }
 
 .provider-btn.primary {
-  background: var(--accent, #3370FF);
-  border-color: var(--accent, #3370FF);
+  background: var(--accent, var(--accent-600));
+  border-color: var(--accent, var(--accent-600));
   color: #ffffff;
 }
 
@@ -1296,8 +1296,8 @@ onMounted(async () => {
 }
 
 .provider-btn.danger:hover:not(:disabled) {
-  border-color: var(--danger, #ef4444);
-  color: var(--danger, #ef4444);
+  border-color: var(--danger, var(--danger));
+  color: var(--danger, var(--danger));
 }
 
 .provider-btn:disabled {
@@ -1307,7 +1307,7 @@ onMounted(async () => {
 
 .provider-empty {
   text-align: center;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
   padding: 32px 0;
   font-size: 13px;
 }
@@ -1326,7 +1326,7 @@ onMounted(async () => {
 }
 
 .provider-card:hover {
-  border-color: var(--accent, #3370FF);
+  border-color: var(--accent, var(--accent-600));
 }
 
 .provider-card-head {
@@ -1339,7 +1339,7 @@ onMounted(async () => {
 .provider-card-name {
   font-weight: 600;
   font-size: 14px;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary, var(--text-800));
 }
 
 .provider-card-meta {
@@ -1353,7 +1353,7 @@ onMounted(async () => {
 .dim-chip,
 .key-chip {
   font-size: 11px;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
   background: var(--bg-tertiary);
   border-radius: var(--radius-xs);
   padding: 2px 6px;
@@ -1407,14 +1407,14 @@ onMounted(async () => {
 .section-title {
   font-size: 18px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-800);
   margin: 0;
   letter-spacing: -0.3px;
 }
 
 .section-desc {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 2px 0 0;
 }
 
@@ -1450,7 +1450,7 @@ onMounted(async () => {
 .field-label {
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-600);
 }
 
 .field-badge {
@@ -1461,8 +1461,8 @@ onMounted(async () => {
 }
 
 .field-badge.optional {
-  background: rgba(16, 185, 129, 0.08);
-  color: #10b981;
+  background: rgba(var(--success-rgb), 0.08);
+  color: var(--success);
 }
 
 .field-input {
@@ -1497,15 +1497,15 @@ onMounted(async () => {
 }
 
 .model-card:hover {
-  border-color: #7dd3fc;
+  border-color: var(--accent-400);
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(51, 112, 255, 0.1);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.1);
 }
 
 .model-card.active {
   border-color: var(--accent-600);
-  background: linear-gradient(135deg, rgba(51,112,255,0.05), rgba(43,95,217,0.04));
-  box-shadow: 0 4px 16px rgba(51, 112, 255, 0.12);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.05), rgba(43,95,217,0.04));
+  box-shadow: 0 4px 16px rgba(var(--accent-rgb), 0.12);
 }
 
 .model-card.switching {
@@ -1522,7 +1522,7 @@ onMounted(async () => {
 .model-card-id {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-900);
   font-family: 'JetBrains Mono', Consolas, monospace;
 }
 
@@ -1531,7 +1531,7 @@ onMounted(async () => {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(51, 112, 255, 0.12);
+  background: rgba(var(--accent-rgb), 0.12);
   color: var(--accent-700);
 }
 
@@ -1547,18 +1547,18 @@ onMounted(async () => {
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   background: rgba(100, 116, 139, 0.1);
-  color: #475569;
+  color: var(--text-600);
 }
 
 .model-card-name {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-family: 'JetBrains Mono', Consolas, monospace;
 }
 
 .model-card-desc {
   font-size: 12.5px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
   line-height: 1.5;
 }
@@ -1585,7 +1585,7 @@ onMounted(async () => {
 }
 
 .data-card:hover {
-  border-color: #7dd3fc;
+  border-color: var(--accent-400);
   transform: translateY(-2px);
 }
 
@@ -1622,12 +1622,12 @@ onMounted(async () => {
 .data-card-label {
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-800);
 }
 
 .data-card-desc {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* Ant Design 对齐 */
@@ -1641,14 +1641,14 @@ onMounted(async () => {
 :deep(.ant-input:hover),
 :deep(.ant-input-password:hover input),
 :deep(.ant-select-selector:hover) {
-  border-color: #7dd3fc !important;
+  border-color: var(--accent-400) !important;
 }
 
 :deep(.ant-input:focus),
 :deep(.ant-input-password input:focus),
 :deep(.ant-select-focused .ant-select-selector) {
   border-color: var(--accent-600) !important;
-  box-shadow: 0 0 0 3px rgba(51, 112, 255, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.08) !important;
 }
 
 /* 固定底部操作栏 */
@@ -1657,7 +1657,7 @@ onMounted(async () => {
   gap: 12px;
   justify-content: flex-end;
   padding: 16px 40px 24px;
-  background: #f8fafc;
+  background: var(--bg-primary);
   border-top: 1px solid rgba(0,0,0,0.06);
   flex-shrink: 0;
 }
@@ -1683,12 +1683,12 @@ onMounted(async () => {
 
 .btn-secondary {
   background: #fff;
-  color: #475569;
+  color: var(--text-600);
   border: 1.5px solid var(--border-base);
 }
 
 .btn-secondary:hover {
-  border-color: #7dd3fc;
+  border-color: var(--accent-400);
   color: var(--accent-600);
 }
 
@@ -1730,7 +1730,7 @@ onMounted(async () => {
 .compact-opt-row input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #6366f1;
+  accent-color: var(--module-indigo);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -1763,7 +1763,7 @@ onMounted(async () => {
 
 .compact-opt-input:focus {
   outline: none;
-  border-color: #6366f1;
+  border-color: var(--module-indigo);
 }
 
 .compact-manual {
@@ -1777,15 +1777,15 @@ onMounted(async () => {
 .compact-manual-btn {
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid #6366f1;
+  border: 1px solid var(--module-indigo);
   background: transparent;
-  color: #6366f1;
+  color: var(--module-indigo);
   font-size: 13px;
   cursor: pointer;
 }
 
 .compact-manual-btn:hover:not(:disabled) {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(var(--module-indigo-rgb), 0.08);
 }
 
 .compact-manual-btn:disabled {
@@ -1805,14 +1805,14 @@ onMounted(async () => {
 }
 .plugin-panel { display: flex; flex-direction: column; gap: 12px; }
 .plugin-toolbar { display: flex; align-items: center; gap: 12px; }
-.plugin-hint { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+.plugin-hint { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
 /* 新增插件表单：字段卡片化，label 上置，与列表列名对齐 */
 .plugin-add-card {
   display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;
-  padding: 12px 14px; border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: #f8fafc;
+  padding: 12px 14px; border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: var(--bg-primary);
 }
 .plugin-field { display: flex; flex-direction: column; gap: 4px; }
-.plugin-field label { font-size: 12px; color: #64748b; font-weight: 500; }
+.plugin-field label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
 .plugin-field.f-code { width: 150px; }
 .plugin-field.f-name { width: 140px; }
 .plugin-field.f-endpoint { flex: 1; min-width: 240px; }
@@ -1821,13 +1821,13 @@ onMounted(async () => {
 .plugin-field.action .btn-sm { height: 32px; }
 .plugin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .plugin-table th, .plugin-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-base); }
-.plugin-table th { font-weight: 600; color: #64748b; }
+.plugin-table th { font-weight: 600; color: var(--text-secondary); }
 .td-code { font-family: monospace; }
-.td-endpoint { font-size: 12px; color: #94a3b8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-endpoint { font-size: 12px; color: var(--text-tertiary); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .plugin-status { padding: 2px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; }
-.ep-placeholder { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; background: rgba(245, 158, 11, 0.15); color: #d97706; cursor: help; }
-.plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+.ep-placeholder { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; background: rgba(var(--warning-rgb), 0.15); color: var(--warning); cursor: help; }
+.plugin-status.on { background: rgba(var(--success-rgb), 0.15); color: var(--success); }
+.plugin-status.off { background: rgba(var(--text-400-rgb), 0.15); color: var(--text-tertiary); }
 /* 表格内小按钮（安装/卸载/删除）：此前无定义导致原生按钮畸形 */
 .td-actions { display: flex; gap: 6px; justify-content: flex-start; }
 .btn-sm {
@@ -1839,24 +1839,24 @@ onMounted(async () => {
   transition: all 0.15s ease;
   border: 1px solid var(--border-base);
   background: #fff;
-  color: #475569;
+  color: var(--text-600);
   font-family: inherit;
   white-space: nowrap;
 }
-.btn-sm:hover { border-color: #3370FF; color: #3370FF; }
+.btn-sm:hover { border-color: var(--accent-600); color: var(--accent-600); }
 .btn-sm.ok {
-  background: #3370FF;
-  border-color: #3370FF;
+  background: var(--accent-600);
+  border-color: var(--accent-600);
   color: #fff;
 }
-.btn-sm.ok:hover { background: #2B5FD9; border-color: #2B5FD9; color: #fff; }
+.btn-sm.ok:hover { background: var(--accent-700); border-color: var(--accent-700); color: #fff; }
 .btn-sm.danger {
   background: #fff;
   border-color: #fecdd3;
   color: #E11D48;
 }
 .btn-sm.danger:hover { background: #fff1f2; border-color: #E11D48; }
-.plugin-empty { font-size: 13px; color: #94a3b8; }
+.plugin-empty { font-size: 13px; color: var(--text-tertiary); }
 /* Skill 清单：目录扫描产物只读展示（FastGPT 风格浅底列表） */
 .skill-list {
   display: flex; flex-direction: column;
@@ -1870,27 +1870,27 @@ onMounted(async () => {
   transition: background 0.12s ease;
 }
 .skill-item:last-child { border-bottom: none; }
-.skill-item:hover { background: #f8fafc; }
+.skill-item:hover { background: var(--bg-primary); }
 .skill-item-id {
-  font-family: monospace; color: #3370FF; flex-shrink: 0;
+  font-family: monospace; color: var(--accent-600); flex-shrink: 0;
   font-size: 12px; font-weight: 600;
 }
-.skill-item-name { font-weight: 500; color: #1e293b; flex-shrink: 0; }
+.skill-item-name { font-weight: 500; color: var(--text-800); flex-shrink: 0; }
 .skill-item-desc {
-  color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
+  color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;
   font-size: 12px;
 }
-.skill-empty { font-size: 13px; color: #94a3b8; }
+.skill-empty { font-size: 13px; color: var(--text-tertiary); }
 
 .skill-panel { display: flex; flex-direction: column; gap: 10px; }
 .skill-dir-row { display: flex; align-items: center; gap: 10px; }
-.skill-dir-label { min-width: 72px; font-size: 13px; color: #64748b; }
-.skill-meta { display: flex; gap: 16px; font-size: 12px; color: #64748b; }
+.skill-dir-label { min-width: 72px; font-size: 13px; color: var(--text-secondary); }
+.skill-meta { display: flex; gap: 16px; font-size: 12px; color: var(--text-secondary); }
 .skill-readable { padding: 1px 8px; border-radius: var(--radius-semilg); font-weight: 600; }
-.skill-readable.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-.skill-readable.off { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-.skill-hint { font-size: 12px; color: #94a3b8; }
+.skill-readable.on { background: rgba(var(--success-rgb), 0.15); color: var(--success); }
+.skill-readable.off { background: rgba(var(--danger-rgb), 0.15); color: var(--danger); }
+.skill-hint { font-size: 12px; color: var(--text-tertiary); }
 
-.td-allow { font-size: 12px; color: #64748b; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-allow { font-size: 12px; color: var(--text-secondary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 </style>

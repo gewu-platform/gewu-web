@@ -143,7 +143,7 @@
       <!-- 调用日志 -->
         <section class="monitor-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, var(--success), #059669)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--success), var(--success))">
               <DocIcon variant="lines" />
             </div>
             <div>
@@ -352,13 +352,13 @@ onMounted(async () => {
 .usage-select {
   background: var(--bg-secondary, #fff);
   border: 1px solid var(--border-color, var(--border-base));
-  border-radius: var(--radius-md); padding: 4px 8px; font-size: 12px; color: var(--text-primary, #1e293b);
+  border-radius: var(--radius-md); padding: 4px 8px; font-size: 12px; color: var(--text-primary, var(--text-800));
 }
 .usage-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-.usage-table th { text-align: left; padding: 8px 10px; color: var(--text-secondary, #64748b); font-weight: 600; border-bottom: 1px solid var(--border-color, var(--border-base)); }
-.usage-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color, var(--border-low)); color: var(--text-primary, #1e293b); }
+.usage-table th { text-align: left; padding: 8px 10px; color: var(--text-secondary, var(--text-secondary)); font-weight: 600; border-bottom: 1px solid var(--border-color, var(--border-base)); }
+.usage-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color, var(--border-low)); color: var(--text-primary, var(--text-800)); }
 .usage-strong { font-weight: 600; }
-.usage-empty { text-align: center; color: var(--text-secondary, #64748b); padding: 18px 0; }
+.usage-empty { text-align: center; color: var(--text-secondary, var(--text-secondary)); padding: 18px 0; }
 
 /* ===== 整体 ===== */
 .monitor-view {
@@ -426,13 +426,13 @@ onMounted(async () => {
 
 .stat-label {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .stat-value {
   font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-900);
   font-variant-numeric: tabular-nums;
 }
 
@@ -468,20 +468,20 @@ onMounted(async () => {
 .section-title {
   font-size: 16px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-900);
   margin: 0;
 }
 
 .section-desc {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 2px 0 0;
 }
 
 .empty-hint {
   padding: 28px 0;
   text-align: center;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 13px;
 }
 
@@ -509,7 +509,7 @@ onMounted(async () => {
   height: 96px;
   display: flex;
   align-items: flex-end;
-  background: #f8fafc;
+  background: var(--bg-primary);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
@@ -524,7 +524,7 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 10px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 /* ===== 模型排行 ===== */
@@ -543,9 +543,9 @@ onMounted(async () => {
 }
 
 .ranking-header {
-  background: #f8fafc;
+  background: var(--bg-primary);
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   height: 40px;
 }
 
@@ -553,10 +553,10 @@ onMounted(async () => {
   height: 46px;
   border-top: 1px solid var(--border-low);
   font-size: 13px;
-  color: #334155;
+  color: var(--text-700);
   transition: background 0.15s ease;
 
-  &:hover { background: #f8fafc; }
+  &:hover { background: var(--bg-primary); }
 }
 
 .rank-col { text-align: center; }
@@ -573,12 +573,12 @@ onMounted(async () => {
   font-size: 12px;
   font-weight: 700;
   background: var(--bg-tertiary);
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
-.rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #fff; }
-.rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #fff; }
-.rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
+.rank-1 { background: linear-gradient(135deg, #fbbf24, var(--warning)); color: #fff; }
+.rank-2 { background: linear-gradient(135deg, var(--text-tertiary), var(--text-secondary)); color: #fff; }
+.rank-3 { background: linear-gradient(135deg, var(--warning), #b45309); color: #fff; }
 
 /* ===== 调用日志 ===== */
 .filter-bar {
@@ -596,11 +596,11 @@ onMounted(async () => {
   border-radius: var(--radius-semilg);
   background: #fff;
   font-size: 13px;
-  color: #334155;
+  color: var(--text-700);
   outline: none;
   transition: border-color 0.2s ease;
 
-  &:focus { border-color: rgba(51, 112, 255, 0.5); }
+  &:focus { border-color: rgba(var(--accent-rgb), 0.5); }
 }
 
 .log-table {
@@ -618,9 +618,9 @@ onMounted(async () => {
 }
 
 .log-header {
-  background: #f8fafc;
+  background: var(--bg-primary);
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
   height: 40px;
 }
 
@@ -628,15 +628,15 @@ onMounted(async () => {
   height: 44px;
   border-top: 1px solid var(--border-low);
   font-size: 13px;
-  color: #334155;
+  color: var(--text-700);
   transition: background 0.15s ease;
 
-  &:hover { background: #f8fafc; }
-  &.error .col-time { box-shadow: inset 3px 0 0 #ef4444; }
-  &.timeout .col-time { box-shadow: inset 3px 0 0 #f59e0b; }
+  &:hover { background: var(--bg-primary); }
+  &.error .col-time { box-shadow: inset 3px 0 0 var(--danger); }
+  &.timeout .col-time { box-shadow: inset 3px 0 0 var(--warning); }
 }
 
-.col-time { font-variant-numeric: tabular-nums; color: #64748b; }
+.col-time { font-variant-numeric: tabular-nums; color: var(--text-secondary); }
 .col-model { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .col-tokens, .col-latency, .col-cost { text-align: right; font-variant-numeric: tabular-nums; }
 
@@ -649,9 +649,9 @@ onMounted(async () => {
   font-size: 11px;
   font-weight: 600;
 
-  &.success { background: rgba(16, 185, 129, 0.12); color: #059669; }
-  &.error { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-  &.timeout { background: rgba(245, 158, 11, 0.14); color: #b45309; }
+  &.success { background: rgba(var(--success-rgb), 0.12); color: var(--success); }
+  &.error { background: rgba(var(--danger-rgb), 0.12); color: var(--danger); }
+  &.timeout { background: rgba(var(--warning-rgb), 0.14); color: #b45309; }
 }
 
 /* ===== 分页 ===== */
@@ -665,7 +665,7 @@ onMounted(async () => {
 
 .page-info {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .page-btn {
@@ -675,11 +675,11 @@ onMounted(async () => {
   border-radius: 9px;
   background: #fff;
   font-size: 12px;
-  color: #334155;
+  color: var(--text-700);
   cursor: pointer;
   transition: all 0.15s ease;
 
-  &:hover:not(:disabled) { border-color: rgba(51, 112, 255, 0.5); color: var(--accent-600); }
+  &:hover:not(:disabled) { border-color: rgba(var(--accent-rgb), 0.5); color: var(--accent-600); }
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 

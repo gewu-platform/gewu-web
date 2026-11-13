@@ -83,7 +83,7 @@ defineEmits(['toggle'])
     font-weight: 600;
     padding: 1px 7px;
     border-radius: 999px;
-    background: rgba(51, 112, 255, 0.12);
+    background: rgba(var(--accent-rgb), 0.12);
     color: var(--accent);
   }
   .step-tool {

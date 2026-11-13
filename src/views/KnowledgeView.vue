@@ -122,7 +122,7 @@
         <!-- ===== 上传文档 ===== -->
         <section v-if="activeTab === 'tab-upload'" class="knowledge-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #10b981, #059669)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--success), var(--success))">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
@@ -194,7 +194,7 @@
         <!-- ===== 知识检索 ===== -->
         <section v-if="activeTab === 'tab-search'" class="knowledge-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--warning), var(--warning))">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
@@ -611,7 +611,7 @@ watch(activeTab, async (newTab) => {
 .knowledge-view {
   height: 100%;
   width: 100%;
-  background: #f8fafc;
+  background: var(--bg-primary);
 }
 
 .knowledge-shell {
@@ -641,7 +641,7 @@ watch(activeTab, async (newTab) => {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(51, 112, 255, 0.15), rgba(56, 189, 248, 0.1));
+  background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.15), rgba(56, 189, 248, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -658,12 +658,12 @@ watch(activeTab, async (newTab) => {
 .nav-title {
   font-size: 16px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-900);
 }
 
 .nav-subtitle {
   font-size: 12px;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .nav-list {
@@ -688,7 +688,7 @@ watch(activeTab, async (newTab) => {
 .nav-item:hover { background: var(--bg-tertiary); }
 
 .nav-item.active {
-  background: rgba(51, 112, 255, 0.08);
+  background: rgba(var(--accent-rgb), 0.08);
 }
 
 .nav-item.active .nav-item-label {
@@ -710,7 +710,7 @@ watch(activeTab, async (newTab) => {
 
 .nav-item-label {
   font-size: 14px;
-  color: #334155;
+  color: var(--text-700);
 }
 
 /* ===== 内容区 ===== */
@@ -746,13 +746,13 @@ watch(activeTab, async (newTab) => {
 .section-title {
   font-size: 19px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-900);
   margin: 0;
 }
 
 .section-desc {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 2px 0 0;
 }
 
@@ -778,7 +778,7 @@ watch(activeTab, async (newTab) => {
 .doc-table-header {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-secondary);
   border-bottom: 1px solid var(--border-base);
 }
 
@@ -787,7 +787,7 @@ watch(activeTab, async (newTab) => {
   transition: background 0.12s;
 }
 
-.doc-table-row:hover { background: #f8fafc; }
+.doc-table-row:hover { background: var(--bg-primary); }
 .doc-table-row:last-of-type { border-bottom: none; }
 
 .col { min-width: 0; }
@@ -801,7 +801,7 @@ watch(activeTab, async (newTab) => {
 
 .doc-filename {
   font-size: 13px;
-  color: #0f172a;
+  color: var(--text-900);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -809,7 +809,7 @@ watch(activeTab, async (newTab) => {
 
 .col-size, .col-chunks, .col-time {
   font-size: 12px;
-  color: #475569;
+  color: var(--text-600);
 }
 
 .type-badge {
@@ -819,13 +819,13 @@ watch(activeTab, async (newTab) => {
   font-weight: 600;
   text-transform: uppercase;
   background: var(--bg-tertiary);
-  color: #475569;
+  color: var(--text-600);
 }
 
-.type-pdf { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.type-docx { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-.type-md { background: rgba(51, 112, 255, 0.1); color: var(--accent-600); }
-.type-txt { background: rgba(100, 116, 139, 0.12); color: #64748b; }
+.type-pdf { background: rgba(var(--danger-rgb), 0.1); color: var(--danger); }
+.type-docx { background: rgba(59, 130, 246, 0.1); color: var(--accent-600); }
+.type-md { background: rgba(var(--accent-rgb), 0.1); color: var(--accent-600); }
+.type-txt { background: rgba(100, 116, 139, 0.12); color: var(--text-secondary); }
 
 .status-badge {
   padding: 3px 10px;
@@ -834,10 +834,10 @@ watch(activeTab, async (newTab) => {
   font-weight: 500;
 }
 
-.status-0 { background: var(--bg-tertiary); color: #64748b; }
-.status-1 { background: rgba(245, 158, 11, 0.12); color: #d97706; }
-.status-2 { background: rgba(16, 185, 129, 0.12); color: #059669; }
-.status-3 { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.status-0 { background: var(--bg-tertiary); color: var(--text-secondary); }
+.status-1 { background: rgba(var(--warning-rgb), 0.12); color: var(--warning); }
+.status-2 { background: rgba(var(--success-rgb), 0.12); color: var(--success); }
+.status-3 { background: rgba(var(--danger-rgb), 0.1); color: var(--danger); }
 
 .col-action {
   display: flex;
@@ -855,12 +855,12 @@ watch(activeTab, async (newTab) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: var(--text-secondary);
   transition: all 0.12s;
 }
 
 .action-btn:hover { border-color: var(--accent-600); color: var(--accent-600); }
-.action-btn.delete-btn:hover { border-color: #ef4444; color: #ef4444; }
+.action-btn.delete-btn:hover { border-color: var(--danger); color: var(--danger); }
 
 /* ===== 空状态 ===== */
 .empty-state {
@@ -869,11 +869,11 @@ watch(activeTab, async (newTab) => {
   align-items: center;
   gap: 8px;
   padding: 48px 20px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .empty-icon { width: 40px; height: 40px; }
-.empty-title { font-size: 15px; font-weight: 600; color: #475569; margin: 0; }
+.empty-title { font-size: 15px; font-weight: 600; color: var(--text-600); margin: 0; }
 .empty-desc { font-size: 13px; margin: 0; }
 
 .empty-action-btn {
@@ -909,18 +909,18 @@ watch(activeTab, async (newTab) => {
 .upload-dropzone:hover,
 .upload-dropzone.dragging {
   border-color: var(--accent-600);
-  background: rgba(51, 112, 255, 0.04);
+  background: rgba(var(--accent-rgb), 0.04);
 }
 
 .upload-big-icon {
   width: 44px; height: 44px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .upload-dropzone.dragging .upload-big-icon { color: var(--accent-600); }
 
-.upload-title { font-size: 15px; font-weight: 600; color: #334155; margin: 0; }
-.upload-desc { font-size: 13px; color: #94a3b8; margin: 0; }
+.upload-title { font-size: 15px; font-weight: 600; color: var(--text-700); margin: 0; }
+.upload-desc { font-size: 13px; color: var(--text-tertiary); margin: 0; }
 
 .hidden-file-input { display: none; }
 
@@ -934,7 +934,7 @@ watch(activeTab, async (newTab) => {
 
 .upload-progress-text {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -944,7 +944,7 @@ watch(activeTab, async (newTab) => {
 .recent-title {
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: var(--text-700);
   margin: 0 0 12px;
 }
 
@@ -959,12 +959,12 @@ watch(activeTab, async (newTab) => {
   border-radius: var(--radius-semilg);
 }
 
-.recent-success { border-left: 3px solid #10b981; }
-.recent-failed { border-left: 3px solid #ef4444; }
+.recent-success { border-left: 3px solid var(--success); }
+.recent-failed { border-left: 3px solid var(--danger); }
 
-.recent-icon { display: flex; color: #f59e0b; }
-.recent-icon.status-2 { color: #10b981; }
-.recent-icon.status-3 { color: #ef4444; }
+.recent-icon { display: flex; color: var(--warning); }
+.recent-icon.status-2 { color: var(--success); }
+.recent-icon.status-3 { color: var(--danger); }
 
 .recent-info {
   display: flex;
@@ -975,13 +975,13 @@ watch(activeTab, async (newTab) => {
 .recent-name {
   font-size: 13px;
   font-weight: 500;
-  color: #0f172a;
+  color: var(--text-900);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.recent-meta { font-size: 12px; color: #94a3b8; }
+.recent-meta { font-size: 12px; color: var(--text-tertiary); }
 
 /* ===== 检索 ===== */
 .search-box { margin-bottom: 20px; }
@@ -993,7 +993,7 @@ watch(activeTab, async (newTab) => {
   border: 1px solid var(--border-base);
   border-radius: var(--radius-lg);
   padding: 4px 8px 4px 14px;
-  background: #f8fafc;
+  background: var(--bg-primary);
   transition: border-color 0.15s;
 }
 
@@ -1001,7 +1001,7 @@ watch(activeTab, async (newTab) => {
 
 .search-input-icon {
   width: 18px; height: 18px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   flex-shrink: 0;
 }
 
@@ -1025,11 +1025,11 @@ watch(activeTab, async (newTab) => {
   padding-left: 6px;
 }
 
-.search-option-label { font-size: 12px; color: #64748b; }
+.search-option-label { font-size: 12px; color: var(--text-secondary); }
 
 .results-summary {
   font-size: 13px;
-  color: #475569;
+  color: var(--text-600);
   margin: 0 0 12px;
 }
 
@@ -1054,7 +1054,7 @@ watch(activeTab, async (newTab) => {
 .result-rank {
   font-size: 12px;
   font-weight: 700;
-  color: #f59e0b;
+  color: var(--warning);
 }
 
 .result-doc-name {
@@ -1063,7 +1063,7 @@ watch(activeTab, async (newTab) => {
   gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-900);
 }
 
 .result-similarity {
@@ -1076,7 +1076,7 @@ watch(activeTab, async (newTab) => {
 .result-content {
   font-size: 13px;
   line-height: 1.65;
-  color: #475569;
+  color: var(--text-600);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 200px;
@@ -1089,11 +1089,11 @@ watch(activeTab, async (newTab) => {
   align-items: center;
   gap: 8px;
   padding: 40px 20px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .search-empty-icon { width: 36px; height: 36px; }
-.search-empty-title { font-size: 15px; font-weight: 600; color: #475569; margin: 0; }
+.search-empty-title { font-size: 15px; font-weight: 600; color: var(--text-600); margin: 0; }
 .search-empty-desc { font-size: 13px; margin: 0; }
 
 /* ===== 详情弹窗 ===== */
@@ -1110,13 +1110,13 @@ watch(activeTab, async (newTab) => {
 .detail-label {
   width: 90px;
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
 .detail-value {
   font-size: 13px;
-  color: #0f172a;
+  color: var(--text-900);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1130,8 +1130,8 @@ watch(activeTab, async (newTab) => {
   margin-top: 12px;
   padding: 10px 14px;
   border-radius: var(--radius-md);
-  background: rgba(239, 68, 68, 0.06);
-  color: #ef4444;
+  background: rgba(var(--danger-rgb), 0.06);
+  color: var(--danger);
   font-size: 13px;
 }
 

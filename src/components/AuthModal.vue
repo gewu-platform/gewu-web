@@ -17,14 +17,14 @@
         <div class="logo-wrapper">
           <!-- 品牌标：观察熊猫（与页头一致） -->
           <svg class="auth-logo" viewBox="0 0 256 256" width="48" height="48" aria-hidden="true" fill="none">
-            <circle cx="64" cy="64" r="30" fill="#1E3A5F"/>
-            <circle cx="192" cy="64" r="30" fill="#1E3A5F"/>
-            <path fill="#1E3A5F" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
-            <path fill="#3370FF" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
-            <path fill="#3370FF" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
-            <path fill="#1E3A5F" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
-            <path fill="#1E3A5F" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
-            <ellipse cx="128" cy="177" rx="10" ry="8" fill="#1E3A5F"/>
+            <circle cx="64" cy="64" r="30" fill="var(--nav)"/>
+            <circle cx="192" cy="64" r="30" fill="var(--nav)"/>
+            <path fill="var(--nav)" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
+            <path fill="var(--accent-600)" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
+            <path fill="var(--accent-600)" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
+            <path fill="var(--nav)" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+            <path fill="var(--nav)" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+            <ellipse cx="128" cy="177" rx="10" ry="8" fill="var(--nav)"/>
           </svg>
         </div>
         <h2 class="auth-title">{{ currentView === 'login' ? '欢迎回来' : '创建账户' }}</h2>
@@ -321,7 +321,7 @@ const handleForgotPassword = () => {
 }
 
 .auth-modal :deep(.ant-modal-close) {
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .auth-modal :deep(.ant-modal-close:hover) {
@@ -353,14 +353,14 @@ const handleForgotPassword = () => {
 .auth-title {
   font-size: 20px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-800);
   margin: 0 0 6px 0;
   letter-spacing: -0.3px;
 }
 
 .auth-subtitle {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -377,7 +377,7 @@ const handleForgotPassword = () => {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-600);
   margin-bottom: 6px;
 }
 
@@ -392,7 +392,7 @@ const handleForgotPassword = () => {
   left: 14px;
   width: 18px;
   height: 18px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   pointer-events: none;
   z-index: 1;
 }
@@ -404,7 +404,7 @@ const handleForgotPassword = () => {
   border: 1.5px solid var(--border-base);
   border-radius: var(--radius-semilg);
   font-size: 14px;
-  color: #1e293b;
+  color: var(--text-800);
   background: #fff;
   transition: all 0.2s ease;
   outline: none;
@@ -432,7 +432,7 @@ const handleForgotPassword = () => {
   border: none;
   background: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -452,7 +452,7 @@ const handleForgotPassword = () => {
 .error-msg {
   display: block;
   font-size: 12px;
-  color: #ef4444;
+  color: var(--danger);
   margin-top: 4px;
 }
 
@@ -470,7 +470,7 @@ const handleForgotPassword = () => {
   gap: 8px;
   cursor: pointer;
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   user-select: none;
 }
 
@@ -529,7 +529,7 @@ const handleForgotPassword = () => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(51, 112, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,7 +539,7 @@ const handleForgotPassword = () => {
 }
 
 .auth-button:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(51, 112, 255, 0.35);
+  box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.35);
   transform: translateY(-1px);
 }
 
@@ -568,7 +568,7 @@ const handleForgotPassword = () => {
 
 .switch-text {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
 }
 
 .switch-link {

@@ -39,10 +39,10 @@ const isAdmin = computed(() => authStore.isAdmin)
   margin-bottom: 10px;
   padding: 10px 12px;
   border-radius: var(--radius-semilg);
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(var(--warning-rgb), 0.08);
+  border: 1px solid rgba(var(--warning-rgb), 0.35);
 
-  .approval-title { font-size: 13px; font-weight: 600; color: #d97706; }
+  .approval-title { font-size: 13px; font-weight: 600; color: var(--warning); }
   .approval-detail {
     font-size: 12px;
     color: var(--text-primary);
@@ -68,7 +68,7 @@ const isAdmin = computed(() => authStore.isAdmin)
 
       &:disabled { opacity: 0.5; cursor: not-allowed; }
     }
-    .btn-approve { background: #10b981; color: white; }
+    .btn-approve { background: var(--success); color: white; }
     .btn-reject { background: rgba(248, 81, 73, 0.9); color: white; }
   }
   .approval-result {
@@ -80,7 +80,7 @@ const isAdmin = computed(() => authStore.isAdmin)
   .approval-readonly {
     margin-top: 8px;
     font-size: 12px;
-    color: #d97706;
+    color: var(--warning);
   }
 }
 </style>

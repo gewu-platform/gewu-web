@@ -1280,9 +1280,9 @@ async function initialize() {
   transform-origin: center;
   transition: stroke-dasharray 0.3s;
   &.lvl-idle { stroke: rgba(128, 128, 128, 0.4); }
-  &.lvl-ok { stroke: var(--success, #3fb950); }
+  &.lvl-ok { stroke: var(--success, var(--success)); }
   &.lvl-warn { stroke: #d29922; }
-  &.lvl-danger { stroke: var(--danger, #f85149); }
+  &.lvl-danger { stroke: var(--danger, var(--danger)); }
 }
 
 .model-inline {
@@ -1356,9 +1356,9 @@ async function initialize() {
   height: 100%;
   border-radius: 3px;
   transition: width 0.3s;
-  &.lvl-ok { background: var(--success, #3fb950); }
+  &.lvl-ok { background: var(--success, var(--success)); }
   &.lvl-warn { background: #d29922; }
-  &.lvl-danger { background: var(--danger, #f85149); }
+  &.lvl-danger { background: var(--danger, var(--danger)); }
   &.lvl-idle { background: rgba(128, 128, 128, 0.4); }
 }
 
@@ -1553,7 +1553,7 @@ async function initialize() {
   flex-shrink: 0;
   padding: 14px 24px 16px;
   background: var(--bg-primary);
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid rgba(var(--text-400-rgb), 0.12);
 }
 
 .input-wrapper {
@@ -1571,8 +1571,8 @@ async function initialize() {
   box-shadow: var(--shadow-1);
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   &:focus-within {
-    border-color: rgba(51, 112, 255, 0.35);
-    box-shadow: 0 2px 12px rgba(19, 51, 107, 0.05), 0 0 0 3px rgba(51, 112, 255, 0.08);
+    border-color: rgba(var(--accent-rgb), 0.35);
+    box-shadow: 0 2px 12px rgba(19, 51, 107, 0.05), 0 0 0 3px rgba(var(--accent-rgb), 0.08);
   }
 }
 
@@ -1627,7 +1627,7 @@ async function initialize() {
 
 .attachment-count {
   font-size: 12px;
-  color: var(--text-tertiary, #94a3b8);
+  color: var(--text-tertiary, var(--text-tertiary));
   padding: 0 4px;
 }
 
@@ -1641,12 +1641,12 @@ async function initialize() {
   border: none;
   border-radius: var(--radius-semilg);
   background: transparent;
-  color: var(--text-secondary, #64748b);
+  color: var(--text-secondary, var(--text-secondary));
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
   &:hover:not(:disabled) {
-    background: rgba(148, 163, 184, 0.12);
-    color: var(--primary-color, var(--accent-600));
+    background: rgba(var(--text-400-rgb), 0.12);
+    color: var(--accent-600);
   }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
@@ -1667,7 +1667,7 @@ async function initialize() {
   line-height: 1.55;
   min-height: 44px;
   max-height: 150px;
-  &::placeholder { color: #94a3b8; }
+  &::placeholder { color: var(--text-tertiary); }
   &:disabled { opacity: 0.55; }
 }
 
@@ -1683,11 +1683,11 @@ async function initialize() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(51, 112, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.3);
   transition: all 0.2s ease;
   &:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--accent-600), var(--accent-700));
-    box-shadow: 0 4px 14px rgba(51, 112, 255, 0.4);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.4);
     transform: translateY(-1px);
   }
   &:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
@@ -1754,9 +1754,9 @@ async function initialize() {
   }
 
   &.on {
-    .toggle-track { background: #10b981; }
+    .toggle-track { background: var(--success); }
     .toggle-thumb { left: 18px; }
-    .toggle-text { color: #10b981; font-weight: 600; }
+    .toggle-text { color: var(--success); font-weight: 600; }
   }
 }
 
@@ -1781,11 +1781,11 @@ async function initialize() {
     cursor: pointer;
     transition: all 0.15s;
 
-    &:hover { border-color: #10b981; }
+    &:hover { border-color: var(--success); }
     &.picked {
-      border-color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
+      border-color: var(--success);
+      background: rgba(var(--success-rgb), 0.1);
+      color: var(--success);
       font-weight: 600;
     }
   }
@@ -1798,11 +1798,11 @@ async function initialize() {
   font-size: 11px;
   padding: 2px 10px;
   border-radius: 999px;
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: rgba(var(--success-rgb), 0.1);
+  color: var(--success);
   margin-bottom: 6px;
 
-  &.miss { background: rgba(148, 163, 184, 0.12); color: #94a3b8; }
+  &.miss { background: rgba(var(--text-400-rgb), 0.12); color: var(--text-tertiary); }
 }
 
 .smart-toggle {
