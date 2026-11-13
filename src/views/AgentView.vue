@@ -907,29 +907,41 @@ onUnmounted(() => {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  table-layout: fixed;
 }
 .tools-table th {
   text-align: left;
-  padding: 8px 10px;
+  padding: 8px 12px;
   font-weight: 600;
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-base);
   font-size: 12px;
+  white-space: nowrap;
 }
 .tools-table td {
-  padding: 9px 10px;
+  padding: 9px 12px;
   border-bottom: 1px solid var(--border-low);
   vertical-align: top;
 }
+/* 列宽分配：名称 30% / 审批策略固定 96px / 说明占满剩余 */
+.tools-table th.tt-name, .tools-table td.tt-name { width: 30%; }
+.tools-table th.tt-approval, .tools-table td.tt-approval { width: 96px; white-space: nowrap; }
+.tools-table th.tt-desc, .tools-table td.tt-desc { width: auto; }
 .tools-row:hover td { background: var(--accent-soft); }
 .tool-code {
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--text-primary);
   font-weight: 600;
+  word-break: break-all; /* MCP 工具名很长，允许断行不撑破列 */
 }
-.tt-approval .approval-tag { margin-right: 6px; }
-.tt-desc { color: var(--text-secondary); font-size: 12.5px; line-height: 1.5; }
+.tt-approval .approval-tag {
+  display: inline-block;
+  white-space: nowrap; /* 「自动执行」四字绝不竖排 */
+  font-size: 11px;
+  padding: 2px 9px;
+}
+.tt-desc { color: var(--text-secondary); font-size: 12.5px; line-height: 1.55; }
 
 
 .approval-tag {
