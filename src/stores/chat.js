@@ -57,7 +57,7 @@ export const useChatStore = defineStore('chat', () => {
       }
 
       // 刷新会话列表，确保当前会话显示在侧边栏
-      await loadSessions()
+      await loadSessions({ force: true })
       return result
     } catch (err) {
       error.value = err.message
@@ -126,16 +126,31 @@ export const useChatStore = defineStore('chat', () => {
   /**
    * 加载会话列表
    */
-  async function loadSessions() {
-    try {
-      const result = await getSessions()
-      const data = unwrap(result)
-      sessions.value = data.sessions || []
-      return result
-    } catch (err) {
-      error.value = err.message
-      throw err
+  // P11：页面加载期 loadSessions 会被并发触发 3 次（restoreSession + onMounted + watch），
+  // 合并为一次请求：并发调用共享同一个 in-flight Promise；窗口期内重复调用直接跳过
+  let loadSessionsInFlight = null
+  let loadSessionsLastAt = 0
+  async function loadSessions(opts) {
+    const force = !!(opts && opts.force)
+    if (loadSessionsInFlight) return loadSessionsInFlight
+    if (!force && Date.now() - loadSessionsLastAt < 1500 && sessions.value.length) {
+      return Promise.resolve()
     }
+    loadSessionsInFlight = (async () => {
+      try {
+        const result = await getSessions()
+        const data = unwrap(result)
+        sessions.value = data.sessions || []
+        loadSessionsLastAt = Date.now()
+        return result
+      } catch (err) {
+        error.value = err.message
+        throw err
+      } finally {
+        loadSessionsInFlight = null
+      }
+    })()
+    return loadSessionsInFlight
   }
 
   /**
@@ -149,7 +164,7 @@ export const useChatStore = defineStore('chat', () => {
       sessionId.value = data.sessionId
       messages.value.splice(0, messages.value.length)
       localStorage.setItem(STORAGE_KEY_SESSION, sessionId.value)
-      await loadSessions()
+      await loadSessions({ force: true })
       return data
     } catch (err) {
       error.value = err.message
@@ -284,7 +299,7 @@ export const useChatStore = defineStore('chat', () => {
         messages.value.splice(0, messages.value.length)
         localStorage.removeItem(STORAGE_KEY_SESSION)
       }
-      await loadSessions()
+      await loadSessions({ force: true })
     } catch (err) {
       error.value = err.message
       throw new Error(err.message || '删除会话失败，请稍后重试')
