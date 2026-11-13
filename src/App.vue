@@ -91,6 +91,13 @@
             >EN</button>
           </div>
 
+          <!-- P18 暗色模式：主题切换（浅色/深色/跟随系统 循环） -->
+          <button class="theme-btn" :title="$t('header.theme.' + theme)" @click="cycleTheme" aria-label="theme">
+            <svg v-if="theme === 'light'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg v-else-if="theme === 'dark'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg v-else class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </button>
+
           <!-- 用户信息 -->
           <div v-if="authStore.isLoggedIn" class="user-area">
             <div class="user-profile-dropdown">
@@ -185,6 +192,7 @@ import enUS from 'ant-design-vue/es/locale/en_US'
 import { computed } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { message } from 'ant-design-vue'
+import { useTheme } from '@/composables/useTheme'
 
 const authStore = useAuthStore()
 const { t: tFn } = useI18n()
@@ -195,6 +203,8 @@ function switchLocale(loc) {
   currentLocale.value = loc
 }
 const router = useRouter()
+// P18 暗色模式：三态主题（light/dark/system），详见 composables/useTheme.js
+const { theme, cycle: cycleTheme } = useTheme()
 const backendHealth = ref(false)
 const showDropdown = ref(false)
 const dropdownRef = ref(null)
@@ -312,6 +322,7 @@ onUnmounted(() => {
   --bg-primary: #F6F8F9;
   --bg-secondary: #ffffff;
   --bg-tertiary: #F4F6F8;
+  --header-bg: rgba(255, 255, 255, 0.85);
 
   /* ---------- 中性灰阶 ---------- */
   --text-900: #111824;
@@ -392,7 +403,78 @@ onUnmounted(() => {
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑',
     'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-mono: 'SF Mono', 'Cascadia Code', Consolas, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+/* ============================================================
+   P18 暗色模式令牌表（html[data-theme="dark"]）
+   浅色为默认；暗色覆盖语义令牌，中间档翻转后语义别名自动跟随
+   ============================================================ */
+[data-theme='dark'] {
+  --header-bg: rgba(13, 18, 28, 0.85);
+
+  --bg-primary: #121926;
+  --bg-secondary: #1A2332;
+  --bg-tertiary: #0C111B;
+
+  --text-900: #F2F5F9;
+  --text-800: #E8EBF0;
+  --text-700: #C9D1DC;
+  --text-600: #A8B3C2;
+  --text-500: #8A95A7;
+  --text-400: #667085;
+  --text-300: #4A5568;
+  --text-200: #2A3444;
+
+  --border-low: #232D3E;
+  --border-base: #2C3850;
+  --border-high: #3A4759;
+
+  --nav: #E8EBF0;
+  --accent-hover: var(--accent-400);
+  --accent-soft: rgba(var(--accent-rgb), 0.16);
+  --success-soft: rgba(var(--success-rgb), 0.14);
+  --danger-soft: rgba(var(--danger-rgb), 0.14);
+  --warning-soft: rgba(var(--warning-rgb), 0.14);
+
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 4px 4px 0 rgba(0, 0, 0, 0.35), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 4px 10px 0 rgba(0, 0, 0, 0.4), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-4: 0 12px 16px -4px rgba(0, 0, 0, 0.5), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-5: 0 20px 24px -8px rgba(0, 0, 0, 0.45), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-6: 0 24px 48px -12px rgba(0, 0, 0, 0.5), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-7: 0 32px 64px -12px rgba(0, 0, 0, 0.5), 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  --shadow-focus: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
+
+  /* ---------- antd 组件暗色适配（v3 编译产物无变量，按组件覆盖） ---------- */
+  .ant-input,
+  .ant-input-number,
+  .ant-input-affix-wrapper,
+  .ant-select-selector,
+  textarea.ant-input {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-base);
+    color: var(--text-800);
+  }
+  .ant-input::placeholder,
+  .ant-select-selection-placeholder { color: var(--text-400); }
+  .ant-select-arrow { color: var(--text-400); }
+  .ant-select-dropdown { background-color: var(--bg-secondary); }
+  .ant-select-item { color: var(--text-700); }
+  .ant-select-item-option-active:not(.ant-select-item-option-selected) { background: rgba(var(--accent-rgb), 0.12); }
+  .ant-select-item-option-selected { background: rgba(var(--accent-rgb), 0.2); }
+  .ant-modal-content,
+  .ant-modal-header { background-color: var(--bg-secondary); }
+  .ant-modal-title,
+  .ant-modal-close-x { color: var(--text-800); }
+  .ant-form-item-label > label { color: var(--text-600); }
+  .ant-table { background: transparent; color: var(--text-800); }
+  .ant-table-thead > tr > th { background: var(--bg-tertiary); color: var(--text-600); }
+  .ant-checkbox-inner,
+  .ant-radio-inner { background-color: var(--bg-secondary); border-color: var(--border-base); }
+  .ant-btn-default { background-color: var(--bg-secondary); border-color: var(--border-base); color: var(--text-800); }
+  .ant-slider-rail { background: var(--border-base); }
+  .ant-tooltip-inner { background-color: var(--bg-secondary); color: var(--text-800); }
 }
 </style>
 
@@ -410,7 +492,7 @@ onUnmounted(() => {
 /* ===== 顶部导航栏 ===== */
 .header {
   height: 56px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--header-bg);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(var(--text-400-rgb), 0.1);
@@ -538,7 +620,7 @@ onUnmounted(() => {
 }
 
 .nav-tab.active {
-  background: #fff;
+  background: var(--bg-secondary);
   color: var(--accent-600);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
@@ -584,6 +666,20 @@ onUnmounted(() => {
   color: var(--border-color);
   font-size: 11px;
 }
+
+.theme-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  &:hover { color: var(--accent-600); }
+}
+.theme-icon { width: 16px; height: 16px; display: block; }
 
 .status-pill {
   display: flex;
@@ -658,7 +754,7 @@ onUnmounted(() => {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: white;
+  background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   min-width: 260px;

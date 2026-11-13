@@ -1749,7 +1749,7 @@ async function initialize() {
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: white;
+    background: var(--bg-secondary);
     transition: left 0.15s;
   }
 
@@ -1831,7 +1831,7 @@ async function initialize() {
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: white;
+    background: var(--bg-secondary);
     transition: left 0.15s;
   }
 

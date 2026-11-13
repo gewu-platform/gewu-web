@@ -46,7 +46,12 @@ export default {
     "profile": "个人资料",
     "language": "语言 / Language",
     "online": "服务正常",
-    "offline": "服务不可用"
+    "offline": "服务不可用",
+    "theme": {
+      "light": "浅色模式",
+      "dark": "深色模式",
+      "system": "跟随系统"
+    }
   },
   "login": {
     "title": "登录",

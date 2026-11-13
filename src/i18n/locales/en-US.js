@@ -46,7 +46,12 @@ export default {
     "profile": "Profile",
     "language": "Language / 语言",
     "online": "Service online",
-    "offline": "Service unavailable"
+    "offline": "Service unavailable",
+    "theme": {
+      "light": "Light mode",
+      "dark": "Dark mode",
+      "system": "Follow system"
+    }
   },
   "login": {
     "title": "Sign in",

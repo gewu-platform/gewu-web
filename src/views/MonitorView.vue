@@ -394,7 +394,7 @@ onMounted(async () => {
   align-items: center;
   gap: 14px;
   padding: 20px;
-  background: #fff;
+  background: var(--bg-secondary);
   border-radius: var(--radius-mdlg);
   border: 1px solid rgba(19, 51, 107, 0.05);
   transition: all 0.2s ease;
@@ -438,7 +438,7 @@ onMounted(async () => {
 
 /* ===== 区块 ===== */
 .monitor-section {
-  background: #fff;
+  background: var(--bg-secondary);
   border: 1px solid rgba(19, 51, 107, 0.05);
   border-radius: var(--radius-xl);
   padding: 20px 24px;
@@ -594,7 +594,7 @@ onMounted(async () => {
   padding: 0 12px;
   border: 1px solid var(--border-base);
   border-radius: var(--radius-semilg);
-  background: #fff;
+  background: var(--bg-secondary);
   font-size: 13px;
   color: var(--text-700);
   outline: none;
@@ -673,7 +673,7 @@ onMounted(async () => {
   padding: 0 14px;
   border: 1px solid var(--border-base);
   border-radius: 9px;
-  background: #fff;
+  background: var(--bg-secondary);
   font-size: 12px;
   color: var(--text-700);
   cursor: pointer;

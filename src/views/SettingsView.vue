@@ -1114,7 +1114,7 @@ onMounted(async () => {
 .settings-nav {
   width: 280px;
   flex-shrink: 0;
-  background: #fff;
+  background: var(--bg-secondary);
   border-right: 1px solid rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
@@ -1422,7 +1422,7 @@ onMounted(async () => {
 .settings-panel {
   width: 100%;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--bg-secondary);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(0,0,0,0.05);
   box-shadow: var(--shadow-1);
@@ -1485,7 +1485,7 @@ onMounted(async () => {
 .model-card {
   text-align: left;
   font-family: inherit;
-  background: #fff;
+  background: var(--bg-secondary);
   border: 1.5px solid var(--border-base);
   border-radius: var(--radius-mdlg);
   padding: 18px 20px;
@@ -1574,7 +1574,7 @@ onMounted(async () => {
   padding: 20px;
   border-radius: var(--radius-lg);
   border: 1.5px solid var(--border-base);
-  background: #fff;
+  background: var(--bg-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -1682,7 +1682,7 @@ onMounted(async () => {
 }
 
 .btn-secondary {
-  background: #fff;
+  background: var(--bg-secondary);
   color: var(--text-600);
   border: 1.5px solid var(--border-base);
 }
@@ -1838,7 +1838,7 @@ onMounted(async () => {
   cursor: pointer;
   transition: all 0.15s ease;
   border: 1px solid var(--border-base);
-  background: #fff;
+  background: var(--bg-secondary);
   color: var(--text-600);
   font-family: inherit;
   white-space: nowrap;
@@ -1851,7 +1851,7 @@ onMounted(async () => {
 }
 .btn-sm.ok:hover { background: var(--accent-700); border-color: var(--accent-700); color: #fff; }
 .btn-sm.danger {
-  background: #fff;
+  background: var(--bg-secondary);
   border-color: #fecdd3;
   color: #E11D48;
 }
@@ -1860,7 +1860,7 @@ onMounted(async () => {
 /* Skill 清单：目录扫描产物只读展示（FastGPT 风格浅底列表） */
 .skill-list {
   display: flex; flex-direction: column;
-  border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: #fff;
+  border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: var(--bg-secondary);
   max-height: 360px; overflow-y: auto;
 }
 .skill-item {

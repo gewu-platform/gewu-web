@@ -405,7 +405,7 @@ const handleForgotPassword = () => {
   border-radius: var(--radius-semilg);
   font-size: 14px;
   color: var(--text-800);
-  background: #fff;
+  background: var(--bg-secondary);
   transition: all 0.2s ease;
   outline: none;
   font-family: inherit;

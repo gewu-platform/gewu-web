@@ -623,7 +623,7 @@ watch(activeTab, async (newTab) => {
 .knowledge-nav {
   width: 260px;
   flex-shrink: 0;
-  background: #fff;
+  background: var(--bg-secondary);
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   padding: 28px 0;
 }
@@ -757,7 +757,7 @@ watch(activeTab, async (newTab) => {
 }
 
 .section-body {
-  background: #fff;
+  background: var(--bg-secondary);
   border: 1px solid var(--border-base);
   border-radius: var(--radius-mdlg);
   padding: 20px;
@@ -850,7 +850,7 @@ watch(activeTab, async (newTab) => {
   height: 32px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-base);
-  background: #fff;
+  background: var(--bg-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;

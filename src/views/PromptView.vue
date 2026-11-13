@@ -365,7 +365,7 @@ watch(extractedVars, (vars) => {
 .prompt-sidebar {
   width: 320px;
   flex-shrink: 0;
-  background: #fff;
+  background: var(--bg-secondary);
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   padding: 24px 16px;
   display: flex;
@@ -572,7 +572,7 @@ watch(extractedVars, (vars) => {
 }
 
 .tab-btn.active {
-  background: #fff;
+  background: var(--bg-secondary);
   color: var(--module-indigo);
   box-shadow: var(--shadow-1);
 }
@@ -602,7 +602,7 @@ watch(extractedVars, (vars) => {
 }
 
 .detail-panel {
-  background: #fff;
+  background: var(--bg-secondary);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(0,0,0,0.05);
   padding: 24px;
@@ -651,7 +651,7 @@ watch(extractedVars, (vars) => {
 
 /* 执行区 */
 .execute-section {
-  background: #fff;
+  background: var(--bg-secondary);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(0,0,0,0.05);
   padding: 24px;
@@ -722,7 +722,7 @@ watch(extractedVars, (vars) => {
 
 /* 结果区 */
 .result-section {
-  background: #fff;
+  background: var(--bg-secondary);
   border-radius: var(--radius-xl);
   border: 1px solid rgba(0,0,0,0.05);
   overflow: hidden;
