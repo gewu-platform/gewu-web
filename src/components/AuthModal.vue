@@ -15,12 +15,17 @@
       <!-- Header -->
       <div class="auth-header">
         <div class="logo-wrapper">
-          <svg class="auth-logo" viewBox="0 0 32 32" width="48" height="48" aria-hidden="true">
-        <rect x="3" y="3" width="12" height="12" rx="3" fill="#1E3A5F"/>
-        <rect x="17" y="3" width="12" height="12" rx="3" fill="#4F46E5"/>
-        <rect x="3" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.55"/>
-        <rect x="17" y="17" width="12" height="12" rx="3" fill="#1E3A5F" opacity="0.25"/>
-      </svg>
+          <!-- 品牌标：观察熊猫（与页头一致） -->
+          <svg class="auth-logo" viewBox="0 0 256 256" width="48" height="48" aria-hidden="true" fill="none">
+            <circle cx="64" cy="64" r="30" fill="#1E3A5F"/>
+            <circle cx="192" cy="64" r="30" fill="#1E3A5F"/>
+            <path fill="#1E3A5F" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
+            <path fill="#3370FF" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
+            <path fill="#3370FF" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
+            <path fill="#1E3A5F" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+            <path fill="#1E3A5F" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+            <ellipse cx="128" cy="177" rx="10" ry="8" fill="#1E3A5F"/>
+          </svg>
         </div>
         <h2 class="auth-title">{{ currentView === 'login' ? '欢迎回来' : '创建账户' }}</h2>
         <p class="auth-subtitle">

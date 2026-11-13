@@ -6,19 +6,19 @@
       <div class="header-inner">
         <div class="header-left">
           <router-link to="/" class="logo-link">
-            <!-- 液态有机主义 Logo -->
-            <div class="organic-logo-container">
-              <!-- 主 blob 形态 -->
-              <div class="organic-blob blob-primary"></div>
-              <!-- 次要 blob -->
-              <div class="organic-blob blob-secondary"></div>
-              <!-- 装饰气泡 -->
-              <div class="organic-bubble bubble-1"></div>
-              <div class="organic-bubble bubble-2"></div>
-              <div class="organic-bubble bubble-3"></div>
-              <!-- 内核光点 -->
-              <div class="organic-core"></div>
-            </div>
+            <!-- 品牌标：观察熊猫（格物致知 · 竹芽生长） -->
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 256 256" fill="none">
+                <circle cx="64" cy="64" r="30" fill="#1E3A5F"/>
+                <circle cx="192" cy="64" r="30" fill="#1E3A5F"/>
+                <path fill="#1E3A5F" fill-rule="evenodd" d="M40 146a88 88 0 1 0 176 0a88 88 0 1 0 -176 0 M56 146a72 72 0 1 0 144 0a72 72 0 1 0 -144 0"/>
+                <path fill="#3370FF" d="M120 52 C 108 48, 94 40, 84 24 C 100 30, 114 40, 120 52 Z"/>
+                <path fill="#3370FF" d="M136 52 C 148 48, 162 40, 172 24 C 156 30, 142 40, 136 52 Z"/>
+                <path fill="#1E3A5F" fill-rule="evenodd" d="M78 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M89.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+                <path fill="#1E3A5F" fill-rule="evenodd" d="M138 117a17 17 0 0 1 17-17h6a17 17 0 0 1 17 17v28a17 17 0 0 1-17 17h-6a17 17 0 0 1-17-17z M149.5 130a8.5 8.5 0 1 0 17 0a8.5 8.5 0 1 0 -17 0"/>
+                <ellipse cx="128" cy="177" rx="10" ry="8" fill="#1E3A5F"/>
+              </svg>
+            </span>
             <!-- 品牌名称 -->
             <div class="brand-name">
               <span class="brand-primary">Gewu</span>
@@ -42,12 +42,7 @@
               {{ $t('nav.knowledge') }}
             </router-link>
             <router-link to="/prompt" class="nav-tab" active-class="active">
-              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
+              <DocIcon class="nav-icon" variant="lines" />
               {{ $t('nav.prompt') }}
             </router-link>
             <router-link to="/monitor" class="nav-tab" active-class="active">
@@ -183,6 +178,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { healthCheck } from '@/api/chat'
 import { useI18n } from 'vue-i18n'
+import DocIcon from '@/components/icons/DocIcon.vue'
 import { setLocale, currentLocale as getLocale } from '@/i18n'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
@@ -435,101 +431,27 @@ onUnmounted(() => {
   position: relative;
   padding: 4px 0;
 }
-
-/* ===== 液态有机主义 Logo ===== */
-.organic-logo-container {
-  position: relative;
-  width: 46px;
-  height: 46px;
-  display: flex;
+/* ===== 品牌标：观察熊猫（Panda v5，格物致知） ===== */
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 主 blob - 天空蓝 */
-.organic-blob {
-  position: absolute;
-  border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-  animation: organic-morph 8s ease-in-out infinite;
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-.blob-primary {
-  width: 38px;
-  height: 38px;
-  background: radial-gradient(circle at 35% 35%, #38bdf8, #0ea5e9, #075985);
-  box-shadow:
-    0 6px 20px rgba(14, 165, 233, 0.25),
-    inset 0 2px 10px rgba(255, 255, 255, 0.15);
-  animation-delay: 0s;
+.logo-link:hover .brand-mark {
+  transform: scale(1.06);
 }
 
-.blob-secondary {
-  width: 32px;
-  height: 32px;
-  background: radial-gradient(circle at 65% 35%, #f472b6, #ec4899);
-  opacity: 0.75;
-  transform: translate(8px, -6px);
-  box-shadow:
-    0 4px 15px rgba(244, 114, 182, 0.3),
-    inset 0 1px 8px rgba(255, 255, 255, 0.2);
-  animation-delay: -2s;
-  animation-duration: 10s;
-}
-
-/* 装饰气泡 */
-.organic-bubble {
-  position: absolute;
-  border-radius: 50%;
-  animation: bubble-float 6s ease-in-out infinite;
-}
-
-.bubble-1 {
-  width: 8px;
-  height: 8px;
-  background: radial-gradient(circle at 40% 40%, #fcd34d, #f59e0b);
-  top: 8px;
-  right: 4px;
-  box-shadow: 0 2px 8px rgba(252, 211, 77, 0.4);
-  animation-delay: 0s;
-}
-
-.bubble-2 {
-  width: 6px;
-  height: 6px;
-  background: radial-gradient(circle at 40% 40%, #a3e635, #84cc16);
-  bottom: 6px;
-  left: 2px;
-  box-shadow: 0 2px 6px rgba(163, 230, 53, 0.35);
-  animation-delay: -1s;
-}
-
-.bubble-3 {
-  width: 5px;
-  height: 5px;
-  background: radial-gradient(circle at 40% 40%, #f9a8d4, #ec4899);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 1px 4px rgba(249, 168, 212, 0.3);
-  animation-delay: -2s;
-}
-
-/* 内核光点 */
-.organic-core {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4));
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-  animation: core-glow 3s ease-in-out infinite;
-}
-
-/* 品牌名称 */
 .brand-name {
   display: flex;
   flex-direction: column;
@@ -569,81 +491,6 @@ onUnmounted(() => {
 
 
 
-/* 有机形态变形动画 */
-@keyframes organic-morph {
-  0%, 100% {
-    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    border-radius: 58% 42% 30% 70% / 55% 45% 55% 45%;
-    transform: translate(2px, -1px) rotate(5deg);
-  }
-  50% {
-    border-radius: 45% 55% 60% 40% / 50% 40% 60% 50%;
-    transform: translate(-1px, 1px) rotate(-3deg);
-  }
-  75% {
-    border-radius: 55% 45% 35% 65% / 52% 48% 52% 48%;
-    transform: translate(1px, 2px) rotate(2deg);
-  }
-}
-
-/* 气泡浮动动画 */
-@keyframes bubble-float {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  33% {
-    transform: translate(2px, -3px);
-  }
-  66% {
-    transform: translate(-1px, 2px);
-  }
-}
-
-/* 内核光点呼吸动画 */
-@keyframes core-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-}
-
-/* 悬停时的液态变形 */
-.logo-link:hover .blob-primary {
-  animation: liquid-expand 2s ease-in-out infinite;
-}
-
-.logo-link:hover .blob-secondary {
-  animation: liquid-merge 2.5s ease-in-out infinite;
-}
-
-@keyframes liquid-expand {
-  0%, 100% {
-    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-    transform: scale(1);
-  }
-  50% {
-    border-radius: 35% 65% 55% 45% / 55% 35% 65% 45%;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes liquid-merge {
-  0%, 100% {
-    opacity: 0.75;
-    transform: translate(8px, -6px);
-  }
-  50% {
-    opacity: 0.9;
-    transform: translate(10px, -8px);
-  }
-}
 
 .header-center {
   display: flex;
