@@ -443,6 +443,10 @@
                     <td class="td-code">{{ p.code }}</td>
                     <td>{{ p.name }}</td>
                     <td class="td-desc">{{ p.description || '—' }}</td>
+                    <td class="td-endpoint">
+                      <span v-if="p.builtin" class="ep-placeholder" :title="$t('settings.plugin.placeholderTip')">{{ $t('settings.plugin.placeholder') }}</span>
+                      {{ p.endpoint }}
+                    </td>
                     <td class="td-endpoint">{{ p.endpoint }}</td>
                     <td class="td-allow">{{ p.toolAllow || $t('settings.plugin.allowAll') }}</td>
                     <td>
@@ -1820,7 +1824,8 @@ onMounted(async () => {
 .plugin-table th { font-weight: 600; color: #64748b; }
 .td-code { font-family: monospace; }
 .td-endpoint { font-size: 12px; color: #94a3b8; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.plugin-status { padding: 2px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; }
+.plugin-status { padding: 2px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; }
+.ep-placeholder { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; background: rgba(245, 158, 11, 0.15); color: #d97706; cursor: help; }
 .plugin-status.on { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .plugin-status.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 /* 表格内小按钮（安装/卸载/删除）：此前无定义导致原生按钮畸形 */

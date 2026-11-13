@@ -257,6 +257,12 @@
           </div>
         </div>
 
+        <!-- P16 已桥接工具可见化：智能模式下展示可自主调用的工具 -->
+        <div v-if="smartMode && bridgedTools.length" class="tools-line">
+          <span class="tools-label">{{ $t('chat.panel.bridged') }}</span>
+          <span v-for="t in bridgedTools" :key="t.name" class="bridge-chip" :title="t.description || t.name">{{ t.name }}</span>
+        </div>
+        
         <!-- P8b 知识库选择抽条 -->
         <div v-if="smartMode && kbEnabled && knowledgeDocs.length" class="kb-selector">
           <span class="kb-label">{{ $t('chat.panel.pickDoc') }}</span>
@@ -286,11 +292,14 @@ import { useAuthStore } from '@/stores/auth'
 import { getModelList, switchModel as apiSwitchModel, healthCheck, renameSession as apiRenameSession, setSessionGroup as apiSetSessionGroup, listGroups as apiListGroups, dissolveGroup as apiDissolveGroup, getCommands, sendCommandStream, getSessionContextUsage, deriveSession as apiDeriveSession, uploadChatImage } from '@/api/chat'
 import { agentChatStreamSession, approveToolCall, rejectToolCall } from '@/api/agent'
 import { getDocuments } from '@/api/knowledge'
+import { getAgentTools } from '@/api/agent'
 import ApprovalCard from '@/components/agent/ApprovalCard.vue'
 import ReasoningTimeline from '@/components/agent/ReasoningTimeline.vue'
 
 // P8a 智能模式（方案 D）：开启后走编排层（模型+工具+会话留档）
 const smartMode = ref(false)
+// P16 已桥接工具清单（智能模式开启时加载展示）
+const bridgedTools = ref([])
 // P8b RAG：知识库选择（智能模式开启时可用）
 const kbEnabled = ref(false)
 const knowledgeDocs = ref([])
@@ -312,7 +321,15 @@ function toggleDoc(id) {
 }
 
 // 智能模式开启时加载文档列表
-watch(smartMode, (v) => { if (v) loadKnowledgeDocs() })
+watch(smartMode, (v) => { if (v) { loadKnowledgeDocs(); loadBridgedTools() } })
+
+/** P16：拉取已桥接工具清单（/api/agent/tools 公开接口） */
+async function loadBridgedTools() {
+  try {
+    const res = await getAgentTools()
+    if (res.code === 200 && Array.isArray(res.data)) bridgedTools.value = res.data
+  } catch (e) { console.warn('[ChatView] 加载工具清单失败:', e) }
+}
 
 // 统一解包 R<T>
 function unwrap(response) {
@@ -1742,6 +1759,10 @@ async function initialize() {
     .toggle-text { color: #10b981; font-weight: 600; }
   }
 }
+
+.tools-line { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; width: 100%; max-width: 720px; margin: 6px auto 0; padding: 6px 12px; }
+.tools-label { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+.bridge-chip { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: rgba(59, 130, 246, 0.12); color: var(--accent-primary); border: 1px solid rgba(59, 130, 246, 0.25); }
 
 .kb-selector {
   width: 100%;
