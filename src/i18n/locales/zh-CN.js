@@ -302,7 +302,8 @@ export default {
       "title": "移动「{name}」到分组",
       "orNew": "或新建分组",
       "namePh": "分组名（留空 = 默认）",
-      "toDefault": "移到默认"
+      "toDefault": "移到默认",
+      "createAndMove": "创建并移入",
     },
     "hero": {
       "title": "Gewu 智能对话",

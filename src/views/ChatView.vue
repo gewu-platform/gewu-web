@@ -62,6 +62,7 @@
           <input v-model="newGroupName" class="mini-input" maxlength="50" :placeholder="$t('chat.move.namePh')" @keyup.enter="confirmMove(newGroupName)" />
           <div class="mini-modal-actions">
             <button class="mini-btn" @click="confirmMove('')">{{ $t('chat.move.toDefault') }}</button>
+            <button class="mini-btn primary" :disabled="!(newGroupName || '').trim()" @click="confirmMove(newGroupName)">{{ $t('chat.move.createAndMove') }}</button>
             <button class="mini-btn" @click="moveOpen = false">{{ $t('common.cancel') }}</button>
           </div>
         </div>
@@ -277,7 +278,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
 import { Modal, message } from 'ant-design-vue'
 import { useChatStore } from '@/stores/chat'

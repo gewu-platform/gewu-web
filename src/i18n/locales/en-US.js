@@ -302,7 +302,8 @@ export default {
       "title": "Move \"{name}\" to group",
       "orNew": "Or create a group",
       "namePh": "Group name (empty = Default)",
-      "toDefault": "Move to Default"
+      "toDefault": "Move to Default",
+      "createAndMove": "Create & move",
     },
     "hero": {
       "title": "Gewu Smart Chat",
