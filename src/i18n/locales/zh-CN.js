@@ -420,6 +420,8 @@ export default {
       "masterTitle": "主 Agent：可派发子 Agent"
     },
     "tools": {
+      "colName": "工具名",
+      "colDesc": "说明",
       "title": "🛠 工具清单（{n}）",
       "needApproval": "需审批",
       "auto": "自动放行"

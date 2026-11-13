@@ -68,17 +68,26 @@
       <div class="console-grid">
         <div class="console-card">
           <h3>{{ $t('agent.tools.title', { n: tools.length }) }}</h3>
-          <div class="tools-grid">
-            <div v-for="t in tools" :key="t.name" class="tool-card">
-              <div class="tool-name">
-                {{ t.name }}
-                <span class="approval-tag" :class="{ required: t.requiresApproval }">
-                  {{ t.requiresApproval ? $t('agent.tools.needApproval') : $t('agent.tools.auto') }}
-                </span>
-              </div>
-              <div class="tool-desc">{{ t.description }}</div>
-            </div>
-          </div>
+          <table class="tools-table">
+            <thead>
+              <tr>
+                <th class="tt-name">{{ $t('agent.tools.colName') }}</th>
+                <th class="tt-approval">{{ $t('agent.table.approval') }}</th>
+                <th class="tt-desc">{{ $t('agent.tools.colDesc') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="t in tools" :key="t.name" class="tools-row">
+                <td class="tt-name"><code class="tool-code">{{ t.name }}</code></td>
+                <td class="tt-approval">
+                  <span class="approval-tag" :class="{ required: t.requiresApproval }">
+                    {{ t.requiresApproval ? $t('agent.tools.needApproval') : $t('agent.tools.auto') }}
+                  </span>
+                </td>
+                <td class="tt-desc">{{ t.description }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="console-card">
@@ -894,33 +903,34 @@ onUnmounted(() => {
   h3 { font-size: 14px; margin-bottom: 12px; color: var(--text-primary); }
 }
 
-.tools-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.tools-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
 }
-
-.tool-card {
+.tools-table th {
+  text-align: left;
   padding: 8px 10px;
-  border-radius: var(--radius-md);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-
-  .tool-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .tool-desc {
-    font-size: 12px;
-    color: var(--text-secondary);
-    margin-top: 3px;
-  }
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-base);
+  font-size: 12px;
 }
+.tools-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border-low);
+  vertical-align: top;
+}
+.tools-row:hover td { background: var(--accent-soft); }
+.tool-code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.tt-approval .approval-tag { margin-right: 6px; }
+.tt-desc { color: var(--text-secondary); font-size: 12.5px; line-height: 1.5; }
+
 
 .approval-tag {
   font-size: 10px;

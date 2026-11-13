@@ -56,7 +56,7 @@
         <!-- 模型排行 -->
         <section class="monitor-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6)">
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-400), var(--accent-600))">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
               </svg>
@@ -93,9 +93,9 @@
         </section>
 
         <!-- T6 用量报表 -->
-      <div class="monitor-card">
+      <div class="monitor-section">
         <div class="section-heading">
-          <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), #6366f1);">📈</div>
+          <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-700));"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
           <div>
             <h2 class="section-title">{{ $t('monitor.usage.title') }}</h2>
             <p class="section-desc">{{ $t('monitor.usage.desc', { n: usageDays }) }}</p>
@@ -143,13 +143,8 @@
       <!-- 调用日志 -->
         <section class="monitor-section">
           <div class="section-heading">
-            <div class="section-icon" style="background: linear-gradient(135deg, #10b981, #059669)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
+            <div class="section-icon" style="background: linear-gradient(135deg, var(--success), #059669)">
+              <DocIcon variant="lines" />
             </div>
             <div>
               <h2 class="section-title">{{ $t('monitor.logs.title') }}</h2>
@@ -220,6 +215,8 @@
 const { t } = useI18n()
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { MODULE_COLORS } from '@/design/palette'
+import DocIcon from '@/components/icons/DocIcon.vue'
 import { message } from 'ant-design-vue'
 import { getMonitorStats, getCallLogs, getUsageReport } from '@/api/monitor'
 
@@ -238,10 +235,10 @@ const query = reactive({
 })
 
 const statsCards = computed(() => [
-  { label: t('monitor.stats.todayCalls'), icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: '#3370FF', key: 'todayCalls' },
-  { label: t('monitor.stats.todayTokens'), icon: '<path d="M12 2v4m0 12v4m-4-8H4m16 0h-4m-2.636-5.364-2.828-2.828m0 11.314 2.828 2.828M9.172 6.344 6.344 9.172m11.314 5.656 2.828 2.828"/>', color: '#10b981', key: 'todayTokens' },
-  { label: t('monitor.stats.todayCost'), icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', color: '#f59e0b', key: 'todayCost' },
-  { label: t('monitor.stats.avgLatency'), icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', color: '#ef4444', key: 'avgLatency' }
+  { label: t('monitor.stats.todayCalls'), icon: '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>', color: MODULE_COLORS.statCalls, key: 'todayCalls' },
+  { label: t('monitor.stats.todayTokens'), icon: '<path d="M12 2v4m0 12v4m-4-8H4m16 0h-4m-2.636-5.364-2.828-2.828m0 11.314 2.828 2.828M9.172 6.344 6.344 9.172m11.314 5.656 2.828 2.828"/>', color: MODULE_COLORS.statTokens, key: 'todayTokens' },
+  { label: t('monitor.stats.todayCost'), icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>', color: MODULE_COLORS.statCost, key: 'todayCost' },
+  { label: t('monitor.stats.avgLatency'), icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>', color: MODULE_COLORS.statLatency, key: 'avgLatency' }
 ])
 
 const modelRanking = computed(() => stats.value?.topModels || [])

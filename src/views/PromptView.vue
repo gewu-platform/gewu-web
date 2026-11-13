@@ -5,12 +5,7 @@
       <aside class="prompt-sidebar">
         <div class="sidebar-header">
           <div class="nav-icon-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
+            <DocIcon variant="lines" />
           </div>
           <div class="nav-title-group">
             <h3 class="sidebar-title">{{ $t('promptView.sidebar.title') }}</h3>
@@ -155,12 +150,7 @@
         </template>
 
         <div v-else class="no-selection">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-          </svg>
+          <DocIcon variant="lines" :stroke-width="1.5" />
           <p>{{ $t('promptView.empty.pick') }}</p>
         </div>
       </div>
@@ -219,6 +209,7 @@ import { message } from 'ant-design-vue'
 import { listTemplates, getTemplate, executeTemplate, createTemplate } from '@/api/prompt'
 import { getModelList } from '@/api/chat'
 import { marked } from 'marked'
+import DocIcon from '@/components/icons/DocIcon.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -428,7 +419,7 @@ watch(extractedVars, (vars) => {
   height: 32px;
   border-radius: var(--radius-semilg);
   border: none;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  background: var(--accent-600);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -706,7 +697,7 @@ watch(extractedVars, (vars) => {
   padding: 12px 28px;
   border-radius: var(--radius-semilg);
   border: none;
-  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  background: var(--accent-600);
   color: #fff;
   font-size: 14px;
   font-weight: 600;

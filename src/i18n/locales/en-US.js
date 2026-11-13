@@ -420,6 +420,8 @@ export default {
       "masterTitle": "Master agent: can dispatch sub-agents"
     },
     "tools": {
+      "colName": "Tool",
+      "colDesc": "Description",
       "title": "🛠 Tools ({n})",
       "needApproval": "Approval required",
       "auto": "Auto-approved"

@@ -25,10 +25,7 @@
             @click="activeTab = tab.id"
           >
             <div class="nav-item-icon" :style="`background: ${tab.color}15; color: ${tab.color}`">
-              <svg v-if="tab.id === 'tab-docs'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
+              <DocIcon v-if="tab.id === 'tab-docs'" />
               <svg v-if="tab.id === 'tab-search'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
@@ -48,10 +45,7 @@
         <section v-if="activeTab === 'tab-docs'" class="knowledge-section">
           <div class="section-heading">
             <div class="section-icon" style="background: linear-gradient(135deg, var(--accent-600), var(--accent-400))">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-              </svg>
+              <DocIcon />
             </div>
             <div>
               <h2 class="section-title">{{ $t('knowledge.docs.title') }}</h2>
@@ -79,10 +73,7 @@
                   class="doc-table-row"
                 >
                   <span class="col col-name">
-                    <svg class="doc-file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                    </svg>
+                    <DocIcon class="doc-file-icon" />
                     <span class="doc-filename" :title="doc.fileName">{{ doc.fileName }}</span>
                   </span>
                   <span class="col col-type">
@@ -113,11 +104,7 @@
 
                 <!-- 空状态 -->
                 <div v-if="!loading && documents.length === 0" class="empty-state">
-                  <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="9" y1="15" x2="15" y2="15"/>
-                  </svg>
+                  <DocIcon class="empty-icon" :stroke-width="1.5" variant="single-line" />
                   <p class="empty-title">{{ $t('knowledge.docs.empty') }}</p>
                   <p class="empty-desc">{{ $t('knowledge.docs.emptyDesc') }}</p>
                   <button class="empty-action-btn" @click="activeTab = 'tab-upload'">
@@ -266,10 +253,7 @@
                   <div class="result-header">
                     <span class="result-rank">#{{ index + 1 }}</span>
                     <span class="result-doc-name">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                      </svg>
+                      <DocIcon :size="14" />
                       {{ result.documentName }}
                     </span>
                     <span class="result-similarity">
@@ -360,6 +344,8 @@
 const { t } = useI18n()
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { MODULE_COLORS } from '@/design/palette'
+import DocIcon from '@/components/icons/DocIcon.vue'
 import { Modal, message } from 'ant-design-vue'
 import { uploadDocument, getDocuments, getDocument, deleteDocument, searchKnowledge } from '@/api/knowledge'
 
@@ -372,9 +358,9 @@ function unwrap(res) {
 }
 
 const tabs = computed(() => [
-    { id: 'tab-docs', label: t('knowledge.tabs.docs'), color: '#3370FF' },
-    { id: 'tab-search', label: t('knowledge.tabs.search'), color: '#f59e0b' },
-    { id: 'tab-upload', label: t('knowledge.tabs.upload'), color: '#10b981' }
+    { id: 'tab-docs', label: t('knowledge.tabs.docs'), color: MODULE_COLORS.knowledgeDocs },
+    { id: 'tab-search', label: t('knowledge.tabs.search'), color: MODULE_COLORS.knowledgeSearch },
+    { id: 'tab-upload', label: t('knowledge.tabs.upload'), color: MODULE_COLORS.knowledgeUpload }
   ])
 
 const activeTab = ref('tab-docs')

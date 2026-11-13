@@ -547,6 +547,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { MODULE_COLORS } from '@/design/palette'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import { useAuthStore } from '@/stores/auth'
@@ -569,12 +570,12 @@ const contentRef = ref(null)
 const activeCategory = ref('section-account')
 
 const categories = computed(() => [
-  { id: 'section-account', label: t('settings.tabs.account'), color: '#6366F1' },
-  { id: 'section-model', label: t('settings.tabs.model'), color: '#3370FF' },
-  { id: 'section-chat', label: t('settings.tabs.chat'), color: '#f59e0b' },
-  { id: 'section-data', label: t('settings.tabs.data'), color: '#ef4444' },
-  { id: 'section-plugin', label: t('settings.tabs.plugin'), color: '#8b5cf6' },
-  { id: 'section-skill', label: t('settings.tabs.skill'), color: '#3370FF' }
+  { id: 'section-account', label: t('settings.tabs.account'), color: MODULE_COLORS.settingAccount },
+  { id: 'section-model', label: t('settings.tabs.model'), color: MODULE_COLORS.settingModel },
+  { id: 'section-chat', label: t('settings.tabs.chat'), color: MODULE_COLORS.settingChat },
+  { id: 'section-data', label: t('settings.tabs.data'), color: MODULE_COLORS.settingData },
+  { id: 'section-plugin', label: t('settings.tabs.plugin'), color: MODULE_COLORS.settingPlugin },
+  { id: 'section-skill', label: t('settings.tabs.skill'), color: MODULE_COLORS.settingSkill }
 ])
 
 
