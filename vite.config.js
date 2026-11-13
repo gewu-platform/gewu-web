@@ -17,5 +17,15 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  // 生产形态等价验证：npm run preview 托管 dist 并反代 /api（对应 DEPLOY.md §1.4 nginx 形态）
+  preview: {
+    port: 4173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8081',
+        changeOrigin: true
+      }
+    }
   }
 })
