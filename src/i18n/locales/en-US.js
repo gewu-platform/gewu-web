@@ -36,7 +36,9 @@ export default {
     "disable": "Disable",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "exception": "Exception: "
+    "exception": "Exception: ",
+    "prev": "Prev",
+    "next": "Next"
   },
   "header": {
     "logout": "Sign out",

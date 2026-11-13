@@ -36,7 +36,9 @@ export default {
     "disable": "禁用",
     "enabled": "已启用",
     "disabled": "已禁用",
-    "exception": "异常："
+    "exception": "异常：",
+    "prev": "上一页",
+    "next": "下一页"
   },
   "header": {
     "logout": "退出登录",

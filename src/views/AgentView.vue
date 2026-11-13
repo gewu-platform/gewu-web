@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="agent in definitions" :key="agent.id">
+            <tr v-for="agent in pagedDefinitions" :key="agent.id">
               <td class="td-name">{{ agent.name }}
                 <span v-if="agent.config?.role === 'master'" class="role-badge master" :title="$t('agent.table.masterTitle')">master</span>
               </td>
@@ -62,6 +62,11 @@
             </tr>
           </tbody>
         </table>
+        <div class="pagination-bar">
+          <button class="page-btn" :disabled="agentPage <= 1" @click="agentPage--">{{ $t('common.prev') }}</button>
+          <span class="page-info">{{ agentPage }} / {{ agentTotalPages }} · {{ definitions.length }}</span>
+          <button class="page-btn" :disabled="agentPage >= agentTotalPages" @click="agentPage++">{{ $t('common.next') }}</button>
+        </div>
       </div>
 
       <!-- 工具清单 + 待审批 -->
@@ -77,7 +82,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="t in tools" :key="t.name" class="tools-row">
+              <tr v-for="t in pagedTools" :key="t.name" class="tools-row">
                 <td class="tt-name"><code class="tool-code">{{ t.name }}</code></td>
                 <td class="tt-approval">
                   <span class="approval-tag" :class="{ required: t.requiresApproval }">
@@ -88,6 +93,11 @@
               </tr>
             </tbody>
           </table>
+        <div class="pagination-bar">
+          <button class="page-btn" :disabled="toolPage <= 1" @click="toolPage--">{{ $t('common.prev') }}</button>
+          <span class="page-info">{{ toolPage }} / {{ toolTotalPages }} · {{ tools.length }}</span>
+          <button class="page-btn" :disabled="toolPage >= toolTotalPages" @click="toolPage++">{{ $t('common.next') }}</button>
+        </div>
         </div>
 
         <div class="console-card">
@@ -123,13 +133,14 @@
             <div class="section-title">{{ $t('agent.debug.select') }}</div>
             <div class="agents-list">
               <div
-                v-for="agent in enabledAgents"
+                v-for="agent in definitions"
                 :key="agent.id"
                 class="agent-item"
-                :class="{ selected: selectedAgentId === agent.id }"
+                :class="{ selected: selectedAgentId === agent.id, agentDisabled: !agent.enabled }"
                 @click="toggleAgent(agent.id)"
               >
                 <div class="agent-name">{{ agent.name }}</div>
+                  <span v-if="!agent.enabled" class="agent-off-badge">{{ $t('agent.debug.disabledBadge') }}</span>
                 <div class="agent-desc">{{ agent.description }}</div>
               </div>
             </div>
@@ -399,6 +410,15 @@ const healthText = computed(() =>
   healthStatus.value === 'UP' ? t('agent.health.up') : healthStatus.value === 'DOWN' ? t('agent.health.down') : t('agent.health.checking')
 )
 const enabledAgents = computed(() => definitions.filter(a => a.enabled))
+
+// P20 分页状态（客户端切片；页大小 8）
+const agentPage = ref(1)
+const toolPage = ref(1)
+const PAGE_SIZE = 8
+const agentTotalPages = computed(() => Math.max(1, Math.ceil(definitions.length / PAGE_SIZE)))
+const toolTotalPages = computed(() => Math.max(1, Math.ceil(tools.length / PAGE_SIZE)))
+const pagedDefinitions = computed(() => definitions.slice((agentPage.value - 1) * PAGE_SIZE, agentPage.value * PAGE_SIZE))
+const pagedTools = computed(() => tools.slice((toolPage.value - 1) * PAGE_SIZE, toolPage.value * PAGE_SIZE))
 
 // ========== 调试台状态 ==========
 const debugOpen = ref(false)
@@ -903,6 +923,34 @@ onUnmounted(() => {
   h3 { font-size: 14px; margin-bottom: 12px; color: var(--text-primary); }
 }
 
+
+/* P20 分页条（样式对齐监控页调用日志分页） */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 14px;
+}
+.page-info {
+  font-size: 12px;
+  color: var(--text-400);
+  font-family: var(--font-mono);
+}
+.page-btn {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid var(--border-base);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 12px;
+  color: var(--text-600);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--accent-300); color: var(--accent-600); }
+.page-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .tools-table {
   width: 100%;
   border-collapse: collapse;
