@@ -67,12 +67,30 @@ api.interceptors.response.use(
 
 // ==================== 认证 API（对齐 native /api/auth/*） ====================
 
+/**
+ * P19：设备标识（localStorage 持久化 UUID；用于单账号多设备并行在线）
+ */
+function getOrCreateDeviceId() {
+  try {
+    let id = localStorage.getItem('device-id')
+    if (!id) {
+      id = (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'dev-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10)
+      localStorage.setItem('device-id', id)
+    }
+    return id
+  } catch (e) {
+    return 'dev-' + Date.now().toString(36)
+  }
+}
+
 export function login(username, password) {
-  return api.post('/auth/login', { username, password })
+  return api.post('/auth/login', { username, password, deviceId: getOrCreateDeviceId() })
 }
 
 export function register(username, email, password) {
-  return api.post('/auth/register', { username, email, password })
+  return api.post('/auth/register', { username, email, password, deviceId: getOrCreateDeviceId() })
 }
 
 export function refreshToken(refreshToken) {
