@@ -847,7 +847,7 @@ watch(activeTab, async (newTab) => {
 
 .action-btn {
   width: 30px;
-  height: 30px;
+  height: 32px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-base);
   background: #fff;

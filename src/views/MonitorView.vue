@@ -590,7 +590,7 @@ onMounted(async () => {
 
 .filter-select,
 .filter-date {
-  height: 34px;
+  height: 32px;
   padding: 0 12px;
   border: 1px solid var(--border-base);
   border-radius: var(--radius-semilg);
@@ -669,7 +669,7 @@ onMounted(async () => {
 }
 
 .page-btn {
-  height: 30px;
+  height: 32px;
   padding: 0 14px;
   border: 1px solid var(--border-base);
   border-radius: 9px;

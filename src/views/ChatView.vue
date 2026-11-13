@@ -1673,7 +1673,7 @@ async function initialize() {
 
 .send-btn {
   width: 44px;
-  height: 44px;
+  height: 40px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, var(--accent-400), var(--accent-600));
   border: none;
