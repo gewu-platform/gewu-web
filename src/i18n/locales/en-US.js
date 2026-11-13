@@ -290,7 +290,7 @@ export default {
   },
   "chat": {
     "sessions": {
-      "title": "💬 Sessions",
+      "title": "Sessions",
       "newSession": "New session",
       "delGroup": "Delete group (sessions return to default)",
       "childTag": "↳ child",

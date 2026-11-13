@@ -290,7 +290,7 @@ export default {
   },
   "chat": {
     "sessions": {
-      "title": "💬 会话",
+      "title": "会话",
       "newSession": "新建会话",
       "delGroup": "删除分组（会话回到默认）",
       "childTag": "↳ 子",

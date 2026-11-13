@@ -3,7 +3,10 @@
     <!-- 左侧：会话列表 -->
     <aside class="sidebar-panel">
       <div class="panel-header">
-        <h3>💬 {{ $t('chat.sessions.title') }}</h3>
+        <h3 class="sessions-heading">
+  <svg class="sessions-heading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  {{ $t('chat.sessions.title') }}
+</h3>
         <button class="btn-icon" @click="handleCreateSession" :title="$t('chat.sessions.newSession')">+</button>
       </div>
       <div class="session-list">
@@ -1066,7 +1069,8 @@ async function initialize() {
   justify-content: space-between;
   padding: 16px;
   border-bottom: 1px solid var(--border-color);
-  h3 { font-size: 15px; font-weight: 600; }
+  h3 { font-size: 15px; font-weight: 600; color: var(--text-800); display: flex; align-items: center; gap: 6px; }
+  .sessions-heading-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--accent-600); }
 }
 
 .btn-icon {

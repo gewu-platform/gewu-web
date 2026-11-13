@@ -7,9 +7,7 @@
         <div class="stats-row">
           <div class="stat-card" v-for="stat in statsCards" :key="stat.label">
             <div class="stat-icon" :style="`background: ${stat.color}15; color: ${stat.color}`">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path v-html="stat.icon" />
-              </svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" v-html="stat.icon" />
             </div>
             <div class="stat-info">
               <span class="stat-label">{{ stat.label }}</span>
