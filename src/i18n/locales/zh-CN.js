@@ -401,7 +401,7 @@ export default {
   },
   "agent": {
     "console": {
-      "title": "🤖 Agent 管理控制台",
+      "title": "Agent 管理控制台",
       "newAgent": "+ 新建 Agent"
     },
     "table": {
@@ -426,12 +426,12 @@ export default {
     "tools": {
       "colName": "工具名",
       "colDesc": "说明",
-      "title": "🛠 工具清单（{n}）",
+      "title": "工具清单（{n}）",
       "needApproval": "需审批",
       "auto": "自动放行"
     },
     "pending": {
-      "title": "⏳ 待审批（{n}）",
+      "title": "待审批（{n}）",
       "empty": "当前无待审批的工具调用",
       "approve": "批准",
       "reject": "拒绝"

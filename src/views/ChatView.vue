@@ -241,7 +241,7 @@
                 </div>
               </div>
             </div>
-            <label class="smart-toggle" :class="{ on: smartMode }" :title="$t('chat.panel.smartTitle')">
+            <label class="smart-toggle" :class="{ on: smartMode }" :title="smartTitleText">
               <input type="checkbox" v-model="smartMode" />
               <span class="toggle-track"><span class="toggle-thumb"></span></span>
               <span class="toggle-text">{{ $t('chat.panel.smart') }}{{ smartMode ? $t('chat.panel.smartOn') : '' }}</span>
@@ -257,11 +257,6 @@
           </div>
         </div>
 
-        <!-- P16 已桥接工具可见化：智能模式下展示可自主调用的工具 -->
-        <div v-if="smartMode && bridgedTools.length" class="tools-line">
-          <span class="tools-label">{{ $t('chat.panel.bridged') }}</span>
-          <span v-for="t in bridgedTools" :key="t.name" class="bridge-chip" :title="t.description || t.name">{{ t.name }}</span>
-        </div>
         
         <!-- P8b 知识库选择抽条 -->
         <div v-if="smartMode && kbEnabled && knowledgeDocs.length" class="kb-selector">
@@ -298,8 +293,13 @@ import ReasoningTimeline from '@/components/agent/ReasoningTimeline.vue'
 
 // P8a 智能模式（方案 D）：开启后走编排层（模型+工具+会话留档）
 const smartMode = ref(false)
-// P16 已桥接工具清单（智能模式开启时加载展示）
+// P16 已桥接工具清单（智能模式悬浮说明动态展示，不再渲染 chips）
 const bridgedTools = ref([])
+const smartTitleText = computed(() => {
+  const base = t('chat.panel.smartTitle')
+  if (!bridgedTools.value.length) return base
+  return base + '\n' + t('chat.panel.bridged') + bridgedTools.value.map(x => x.name).join('、')
+})
 // P8b RAG：知识库选择（智能模式开启时可用）
 const kbEnabled = ref(false)
 const knowledgeDocs = ref([])
@@ -1759,10 +1759,6 @@ async function initialize() {
     .toggle-text { color: #10b981; font-weight: 600; }
   }
 }
-
-.tools-line { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; width: 100%; max-width: 720px; margin: 6px auto 0; padding: 6px 12px; }
-.tools-label { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
-.bridge-chip { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: rgba(59, 130, 246, 0.12); color: var(--accent-primary); border: 1px solid rgba(59, 130, 246, 0.25); }
 
 .kb-selector {
   width: 100%;

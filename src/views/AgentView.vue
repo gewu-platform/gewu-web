@@ -3,7 +3,7 @@
     <!-- ===== 管理控制台（P8a 方案 D）===== -->
     <div class="console-section">
       <div class="console-header">
-        <h2>{{ $t('agent.console.title') }}</h2>
+        <h2><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>{{ $t('agent.console.title') }}</h2>
         <div class="console-actions">
           <div class="health-pill" :class="{ up: healthStatus === 'UP' }">
             <span class="health-dot"></span>
@@ -72,7 +72,7 @@
       <!-- 工具清单 + 待审批 -->
       <div class="console-grid">
         <div class="console-card">
-          <h3>{{ $t('agent.tools.title', { n: tools.length }) }}</h3>
+          <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>{{ $t('agent.tools.title', { n: tools.length }) }}</h3>
           <table class="tools-table">
             <thead>
               <tr>
@@ -101,7 +101,7 @@
         </div>
 
         <div class="console-card">
-          <h3>{{ $t('agent.pending.title', { n: pendingCount }) }}</h3>
+          <h3><svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{{ $t('agent.pending.title', { n: pendingCount }) }}</h3>
           <div v-if="pendingCount === 0" class="empty-tip">{{ $t('agent.pending.empty') }}</div>
           <div v-for="(req, id) in pendingRequests" :key="id" class="pending-item">
             <div class="pending-tool">{{ req.toolName }}</div>
@@ -875,6 +875,8 @@ onUnmounted(() => {
 }
 
 /* P8b 审批策略徽章 */
+.title-icon { width: 18px; height: 18px; margin-right: 8px; vertical-align: -3px; color: var(--accent-primary, #3b82f6); }
+
 .approval-badge {
   display: inline-block;
   padding: 2px 10px;

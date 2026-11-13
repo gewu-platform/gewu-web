@@ -401,7 +401,7 @@ export default {
   },
   "agent": {
     "console": {
-      "title": "🤖 Agent Management Console",
+      "title": "Agent Management Console",
       "newAgent": "+ New Agent"
     },
     "table": {
@@ -426,12 +426,12 @@ export default {
     "tools": {
       "colName": "Tool",
       "colDesc": "Description",
-      "title": "🛠 Tools ({n})",
+      "title": "Tools ({n})",
       "needApproval": "Approval required",
       "auto": "Auto-approved"
     },
     "pending": {
-      "title": "⏳ Pending ({n})",
+      "title": "Pending ({n})",
       "empty": "No pending tool calls",
       "approve": "Approve",
       "reject": "Reject"
