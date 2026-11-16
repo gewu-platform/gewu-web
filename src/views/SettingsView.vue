@@ -698,15 +698,17 @@ loadPlugins()
 
 // ==================== 公共 Skill 目录（v2.0.1 T2.3） ====================
 const skillDirInput = ref('')
-const skillDirInfo = reactive({ dir: '', readable: false, count: undefined })
+const skillDirInfo = reactive({ dir: '', hostDir: '', readable: false, count: undefined })
 const skillsList = ref([])
 async function loadSkillDir() {
   try {
     const res = await getSkillsDir()
     const d = res?.data !== undefined ? res.data : res
-    skillDirInfo.dir = d.dir || ''
+    skillDirInfo.hostDir = d.hostDir || ''
+    // 变更项：配置目录（hostDir）优先展示——容器部署下不再显示容器内路径
+    skillDirInfo.dir = d.hostDir || d.dir || ''
     skillDirInfo.readable = !!d.readable
-    skillDirInput.value = d.dir || ''
+    skillDirInput.value = d.hostDir || d.dir || ''
     const sl = await listSkills()
     const arr = sl?.data !== undefined ? sl.data : sl
     skillDirInfo.count = Array.isArray(arr) ? arr.length : 0
@@ -715,6 +717,20 @@ async function loadSkillDir() {
 }
 async function applySkillDir() {
   if (!skillDirInput.value) { message.warning(t('settings.skill.dirRequired')); return }
+  if (skillDirInfo.hostDir) {
+    // 容器部署：目录由挂载映射决定（ro），运行时切换容器内路径通常无效
+    Modal.confirm({
+      title: t('settings.skill.hostDirConfirmTitle'),
+      content: t('settings.skill.hostDirConfirm'),
+      okText: t('chat.msgs.ok'),
+      cancelText: t('common.cancel'),
+      onOk: () => doApplySkillDir()
+    })
+    return
+  }
+  doApplySkillDir()
+}
+async function doApplySkillDir() {
   try {
     const res = await setSkillsDir(skillDirInput.value)
     const d = res?.data !== undefined ? res.data : res

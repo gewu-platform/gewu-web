@@ -692,6 +692,8 @@ export default {
       "readable": "目录可读",
       "notReadable": "目录不存在或不可读",
       "count": "Skill 数：{n}",
+      "hostDirConfirmTitle": "容器部署模式",
+      "hostDirConfirm": "当前为容器部署：扫描目录由 .env 的 GEWU_SKILLS_DIR_HOST 只读挂载进容器。在此切换容器内路径通常无效；如需更换宿主机目录，请修改 .env 后重启容器。仍要继续运行时切换吗？",
       "dirRequired": "请输入目录",
       "switched": "目录已切换并重扫：{dir}",
       "switchFailed": "切换失败（目录不存在或不可读）",

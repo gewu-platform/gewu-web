@@ -692,6 +692,8 @@ export default {
       "readable": "Directory readable",
       "notReadable": "Directory missing or unreadable",
       "count": "Skills: {n}",
+      "hostDirConfirmTitle": "Container deployment",
+      "hostDirConfirm": "Container deployment detected: the scan directory is mounted read-only from GEWU_SKILLS_DIR_HOST in .env. Switching to another in-container path here usually has no effect; to change the host directory, edit .env and restart the container. Continue with runtime switch anyway?",
       "dirRequired": "Please enter a directory",
       "switched": "Directory switched and rescanned: {dir}",
       "switchFailed": "Switch failed (directory missing or unreadable)",
