@@ -1450,6 +1450,7 @@ async function initialize() {
 .message-bubble {
   padding: 12px 16px;
   border-radius: var(--radius-lg);
+  color: var(--text-800);
   .user & { background: rgba(88, 166, 255, 0.12); border: 1px solid rgba(88, 166, 255, 0.2); }
   .assistant & { background: var(--bg-secondary); border: 1px solid var(--border-color); }
 }
