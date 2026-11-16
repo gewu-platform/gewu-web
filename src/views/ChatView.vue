@@ -98,15 +98,15 @@
           v-for="(msg, index) in chatStore.messages"
           :key="msg.id || index"
           class="message-row"
-          :class="msg.role"
+          :class="[msg.role, { 'compact-mark': msg.contentType === 'compact' }]"
         >
           <div class="avatar">
-            {{ msg.role === 'user' ? '👤' : '🤖' }}
+            {{ msg.contentType === 'compact' ? '📦' : (msg.role === 'user' ? '👤' : '🤖') }}
           </div>
           <div class="message-bubble">
             <div class="message-meta">
-              <span class="role-label">{{ msg.role === 'user' ? $t('chat.msg.me') : 'AI' }}</span>
-              <span v-if="msg.model" class="model-tag">{{ msg.model }}</span>
+              <span v-if="msg.contentType !== 'compact'" class="role-label">{{ msg.role === 'user' ? $t('chat.msg.me') : 'AI' }}</span>
+              <span v-if="msg.model && msg.contentType !== 'compact'" class="model-tag">{{ msg.model }}</span>
               <span class="time">{{ formatTime(msg.timestamp) }}</span>
             </div>
 
@@ -1427,6 +1427,24 @@ async function initialize() {
   &:hover { border-color: var(--accent); background: rgba(88, 166, 255, 0.06); }
 }
 
+.message-row.compact-mark {
+  max-width: 100%;
+  justify-content: center;
+}
+.message-row.compact-mark .avatar {
+  display: none;
+}
+.message-row.compact-mark .message-bubble {
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  text-align: center;
+  padding: 6px 14px;
+}
+.message-row.compact-mark .message-text {
+  font-size: 12px;
+}
 .message-row {
   display: flex;
   gap: 12px;
