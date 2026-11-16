@@ -97,6 +97,11 @@ export function uninstallPlugin(id) {
   return api.post(`/settings/plugins/${id}/uninstall`, {})
 }
 
+/** V2.8.0 R3/T3.2：运行时重连（enable 桥接 + 工具刷新） */
+export function reconnectPlugin(id) {
+  return api.post(`/settings/plugins/${id}/reconnect`, {})
+}
+
 /** 删除条目（内置不可删，已安装需先卸载） */
 export function deletePlugin(id) {
   return api.delete(`/settings/plugins/${id}`)

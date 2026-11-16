@@ -453,13 +453,14 @@
                     <td class="td-endpoint">{{ p.endpoint }}</td>
                     <td class="td-allow">{{ p.toolAllow || $t('settings.plugin.allowAll') }}</td>
                     <td>
-                      <span class="plugin-status" :class="p.installed ? 'on' : 'off'">
-                        {{ p.installed ? $t('settings.plugin.installed') : $t('settings.plugin.notInstalled') }}
+                      <span class="plugin-status" :class="p.installed ? (p.health && p.health.status === 'connected' ? 'on' : 'warn') : 'off'">
+                        {{ p.installed ? (p.health && p.health.status === 'connected' ? $t('settings.plugin.bridged') : $t('settings.plugin.unreachable')) : $t('settings.plugin.notInstalled') }}
                       </span>
                     </td>
                     <td class="td-actions">
                       <button v-if="!p.installed" class="btn-sm ok" @click="installPluginRow(p)">{{ $t('settings.plugin.install') }}</button>
                       <button v-else class="btn-sm" @click="uninstallPluginRow(p)">{{ $t('settings.plugin.uninstall') }}</button>
+                      <button v-if="p.installed && (!p.health || p.health.status !== 'connected')" class="btn-sm" @click="reconnectPluginRow(p)">{{ $t('settings.plugin.reconnect') }}</button>
                       <button v-if="!p.builtin" class="btn-sm danger" @click="deletePluginRow(p)">{{ $t('settings.plugin.delete') }}</button>
                     </td>
                   </tr>
@@ -562,7 +563,7 @@ import { useChatStore } from '@/stores/chat'
 import { getModelList, switchModel as apiSwitchModel, getCompactSettings, saveCompactSettings, compactSession as apiCompactSession } from '@/api/chat'
 import { listProviders, createProvider, updateProvider, deleteProvider, activateProvider, testProvider as apiTestProvider } from '@/api/settings'
 import { getProfile, updateProfile, changePassword } from '@/api/user'
-import { listPlugins, createPlugin, installPlugin, uninstallPlugin, deletePlugin } from '@/api/settings'
+import { listPlugins, createPlugin, installPlugin, uninstallPlugin, deletePlugin, reconnectPlugin } from '@/api/settings'
 import { listSkills, rescanSkills, getSkillsDir, setSkillsDir } from '@/api/settings'
 const { t } = useI18n()
 
@@ -1080,6 +1081,16 @@ function clearAllSessions() {
       }
     }
   })
+}
+
+async function reconnectPluginRow(p) {
+  try {
+    const res = await reconnectPlugin(p.id)
+    const d = res?.data !== undefined ? res.data : res
+    if (d.ok) message.success(t('settings.plugin.reconnected', { code: d.code }))
+    else message.error(d.message || t('settings.plugin.reconnectFailed'))
+    await loadPlugins()
+  } catch (e) { message.error(t('common.exception') + e.message) }
 }
 
 // ==================== 恢复默认 ====================
@@ -1847,6 +1858,7 @@ onMounted(async () => {
 .ep-placeholder { display: inline-block; margin-right: 6px; padding: 1px 8px; border-radius: var(--radius-semilg); font-size: 12px; font-weight: 600; background: rgba(var(--warning-rgb), 0.15); color: var(--warning); cursor: help; }
 .plugin-status.on { background: rgba(var(--success-rgb), 0.15); color: var(--success); }
 .plugin-status.off { background: rgba(var(--text-400-rgb), 0.15); color: var(--text-tertiary); }
+.plugin-status.warn { background: rgba(var(--warning-rgb), 0.15); color: var(--warning); }
 /* 表格内小按钮（安装/卸载/删除）：此前无定义导致原生按钮畸形 */
 .td-actions { display: flex; gap: 6px; justify-content: flex-start; }
 .btn-sm {
