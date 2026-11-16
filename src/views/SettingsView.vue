@@ -500,10 +500,12 @@
                 <span>{{ $t('settings.skill.count', { n: skillDirInfo.count !== undefined ? skillDirInfo.count : '—' }) }}</span>
               </div>
               <div v-if="skillsList.length" class="skill-list">
-                <div v-for="s in skillsList" :key="s.id" class="skill-item">
+                <div v-for="s in skillsList" :key="s.id" class="skill-item" @click="toggleSkillDetail(s.id)">
                   <span class="skill-item-id">{{ s.id }}</span>
                   <span class="skill-item-name">{{ s.name || s.id }}</span>
                   <span class="skill-item-desc" :title="s.description">{{ s.description || '—' }}</span>
+                  <span class="skill-item-expand-hint">{{ expandedSkillId === s.id ? '▲ 收起' : '▼ 展开指令段' }}</span>
+                  <pre v-if="expandedSkillId === s.id && s.instructions" class="skill-item-exp">{{ s.instructions }}</pre>
                 </div>
               </div>
               <p v-else-if="skillDirInfo.readable" class="skill-empty">该目录下未扫描到 SKILL.md</p>
@@ -701,6 +703,10 @@ loadPlugins()
 const skillDirInput = ref('')
 const skillDirInfo = reactive({ dir: '', hostDir: '', readable: false, count: undefined })
 const skillsList = ref([])
+const expandedSkillId = ref('')
+function toggleSkillDetail(id) {
+  expandedSkillId.value = expandedSkillId.value === id ? '' : id
+}
 async function loadSkillDir() {
   try {
     const res = await getSkillsDir()
@@ -1894,7 +1900,24 @@ onMounted(async () => {
   border: 1px solid var(--border-base); border-radius: var(--radius-semilg); background: var(--bg-secondary);
   max-height: 360px; overflow-y: auto;
 }
-.skill-item {
+.skill-item { cursor: pointer;
+.skill-item-expand-hint { margin-left: auto; font-size: 11px; color: var(--text-tertiary); flex-shrink: 0; }
+.skill-item-exp {
+  width: 100%;
+  margin: 8px 0 2px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-700);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+}
   display: flex; align-items: baseline; gap: 12px; font-size: 13px;
   padding: 9px 14px;
   border-bottom: 1px solid var(--border-low);
