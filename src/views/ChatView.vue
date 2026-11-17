@@ -532,7 +532,7 @@ watch(inputMessage, (v) => {
  */
 async function executeCommand(text) {
   if (!chatStore.sessionId) {
-    await chatStore.initSession()
+    await chatStore.ensureSessionForSend()
   }
   chatStore.messages.push({ role: 'user', content: text, timestamp: Date.now() })
   const aiMsg = reactive({ role: 'assistant', content: '', timestamp: Date.now(), streaming: true })
@@ -616,15 +616,9 @@ async function onModelSwitch() {
   }
 }
 
-// 创建新会话
-async function handleCreateSession() {
-  try {
-    await chatStore.createNewSession()
-    message.success(t('chat.msgs.created'))
-  } catch (e) {
-    if (e.isAuthError) return
-    message.error(t('chat.msgs.createFailed') + (e.message || t('common.failed')))
-  }
+// V2.8.1 ④：OpenClaw 式新建会话——本地 pending（不入库不入列表），首条消息或切换时收敛
+function handleCreateSession() {
+  chatStore.startNewSession()
 }
 
 // 选择会话

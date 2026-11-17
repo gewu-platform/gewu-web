@@ -8,7 +8,8 @@ import {
   deleteSession,
   getSessions,
   getSessionMessages,
-  switchModel
+  switchModel,
+  renameSession as apiRenameSession
 } from '@/api/chat'
 
 // localStorage 键名（对齐 native）
@@ -27,6 +28,7 @@ function unwrap(response) {
 export const useChatStore = defineStore('chat', () => {
   // ==================== 状态 ====================
   const sessionId = ref(null)
+  const pendingNew = ref(false)
   const messages = ref([])
   const sessions = ref([])
   const isLoading = ref(false)
@@ -173,9 +175,39 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   /**
+   * V2.8.1 ④：OpenClaw 式新建会话——本地 pending 状态，不调创建接口、不入库、不出现在会话列表。
+   * 收敛时机：首条消息发送时真实创建（ensureSessionForSend），或切换到其他会话时静默丢弃。
+   */
+  function startNewSession() {
+    pendingNew.value = true
+    sessionId.value = null
+    messages.value.splice(0, messages.value.length)
+    localStorage.removeItem(STORAGE_KEY_SESSION)
+    error.value = null
+  }
+
+  /**
+   * V2.8.1 ④：发送前确保会话就绪——pending 态则真实创建全新会话（不复用已有活跃会话）
+   * 并设置默认会话名 New Session；非 pending 态走原 initSession（getOrCreate 语义）。
+   */
+  async function ensureSessionForSend() {
+    if (sessionId.value) return
+    if (pendingNew.value) {
+      const created = await createNewSession()
+      pendingNew.value = false
+      if (created && created.data && created.data.sessionId) {
+        try { await apiRenameSession(created.data.sessionId, 'New Session') } catch (e) { /* 默认名设置失败不阻断 */ }
+      }
+      return
+    }
+    await initSession()
+  }
+
+  /**
    * 切换会话（加载历史）
    */
   async function selectSession(targetSessionId) {
+    pendingNew.value = false // V2.8.1 ④：切换会话即丢弃未对话的 pending 新会话
     sessionId.value = targetSessionId
     localStorage.setItem(STORAGE_KEY_SESSION, targetSessionId)
     await loadSessionMessages(targetSessionId)
@@ -198,7 +230,7 @@ export const useChatStore = defineStore('chat', () => {
 
       // 没有会话则先创建
       if (!sessionId.value) {
-        await initSession()
+        await ensureSessionForSend()
       }
 
       // 用户消息入列。注意：imageUrls 存的是可访问 URL（供气泡渲染缩略图），
