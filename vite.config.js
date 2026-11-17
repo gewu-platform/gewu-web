@@ -4,6 +4,14 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  // V2.8.0 收尾：Sass 现代化 API（消除 legacy-js-api 弃用警告——dev server 曾 6 次伴随该警告退出）
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern'
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
